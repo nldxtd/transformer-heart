@@ -47,7 +47,7 @@ struct SingleAttentionHeadView: View {
         [0.55, 0.44, 0.97, 0.58, 0.47, 0.78, 0.7, 0.75, 0.57, 0.49],
         [0.45, 0.65, 0.6, 0.74, 0.61, 0.43, 0.69, 0.55, 0.58, 0.86],
     ])
-    @State private var dotProductView: AttentionHeadViewModel = AttentionHeadViewModel(headWeight: [
+    @State private var dotHeadView: AttentionHeadViewModel = AttentionHeadViewModel(headWeight: [
         [7.32, 7.3, 1.8, 4.8, 5.04, 12.86, 6.97],
         [11.89, 10.92, 1.26, 8.38, 7.37, 16.02, 16.47],
         [17.07, 19.68, 12.7, 17.06, 18.64, 7.85, 17.26],
@@ -56,7 +56,7 @@ struct SingleAttentionHeadView: View {
         [17.49, 17.47, 11.96, 18.56, 8.21, 8.68, 5.0],
         [16.5, 2.75, 19.09, 17.27, 1.7, 1.34, 3.44],
     ])
-    @State private var maskProductView: AttentionHeadViewModel = AttentionHeadViewModel(
+    @State private var maskHeadView: AttentionHeadViewModel = AttentionHeadViewModel(
         headWeight: [
             [7.32, 7.3, 1.8, 4.8, 5.04, 12.86, 6.97],
             [11.89, 10.92, 1.26, 8.38, 7.37, 16.02, 16.47],
@@ -66,7 +66,7 @@ struct SingleAttentionHeadView: View {
             [17.49, 17.47, 11.96, 18.56, 8.21, 8.68, 5.0],
             [16.5, 2.75, 19.09, 17.27, 1.7, 1.34, 3.44],
         ])
-    @State private var softmaxProductView: AttentionHeadViewModel = AttentionHeadViewModel(
+    @State private var softHeadView: AttentionHeadViewModel = AttentionHeadViewModel(
         headWeight: [
             [7.32, 7.3, 1.8, 4.8, 5.04, 12.86, 6.97],
             [11.89, 10.92, 1.26, 8.38, 7.37, 16.02, 16.47],
@@ -86,6 +86,10 @@ struct SingleAttentionHeadView: View {
     @State private var verticalHeadPositions: [CGPoint] = []
     @State private var coordinatesReady: Bool = false
     @State private var animationProgress: CGFloat = 0
+    @State private var scale: CGFloat = 0
+    
+    @State private var MaskVisible: Bool = false
+    @State private var SoftmaxVisible: Bool = false
 
     @Binding var currentView: String
     var animationNamespace: Namespace.ID
@@ -110,6 +114,7 @@ struct SingleAttentionHeadView: View {
                             defaultWidth: 3,
                             defaultHeight: 10,
                             spacing: 5,
+                            vectorSpacing: 0,
                             title: "key",
                             titleWidth: 43,
                             titleHeight: 20
@@ -135,6 +140,7 @@ struct SingleAttentionHeadView: View {
                             defaultWidth: 3,
                             defaultHeight: 10,
                             spacing: 5,
+                            vectorSpacing: 0,
                             title: "query",
                             titleWidth: 48,
                             titleHeight: 20
@@ -160,6 +166,7 @@ struct SingleAttentionHeadView: View {
                             defaultWidth: 3,
                             defaultHeight: 10,
                             spacing: 5,
+                            vectorSpacing: 0,
                             title: "value",
                             titleWidth: 43,
                             titleHeight: 20
@@ -181,8 +188,9 @@ struct SingleAttentionHeadView: View {
                     // Represent of dot-product calculation
                     AttentionHeadView(
                         head: tokens.count,
-                        headViewModel: dotProductView,
-                        title: "Dot Product"
+                        headViewModel: dotHeadView,
+                        title: "Dot Product",
+                        circleScale: $scale
                     )
                     .overlay(
                         GeometryReader { geo in
@@ -196,28 +204,38 @@ struct SingleAttentionHeadView: View {
                         }
                         .border(Color.red)
                     )
+                    
+                    HStack {
+                        // Right arrow
+                        Image(systemName: "arrow.right")
+                            .offset(y: -25)
 
-                    // Right arrow
-                    Image(systemName: "arrow.right")
-                        .offset(y: -25)
+                        // Represent of scaling and mask
+                        AttentionHeadView(
+                            head: tokens.count,
+                            headViewModel: maskHeadView,
+                            title: "Scaling · Mask",
+                            circleScale: $scale
+                        )
+                    }
+                    .opacity(MaskVisible ? 1 : 0)
+                    .offset(x: MaskVisible ? 0 : -30)
 
-                    // Represent of scaling and mask
-                    AttentionHeadView(
-                        head: tokens.count,
-                        headViewModel: maskProductView,
-                        title: "Scaling · Mask"
-                    )
+                    HStack {
+                        // Right arrow
+                        Image(systemName: "arrow.right")
+                            .offset(y: -25)
 
-                    // Right arrow
-                    Image(systemName: "arrow.right")
-                        .offset(y: -25)
-
-                    // Represent of Softmax and dropout
-                    AttentionHeadView(
-                        head: tokens.count,
-                        headViewModel: softmaxProductView,
-                        title: "Softmax · Dropout"
-                    )
+                        // Represent of Softmax and dropout
+                        AttentionHeadView(
+                            head: tokens.count,
+                            headViewModel: softHeadView,
+                            title: "Softmax · Dropout",
+                            circleScale: $scale
+                        )
+                    }
+                    .opacity(SoftmaxVisible ? 1 : 0)
+                    .offset(x: SoftmaxVisible ? 0 : -30)
                 }
                 .offset(y: 60)
 
@@ -260,6 +278,26 @@ struct SingleAttentionHeadView: View {
                     animationProgress = 1.0
                 }
             }
+            DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+                withAnimation(.easeInOut(duration: 1.0)) {
+                    scale = 1.0
+                }
+            }
+            DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
+                withAnimation(.easeInOut(duration: 0.5)) {
+                    MaskVisible = true
+                    for i in 0..<tokens.count {
+                        for j in i+1..<tokens.count {
+                            maskHeadView.headWeight[i][j] = 0
+                        }
+                    }
+                }
+            }
+            DispatchQueue.main.asyncAfter(deadline: .now() + 4) {
+                withAnimation(.easeInOut(duration: 0.5)) {
+                    SoftmaxVisible = true
+                }
+            }
         }
     }
 
@@ -270,8 +308,6 @@ struct SingleAttentionHeadView: View {
             horizontalHeadPositions.append(CGPoint(x: headPosition.x + CGFloat(i * 22), y: headPosition.y))
             verticalHeadPositions.append(CGPoint(x: headPosition.x, y: headPosition.y + CGFloat(i * 22)))
         }
-        print(kPositions)
-        print(horizontalHeadPositions)
     }
 }
 

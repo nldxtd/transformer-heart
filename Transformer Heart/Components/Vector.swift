@@ -100,6 +100,7 @@ struct VectorList: View {
     var defaultWidth: CGFloat = 10
     var defaultHeight: CGFloat = 30
     var spacing: CGFloat = 16
+    var vectorSpacing: CGFloat = 2
     var cornerRadius: CGFloat = 4
     var title: String = ""
     var titleFont: Font = .headline
@@ -120,9 +121,10 @@ struct VectorList: View {
                     VectorView(
                         dimention: dimention, 
                         vectorWeight: vectors.vectorListWeight[index], 
-                        color: color, 
+                        color: color,
                         defaultWidth: defaultWidth, 
                         defaultHeight: defaultHeight,
+                        spacing: vectorSpacing,
                         matrixMode: matrixMode
                     )
                 }
