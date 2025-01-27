@@ -28,7 +28,7 @@ struct AttentionHeadView: View {
                     HStack(spacing: spacing*zoom) {
                         ForEach(0..<head, id: \.self) { colIndex in
                             Circle()
-                                .fill(Color(red: 0, green: 0, blue: headViewModel.headWeight[rowIndex][colIndex]/20+0.2))
+                                .fill(Color(red: 1, green: 1, blue: 1-headViewModel.headWeight[rowIndex][colIndex]/20))
                                 .frame(width: defaultRadius*2*zoom, height: defaultRadius*2*zoom)
                                 .scaleEffect(circleScale)
                         }

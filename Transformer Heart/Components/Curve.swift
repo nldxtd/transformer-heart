@@ -5,6 +5,7 @@ struct HorizontalCurveConnection: View {
     var end: CGPoint
     var color: Color = .gray
     var progress: CGFloat
+    var extend: Bool = true
     
     var body: some View {
         Path { path in
@@ -36,7 +37,9 @@ struct HorizontalCurveConnection: View {
                     y: end.y
                 )
             )
-            path.addLine(to: CGPoint(x: end.x + 132, y: end.y))
+            if extend {
+                path.addLine(to: CGPoint(x: end.x + 132, y: end.y))
+            }
         }
         .trim(from: 0, to: progress)
         .stroke(color, lineWidth: 2)
@@ -68,5 +71,53 @@ struct VerticalCurveConnection: View {
         }
         .trim(from: 0, to: progress)
         .stroke(color, lineWidth: 2)
+    }
+}
+
+struct AnimatedCurveShape: Shape {
+    var corner1: CGPoint
+    var corner2: CGPoint
+    var corner3: CGPoint
+    var corner4: CGPoint
+    var progress: CGFloat // Progress for the animation (0 to 1)
+
+    var animatableData: CGFloat {
+        get { progress }
+        set { progress = newValue }
+    }
+
+    func path(in rect: CGRect) -> Path {
+        var path = Path()
+        
+        // Interpolated points based on progress
+        let animatedValueTopEnd = CGPoint(
+            x: corner1.x + (corner2.x - corner1.x) * progress,
+            y: corner1.y + (corner2.y - corner1.y) * progress
+        )
+        let animatedValueBottomEnd = CGPoint(
+            x: corner4.x + (corner3.x - corner4.x) * progress,
+            y: corner4.y + (corner3.y - corner4.y) * progress
+        )
+        
+        // First curve
+        path.move(to: corner1)
+        path.addCurve(
+            to: animatedValueTopEnd,
+            control1: CGPoint(x: corner1.x + (animatedValueTopEnd.x - corner1.x) / 2, y: corner1.y),
+            control2: CGPoint(x: corner1.x + (animatedValueTopEnd.x - corner1.x) / 2, y: animatedValueTopEnd.y)
+        )
+        
+        // Line to bottom
+        path.addLine(to: animatedValueBottomEnd)
+        
+        // Second curve
+        path.addCurve(
+            to: corner4,
+            control1: CGPoint(x: corner4.x + (animatedValueBottomEnd.x - corner4.x) / 2, y: animatedValueBottomEnd.y),
+            control2: CGPoint(x: corner4.x + (animatedValueBottomEnd.x - corner4.x) / 2, y: corner4.y)
+        )
+        
+        path.closeSubpath()
+        return path
     }
 }

@@ -79,17 +79,18 @@ struct SingleAttentionHeadView: View {
     @State private var kPosition: CGPoint = CGPoint(x: 0, y: 0)
     @State private var qPosition: CGPoint = CGPoint(x: 0, y: 0)
     @State private var vPosition: CGPoint = CGPoint(x: 0, y: 0)
-    @State private var headPosition: CGPoint = CGPoint(x: 0, y: 0)
+    @State private var dpHeadPosition: CGPoint = CGPoint(x: 0, y: 0)
+    @State private var smHeadPosition: CGPoint = CGPoint(x: 0, y: 0)
     @State private var kPositions: [CGPoint] = []
     @State private var qPositions: [CGPoint] = []
     @State private var horizontalHeadPositions: [CGPoint] = []
     @State private var verticalHeadPositions: [CGPoint] = []
-    @State private var coordinatesReady: Bool = false
-    @State private var animationProgress: CGFloat = 0
+
     @State private var scale: CGFloat = 0
-    
     @State private var MaskVisible: Bool = false
     @State private var SoftmaxVisible: Bool = false
+    @State private var dotProductProgress: CGFloat = 0
+    @State private var finalMultipleProgress: CGFloat = 0
 
     @Binding var currentView: String
     var animationNamespace: Namespace.ID
@@ -102,9 +103,9 @@ struct SingleAttentionHeadView: View {
         // The z-axis view
         ZStack {
             // Over all is a horizontal view
-            HStack(spacing: 80) {
+            HStack(spacing: 60) {
                 // Represent of KQV vectors
-                VStack(spacing: 80) {
+                VStack(spacing: 100) {
                     GeometryReader { geo in
                         // Perform the side-effect (append points) in onAppear
                         VectorList(
@@ -196,7 +197,7 @@ struct SingleAttentionHeadView: View {
                         GeometryReader { geo in
                             Color.clear
                                 .onAppear {
-                                    headPosition = CGPoint(
+                                    dpHeadPosition = CGPoint(
                                         x: geo.frame(in: .named("rootView")).minX+10,
                                         y: geo.frame(in: .named("rootView")).minY+10
                                     )
@@ -233,23 +234,41 @@ struct SingleAttentionHeadView: View {
                             title: "Softmax · Dropout",
                             circleScale: $scale
                         )
+                        .overlay(
+                            GeometryReader { geo in
+                                Color.clear
+                                    .onAppear {
+                                        if SoftmaxVisible {
+                                            smHeadPosition = CGPoint(
+                                                x: geo.frame(in: .named("rootView")).maxX+10,
+                                                y: geo.frame(in: .named("rootView")).minY+10
+                                            )
+                                        } else {
+                                            smHeadPosition = CGPoint(
+                                                x: geo.frame(in: .named("rootView")).maxX+40,
+                                                y: geo.frame(in: .named("rootView")).minY+10
+                                            )
+                                        }
+                                    }
+                            }
+                        )
                     }
                     .opacity(SoftmaxVisible ? 1 : 0)
                     .offset(x: SoftmaxVisible ? 0 : -30)
                 }
-                .offset(y: 60)
+                .offset(y: 25)
 
-                VectorList(
-                    dimention: 10,
-                    vectors: embeddingMatrix,
-                    color: .gray,
-                    defaultWidth: 12,
-                    defaultHeight: 13,
-                    spacing: 2,
-                    title: "Embedding Matrix",
-                    matrixMode: true
-                )
-                .matchedGeometryEffect(id: "EmbeddingMatrix", in: animationNamespace)
+                // VectorList(
+                //     dimention: 10,
+                //     vectors: embeddingMatrix,
+                //     color: .gray,
+                //     defaultWidth: 12,
+                //     defaultHeight: 13,
+                //     spacing: 2,
+                //     title: "Embedding Matrix",
+                //     matrixMode: true
+                // )
+                // .matchedGeometryEffect(id: "EmbeddingMatrix", in: animationNamespace)
             }
             .background {
                 if verticalHeadPositions.count == tokens.count {
@@ -258,15 +277,37 @@ struct SingleAttentionHeadView: View {
                             start: qPositions[i],
                             end: verticalHeadPositions[tokens.count-1-i],
                             color: .orange,
-                            progress: animationProgress
+                            progress: dotProductProgress
                         )
                         VerticalCurveConnection(
                             start: kPositions[i],
                             end: horizontalHeadPositions[tokens.count-1-i],
                             color: .green,
-                            progress: animationProgress
+                            progress: dotProductProgress
                         )
                     }
+                }
+                if smHeadPosition != .zero {
+                    let vTopPosition: CGPoint = CGPoint(x: vPosition.x, y: vPosition.y-90)
+                    let smBottomPosition: CGPoint = CGPoint(x: smHeadPosition.x, y: smHeadPosition.y+132)
+                    let valueTopEndPosition: CGPoint = CGPoint(x: smHeadPosition.x+40, y: smHeadPosition.y+22)
+                    let valueBottomEndPotision: CGPoint = CGPoint(x: smHeadPosition.x+40, y: smHeadPosition.y+110)
+                    AnimatedCurveShape(
+                        corner1: vTopPosition,
+                        corner2: valueTopEndPosition,
+                        corner3: valueBottomEndPotision,
+                        corner4: vPosition,
+                        progress: finalMultipleProgress
+                    )
+                    .fill(Color.purple.opacity(0.1))
+                    AnimatedCurveShape(
+                        corner1: smHeadPosition,
+                        corner2: valueTopEndPosition,
+                        corner3: valueBottomEndPotision,
+                        corner4: smBottomPosition,
+                        progress: finalMultipleProgress
+                    )
+                    .fill(Color.blue.opacity(0.1))
                 }
             }
         }
@@ -275,7 +316,7 @@ struct SingleAttentionHeadView: View {
             DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
                 calculatePositions()
                 withAnimation(.easeInOut(duration: 1.0)) {
-                    animationProgress = 1.0
+                    dotProductProgress = 1.0
                 }
             }
             DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
@@ -286,6 +327,10 @@ struct SingleAttentionHeadView: View {
             DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
                 withAnimation(.easeInOut(duration: 0.5)) {
                     MaskVisible = true
+                }
+            }
+            DispatchQueue.main.asyncAfter(deadline: .now() + 4) {
+                withAnimation(.easeInOut(duration: 0.5)) {
                     for i in 0..<tokens.count {
                         for j in i+1..<tokens.count {
                             maskHeadView.headWeight[i][j] = 0
@@ -293,9 +338,14 @@ struct SingleAttentionHeadView: View {
                     }
                 }
             }
-            DispatchQueue.main.asyncAfter(deadline: .now() + 4) {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 5) {
                 withAnimation(.easeInOut(duration: 0.5)) {
                     SoftmaxVisible = true
+                }
+            }
+            DispatchQueue.main.asyncAfter(deadline: .now() + 6) {
+                withAnimation(.easeInOut(duration: 1)) {
+                    finalMultipleProgress = 1
                 }
             }
         }
@@ -305,8 +355,8 @@ struct SingleAttentionHeadView: View {
         for i in 0..<tokens.count {
             kPositions.append(CGPoint(x: kPosition.x, y: kPosition.y - CGFloat(i * 15)))
             qPositions.append(CGPoint(x: qPosition.x, y: qPosition.y - CGFloat(i * 15)))
-            horizontalHeadPositions.append(CGPoint(x: headPosition.x + CGFloat(i * 22), y: headPosition.y))
-            verticalHeadPositions.append(CGPoint(x: headPosition.x, y: headPosition.y + CGFloat(i * 22)))
+            horizontalHeadPositions.append(CGPoint(x: dpHeadPosition.x + CGFloat(i * 22), y: dpHeadPosition.y))
+            verticalHeadPositions.append(CGPoint(x: dpHeadPosition.x, y: dpHeadPosition.y + CGFloat(i * 22)))
         }
     }
 }
