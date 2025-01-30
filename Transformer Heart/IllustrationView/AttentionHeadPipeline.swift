@@ -85,10 +85,12 @@ struct SingleAttentionHeadView: View {
     @State private var qPositions: [CGPoint] = []
     @State private var horizontalHeadPositions: [CGPoint] = []
     @State private var verticalHeadPositions: [CGPoint] = []
+    @State private var embeddingMatrixPosition: CGPoint = CGPoint(x: 0, y: 0)
+    @State private var plusSignPosition: CGPoint = CGPoint(x: 0, y: 0)
 
     @State private var scale: CGFloat = 0
-    @State private var MaskVisible: Bool = false
-    @State private var SoftmaxVisible: Bool = false
+    @State private var maskVisible: Bool = false
+    @State private var softmaxVisible: Bool = false
     @State private var dotProductProgress: CGFloat = 0
     @State private var finalMultipleProgress: CGFloat = 0
 
@@ -125,8 +127,8 @@ struct SingleAttentionHeadView: View {
                         .onAppear {
                             // Append the initial right-top point to the positions array
                             kPosition = CGPoint(
-                                x: geo.frame(in: .named("rootView")).maxX+5,
-                                y: geo.frame(in: .named("rootView")).maxY-5
+                                x: geo.frame(in: .named("rootView")).maxX + 5,
+                                y: geo.frame(in: .named("rootView")).maxY - 5
                             )
                         }
                     }
@@ -151,8 +153,8 @@ struct SingleAttentionHeadView: View {
                         .onAppear {
                             // Append the initial right-top point to the positions array
                             qPosition = CGPoint(
-                                x: geo.frame(in: .named("rootView")).maxX+5,
-                                y: geo.frame(in: .named("rootView")).maxY-5
+                                x: geo.frame(in: .named("rootView")).maxX + 5,
+                                y: geo.frame(in: .named("rootView")).maxY - 5
                             )
                         }
                     }
@@ -177,14 +179,15 @@ struct SingleAttentionHeadView: View {
                         .onAppear {
                             // Append the initial right-top point to the positions array
                             vPosition = CGPoint(
-                                x: geo.frame(in: .named("rootView")).maxX+5,
-                                y: geo.frame(in: .named("rootView")).maxY-5
+                                x: geo.frame(in: .named("rootView")).maxX + 5,
+                                y: geo.frame(in: .named("rootView")).maxY - 5
                             )
                         }
                     }
                     .frame(width: vectorListWidth, height: vectorListHeight)
                 }
 
+                // Attention head block
                 HStack {
                     // Represent of dot-product calculation
                     AttentionHeadView(
@@ -198,14 +201,14 @@ struct SingleAttentionHeadView: View {
                             Color.clear
                                 .onAppear {
                                     dpHeadPosition = CGPoint(
-                                        x: geo.frame(in: .named("rootView")).minX+10,
-                                        y: geo.frame(in: .named("rootView")).minY+10
+                                        x: geo.frame(in: .named("rootView")).minX + 10,
+                                        y: geo.frame(in: .named("rootView")).minY + 10
                                     )
                                 }
                         }
-                        .border(Color.red)
                     )
-                    
+
+                    // Represent of scaling and mask
                     HStack {
                         // Right arrow
                         Image(systemName: "arrow.right")
@@ -219,9 +222,10 @@ struct SingleAttentionHeadView: View {
                             circleScale: $scale
                         )
                     }
-                    .opacity(MaskVisible ? 1 : 0)
-                    .offset(x: MaskVisible ? 0 : -30)
+                    .opacity(maskVisible ? 1 : 0)
+                    .offset(x: maskVisible ? 0 : -30)
 
+                    // Represent of Softmax
                     HStack {
                         // Right arrow
                         Image(systemName: "arrow.right")
@@ -231,67 +235,141 @@ struct SingleAttentionHeadView: View {
                         AttentionHeadView(
                             head: tokens.count,
                             headViewModel: softHeadView,
-                            title: "Softmax · Dropout",
+                            title: "Softmax",
                             circleScale: $scale
                         )
                         .overlay(
                             GeometryReader { geo in
                                 Color.clear
                                     .onAppear {
-                                        if SoftmaxVisible {
+                                        if softmaxVisible {
                                             smHeadPosition = CGPoint(
-                                                x: geo.frame(in: .named("rootView")).maxX+10,
-                                                y: geo.frame(in: .named("rootView")).minY+10
+                                                x: geo.frame(in: .named("rootView")).maxX + 10,
+                                                y: geo.frame(in: .named("rootView")).minY + 10
                                             )
                                         } else {
                                             smHeadPosition = CGPoint(
-                                                x: geo.frame(in: .named("rootView")).maxX+40,
-                                                y: geo.frame(in: .named("rootView")).minY+10
+                                                x: geo.frame(in: .named("rootView")).maxX + 40,
+                                                y: geo.frame(in: .named("rootView")).minY + 10
                                             )
                                         }
                                     }
                             }
                         )
                     }
-                    .opacity(SoftmaxVisible ? 1 : 0)
-                    .offset(x: SoftmaxVisible ? 0 : -30)
+                    .opacity(softmaxVisible ? 1 : 0)
+                    .offset(x: softmaxVisible ? 0 : -30)
+
+                    // Represent of final matrix calculation
+                    VStack {
+                        // Represent of Embedding matrix
+                        VectorList(
+                            dimention: 10,
+                            vectors: embeddingMatrix,
+                            color: .gray,
+                            defaultWidth: 12,
+                            defaultHeight: 13,
+                            spacing: 2,
+                            title: "Embedding Matrix",
+                            matrixMode: true
+                        )
+                        .offset(x: -65, y: -70)
+                        .matchedGeometryEffect(id: "Embedding Matrix", in: animationNamespace)
+                        .background {
+                            GeometryReader { geo in
+                                Color.clear
+                                    .onAppear {
+                                        embeddingMatrixPosition = CGPoint(
+                                            x: geo.frame(in: .named("rootView")).midX,
+                                            y: geo.frame(in: .named("rootView")).maxY
+                                        )
+                                    }
+                            }
+                        }
+
+                        // Represent of Softmax and final residual connection
+                        HStack {
+                            Text("")
+                                .frame(width: 45)
+
+                            ZStack {
+                                Circle()
+                                    .fill(Color.gray.opacity(0.2))
+                                    .frame(width: 30, height: 30)
+                                Image(systemName: "plus")
+                                    .font(.system(size: 20))
+                                    .foregroundColor(.black)
+                            }
+                            .offset(y: -30)
+                            .background {
+                                GeometryReader { geo in
+                                    Color.clear
+                                        .onAppear {
+                                            plusSignPosition = CGPoint(
+                                                x: geo.frame(in: .named("rootView")).midX,
+                                                y: geo.frame(in: .named("rootView")).minY
+                                            )
+                                        }
+                                }
+                            }
+
+                            Text("=")
+                                .offset(y: -30)
+
+                            VectorList(
+                                dimention: 10,
+                                vectors: embeddingMatrix,
+                                color: .gray,
+                                defaultWidth: 12,
+                                defaultHeight: 13,
+                                spacing: 2,
+                                title: "Attention Output",
+                                matrixMode: true
+                            )
+                            .matchedGeometryEffect(id: "Attention Output", in: animationNamespace)
+                            .offset(y: -60)
+                        }
+                    }
+                    .offset(y: -87.5)
+                    .background {
+                        Path { path in
+                            path.move(to: embeddingMatrixPosition)
+                            path.addCurve(
+                                to: plusSignPosition,
+                                control1: CGPoint(x: embeddingMatrixPosition.x, y: embeddingMatrixPosition.y - 50),
+                                control2: CGPoint(x: plusSignPosition.x, y: plusSignPosition.y + 50)
+                            )
+                        }
+                        .stroke(Color.gray, lineWidth: 2)
+                    }
                 }
                 .offset(y: 25)
-
-                // VectorList(
-                //     dimention: 10,
-                //     vectors: embeddingMatrix,
-                //     color: .gray,
-                //     defaultWidth: 12,
-                //     defaultHeight: 13,
-                //     spacing: 2,
-                //     title: "Embedding Matrix",
-                //     matrixMode: true
-                // )
-                // .matchedGeometryEffect(id: "EmbeddingMatrix", in: animationNamespace)
             }
             .background {
                 if verticalHeadPositions.count == tokens.count {
                     ForEach(0..<tokens.count) { i in
                         HorizontalCurveConnection(
                             start: qPositions[i],
-                            end: verticalHeadPositions[tokens.count-1-i],
+                            end: verticalHeadPositions[tokens.count - 1 - i],
                             color: .orange,
                             progress: dotProductProgress
                         )
                         VerticalCurveConnection(
                             start: kPositions[i],
-                            end: horizontalHeadPositions[tokens.count-1-i],
+                            end: horizontalHeadPositions[tokens.count - 1 - i],
                             color: .green,
                             progress: dotProductProgress
                         )
                     }
                 }
                 if smHeadPosition != .zero {
-                    let vTopPosition: CGPoint = CGPoint(x: vPosition.x, y: vPosition.y-90)
-                    let smBottomPosition: CGPoint = CGPoint(x: smHeadPosition.x, y: smHeadPosition.y+132)
-                    let valueTopEndPosition: CGPoint = CGPoint(x: smHeadPosition.x+40, y: smHeadPosition.y+22)
-                    let valueBottomEndPotision: CGPoint = CGPoint(x: smHeadPosition.x+40, y: smHeadPosition.y+110)
+                    let vTopPosition: CGPoint = CGPoint(x: vPosition.x, y: vPosition.y - 90)
+                    let smBottomPosition: CGPoint = CGPoint(
+                        x: smHeadPosition.x, y: smHeadPosition.y + 132)
+                    let valueTopEndPosition: CGPoint = CGPoint(
+                        x: smHeadPosition.x + 40, y: smHeadPosition.y + 22)
+                    let valueBottomEndPotision: CGPoint = CGPoint(
+                        x: smHeadPosition.x + 40, y: smHeadPosition.y + 110)
                     AnimatedCurveShape(
                         corner1: vTopPosition,
                         corner2: valueTopEndPosition,
@@ -326,13 +404,13 @@ struct SingleAttentionHeadView: View {
             }
             DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
                 withAnimation(.easeInOut(duration: 0.5)) {
-                    MaskVisible = true
+                    maskVisible = true
                 }
             }
             DispatchQueue.main.asyncAfter(deadline: .now() + 4) {
                 withAnimation(.easeInOut(duration: 0.5)) {
                     for i in 0..<tokens.count {
-                        for j in i+1..<tokens.count {
+                        for j in i + 1..<tokens.count {
                             maskHeadView.headWeight[i][j] = 0
                         }
                     }
@@ -340,7 +418,7 @@ struct SingleAttentionHeadView: View {
             }
             DispatchQueue.main.asyncAfter(deadline: .now() + 5) {
                 withAnimation(.easeInOut(duration: 0.5)) {
-                    SoftmaxVisible = true
+                    softmaxVisible = true
                 }
             }
             DispatchQueue.main.asyncAfter(deadline: .now() + 6) {
@@ -355,8 +433,10 @@ struct SingleAttentionHeadView: View {
         for i in 0..<tokens.count {
             kPositions.append(CGPoint(x: kPosition.x, y: kPosition.y - CGFloat(i * 15)))
             qPositions.append(CGPoint(x: qPosition.x, y: qPosition.y - CGFloat(i * 15)))
-            horizontalHeadPositions.append(CGPoint(x: dpHeadPosition.x + CGFloat(i * 22), y: dpHeadPosition.y))
-            verticalHeadPositions.append(CGPoint(x: dpHeadPosition.x, y: dpHeadPosition.y + CGFloat(i * 22)))
+            horizontalHeadPositions.append(
+                CGPoint(x: dpHeadPosition.x + CGFloat(i * 22), y: dpHeadPosition.y))
+            verticalHeadPositions.append(
+                CGPoint(x: dpHeadPosition.x, y: dpHeadPosition.y + CGFloat(i * 22)))
         }
     }
 }

@@ -113,7 +113,6 @@ struct VectorList: View {
             Text(title)
                 .font(titleFont)
                 .frame(width: titleWidth, height: titleHeight)
-                .border(.pink)
 
             // Vector into a vertical list
             VStack(alignment: .center, spacing: spacing*zoom) {
