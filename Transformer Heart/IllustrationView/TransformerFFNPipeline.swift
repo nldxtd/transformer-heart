@@ -10,8 +10,6 @@ struct EmbeddingMatrixFFNPositionKey: PreferenceKey {
 
 struct TransformerFFNView: View {
     // Mock data for tokens and embedding weights
-    let tokens: [String] = ["USC", "is", "located", "near", "the", "downtown", "of"]
-    let tokensId: [Int] = [9007, 58, 256, 174, 13, 347, 41]
     let QKVMatrixWeight: [[Double]] = [
         [0.48, 0.32, 0.76, 0.39, 0.55, 0.5, 0.39, 0.55, 0.5, 0.62, 0.65, 0.62, 0.54, 0.37, 0.42, 0.34, 0.63, 0.36, 0.65, 0.41, 0.69, 0.59, 0.37, 0.4, 0.74, 0.56, 0.7, 0.78, 0.43, 0.53],
         [0.5, 0.52, 0.62, 0.45, 0.35, 0.33, 0.56, 0.66, 0.66, 0.31, 0.7, 0.65, 0.5, 0.54, 0.72, 0.79, 0.34, 0.58, 0.75, 0.6, 0.41, 0.67, 0.55, 0.78, 0.36, 0.41, 0.75, 0.59, 0.79, 0.63],
@@ -24,8 +22,9 @@ struct TransformerFFNView: View {
         [0.7, 0.71, 0.38, 0.46, 0.7, 0.37, 0.69, 0.7, 0.75, 0.46, 0.62, 0.64, 0.44, 0.69, 0.73, 0.39, 0.45, 0.73, 0.45, 0.52, 0.67, 0.46, 0.68, 0.31, 0.66, 0.7, 0.74, 0.57, 0.76, 0.37],
         [0.67, 0.53, 0.48, 0.49, 0.43, 0.77, 0.38, 0.56, 0.8, 0.47, 0.63, 0.4, 0.65, 0.36, 0.53, 0.69, 0.69, 0.56, 0.63, 0.5, 0.42, 0.53, 0.68, 0.61, 0.71, 0.55, 0.47, 0.6, 0.71, 0.72]
     ]
-    
-    @State private var embeddingMatrixFrames: [CGRect] = Array(repeating: .zero, count: 5)
+
+    @Binding var currentView: String
+    var animationNamespace: Namespace.ID
     
     var body: some View {
         HStack(spacing: 20) {
@@ -207,12 +206,5 @@ struct FFNLayerView: View {
                     .frame(width: 30, height: 30)
             }
         }
-    }
-}
-
-// Preview
-struct TransformerFFNView_Previews: PreviewProvider {
-    static var previews: some View {
-        TransformerFFNView()
     }
 }

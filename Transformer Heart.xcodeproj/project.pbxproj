@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		8A3DAC442D50BBB70009E7E6 /* Stack.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A3DAC432D50BBB30009E7E6 /* Stack.swift */; };
+		8A3DAC462D50C8E00009E7E6 /* Constant.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A3DAC452D50C8DD0009E7E6 /* Constant.swift */; };
 		8A40A8482D3708AD004BA5F6 /* ProbabilityOutputPipeline.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A40A8472D37087F004BA5F6 /* ProbabilityOutputPipeline.swift */; };
 		8A65C84D2D31220C0093E12A /* Transformer_HeartApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A65C84C2D31220C0093E12A /* Transformer_HeartApp.swift */; };
 		8A65C8512D31220E0093E12A /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 8A65C8502D31220E0093E12A /* Assets.xcassets */; };
@@ -24,6 +26,8 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		8A3DAC432D50BBB30009E7E6 /* Stack.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Stack.swift; sourceTree = "<group>"; };
+		8A3DAC452D50C8DD0009E7E6 /* Constant.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constant.swift; sourceTree = "<group>"; };
 		8A40A8472D37087F004BA5F6 /* ProbabilityOutputPipeline.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProbabilityOutputPipeline.swift; sourceTree = "<group>"; };
 		8A65C8492D31220C0093E12A /* Transformer Heart.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Transformer Heart.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		8A65C84C2D31220C0093E12A /* Transformer_HeartApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Transformer_HeartApp.swift; sourceTree = "<group>"; };
@@ -74,6 +78,7 @@
 				8A7B331E2D3C9D590071ADF8 /* IllustrationView */,
 				8A7B330D2D3A40AA0071ADF8 /* Components */,
 				8A65C84C2D31220C0093E12A /* Transformer_HeartApp.swift */,
+				8A3DAC452D50C8DD0009E7E6 /* Constant.swift */,
 				8A7B331F2D3C9D730071ADF8 /* Illustration.swift */,
 				8A65C8502D31220E0093E12A /* Assets.xcassets */,
 				8A65C8522D31220E0093E12A /* Preview Content */,
@@ -104,6 +109,7 @@
 		8A7B331E2D3C9D590071ADF8 /* IllustrationView */ = {
 			isa = PBXGroup;
 			children = (
+				8A3DAC432D50BBB30009E7E6 /* Stack.swift */,
 				8A7B331C2D3A47DE0071ADF8 /* EmbeddingPipeline.swift */,
 				8A74ADFB2D333C9B00E6B06B /* AttentionKQVPipeline.swift */,
 				8A830B962D33B23F004DEE43 /* AttentionHeadPipeline.swift */,
@@ -184,11 +190,13 @@
 			buildActionMask = 2147483647;
 			files = (
 				8A40A8482D3708AD004BA5F6 /* ProbabilityOutputPipeline.swift in Sources */,
+				8A3DAC442D50BBB70009E7E6 /* Stack.swift in Sources */,
 				8A7B33142D3A457D0071ADF8 /* Matrix.swift in Sources */,
 				8A7B33152D3A457D0071ADF8 /* AttentionHead.swift in Sources */,
 				8A7B33162D3A457D0071ADF8 /* TokenList.swift in Sources */,
 				8A7B33202D3C9D970071ADF8 /* Illustration.swift in Sources */,
 				8A7B33172D3A457D0071ADF8 /* Vector.swift in Sources */,
+				8A3DAC462D50C8E00009E7E6 /* Constant.swift in Sources */,
 				8A7B331D2D3A47E60071ADF8 /* EmbeddingPipeline.swift in Sources */,
 				8A8FA7C62D462BA70079583F /* Curve.swift in Sources */,
 				8A830B972D33B23F004DEE43 /* AttentionHeadPipeline.swift in Sources */,

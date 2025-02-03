@@ -6,18 +6,7 @@ import SwiftUI
 /// Add detail in the graph and
 
 struct InputEmbeddingView: View {
-    // Default tokens
-    let tokens: [String] = ["USC", "is", "located", "near", "the", "downtown", "of"]
-    let tokensId: [Int] = [9007, 58, 256, 174, 13, 347, 41]
-    @State private var embeddingMatrix: VectorListViewModel = VectorListViewModel(matrixWeight: [
-        [0.67, 0.47, 0.3, 0.41, 0.67, 0.62, 0.59, 0.66, 0.49, 0.49],
-        [0.34, 0.6, 0.38, 0.35, 0.59, 0.63, 0.44, 0.63, 0.42, 0.64],
-        [0.37, 0.41, 0.41, 0.68, 0.51, 0.64, 0.69, 0.48, 0.41, 0.34],
-        [0.66, 0.51, 0.55, 0.56, 0.44, 0.58, 0.63, 0.57, 0.65, 0.6],
-        [0.47, 0.48, 0.7, 0.32, 0.56, 0.4, 0.54, 0.36, 0.39, 0.5],
-        [0.31, 0.54, 0.59, 0.7, 0.37, 0.49, 0.39, 0.34, 0.53, 0.37],
-        [0.35, 0.44, 0.47, 0.55, 0.54, 0.39, 0.64, 0.4, 0.32, 0.54]
-    ])
+    @State private var embeddingMatrix: VectorListViewModel = VectorListViewModel(matrixWeight: embeddingMatrixWeight)
     @State private var isHorizontal = true // Toggle between horizontal and vertical views
     @State private var showComponents = [false, false, false, false] // Controls visibility of components
     @State private var isMatrixMode = false // Controls the mode of embedding output

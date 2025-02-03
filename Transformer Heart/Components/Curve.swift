@@ -121,3 +121,51 @@ struct AnimatedCurveShape: Shape {
         return path
     }
 }
+
+struct VerticleAnimatedCurveShape: Shape {
+    var corner1: CGPoint
+    var corner2: CGPoint
+    var corner3: CGPoint
+    var corner4: CGPoint
+    var progress: CGFloat // Progress for the animation (0 to 1)
+
+    var animatableData: CGFloat {
+        get { progress }
+        set { progress = newValue }
+    }
+
+    func path(in rect: CGRect) -> Path {
+        var path = Path()
+        
+        // Interpolated points based on progress
+        let animatedValueTopEnd = CGPoint(
+            x: corner1.x + (corner2.x - corner1.x) * progress,
+            y: corner1.y + (corner2.y - corner1.y) * progress
+        )
+        let animatedValueBottomEnd = CGPoint(
+            x: corner4.x + (corner3.x - corner4.x) * progress,
+            y: corner4.y + (corner3.y - corner4.y) * progress
+        )
+        
+        // First curve
+        path.move(to: corner1)
+        path.addCurve(
+            to: animatedValueTopEnd,
+            control1: CGPoint(x: corner1.x, y: corner1.y + (animatedValueTopEnd.y - corner1.y) / 2),
+            control2: CGPoint(x: animatedValueTopEnd.x, y: corner1.y + (animatedValueTopEnd.y - corner1.y) / 2)
+        )
+        
+        // Line to bottom
+        path.addLine(to: animatedValueBottomEnd)
+        
+        // Second curve
+        path.addCurve(
+            to: corner4,
+            control1: CGPoint(x: animatedValueBottomEnd.x, y: corner4.y + (animatedValueBottomEnd.y - corner4.y) / 2),
+            control2: CGPoint(x: corner4.x, y: corner4.y + (animatedValueBottomEnd.y - corner4.y) / 2)
+        )
+        
+        path.closeSubpath()
+        return path
+    }
+}

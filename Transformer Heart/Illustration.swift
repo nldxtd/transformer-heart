@@ -13,6 +13,8 @@ struct IllustrationView: View {
                 AttentionQKVView(currentView: $currentView, animationNamespace: animationNamespace)
             } else if currentView == "AttentionHeadPipiline" {
                 SingleAttentionHeadView(currentView: $currentView, animationNamespace: animationNamespace)
+            } else if currentView == "FeedForwardPipeline" {
+                TransformerFFNView(currentView: $currentView, animationNamespace: animationNamespace)
             }
             HStack(spacing: 10) {
                 Button(action: {
@@ -43,6 +45,17 @@ struct IllustrationView: View {
                     }
                 }) {
                     Text("Go to head")
+                        .padding()
+                        .background(Color.red)
+                        .foregroundColor(.white)
+                        .cornerRadius(10)
+                }
+                Button(action: {
+                    withAnimation(.easeInOut(duration: 2.0)) { // 设置持续时间为 1 秒
+                        currentView = "FeedForwardPipeline"
+                    }
+                }) {
+                    Text("Go to ffn")
                         .padding()
                         .background(Color.red)
                         .foregroundColor(.white)

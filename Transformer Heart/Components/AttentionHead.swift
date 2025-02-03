@@ -38,7 +38,7 @@ struct AttentionHeadView: View {
             }
             if title != "" {
                 Text(title)
-                    .padding()
+                    .padding(.top, 5)
                     .font(titleFont)
             }
         }
