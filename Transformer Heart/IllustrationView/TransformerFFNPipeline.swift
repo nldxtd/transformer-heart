@@ -1,172 +1,307 @@
 import SwiftUI
 
-// A key to track positions for the embedding matrix (optional, based on your original code).
-struct EmbeddingMatrixFFNPositionKey: PreferenceKey {
-    static var defaultValue: [CGRect] = []
-    static func reduce(value: inout [CGRect], nextValue: () -> [CGRect]) {
-        value.append(contentsOf: nextValue())
-    }
-}
-
 struct TransformerFFNView: View {
-    // Mock data for tokens and embedding weights
-    let QKVMatrixWeight: [[Double]] = [
-        [0.48, 0.32, 0.76, 0.39, 0.55, 0.5, 0.39, 0.55, 0.5, 0.62, 0.65, 0.62, 0.54, 0.37, 0.42, 0.34, 0.63, 0.36, 0.65, 0.41, 0.69, 0.59, 0.37, 0.4, 0.74, 0.56, 0.7, 0.78, 0.43, 0.53],
-        [0.5, 0.52, 0.62, 0.45, 0.35, 0.33, 0.56, 0.66, 0.66, 0.31, 0.7, 0.65, 0.5, 0.54, 0.72, 0.79, 0.34, 0.58, 0.75, 0.6, 0.41, 0.67, 0.55, 0.78, 0.36, 0.41, 0.75, 0.59, 0.79, 0.63],
-        [0.48, 0.34, 0.74, 0.45, 0.54, 0.43, 0.74, 0.79, 0.31, 0.36, 0.54, 0.34, 0.46, 0.61, 0.61, 0.76, 0.45, 0.71, 0.74, 0.74, 0.59, 0.53, 0.57, 0.64, 0.61, 0.56, 0.47, 0.74, 0.79, 0.67],
-        [0.36, 0.34, 0.8, 0.74, 0.8, 0.46, 0.72, 0.58, 0.72, 0.63, 0.3, 0.46, 0.32, 0.43, 0.43, 0.73, 0.72, 0.69, 0.41, 0.4, 0.76, 0.69, 0.52, 0.45, 0.38, 0.52, 0.39, 0.5, 0.41, 0.49],
-        [0.4, 0.6, 0.37, 0.37, 0.62, 0.68, 0.62, 0.57, 0.32, 0.58, 0.32, 0.46, 0.4, 0.62, 0.4, 0.37, 0.49, 0.51, 0.62, 0.66, 0.45, 0.57, 0.53, 0.75, 0.34, 0.8, 0.44, 0.67, 0.78, 0.69],
-        [0.5, 0.76, 0.57, 0.79, 0.78, 0.35, 0.36, 0.78, 0.61, 0.42, 0.47, 0.73, 0.49, 0.79, 0.71, 0.58, 0.53, 0.36, 0.75, 0.6, 0.56, 0.69, 0.3, 0.64, 0.69, 0.37, 0.73, 0.57, 0.68, 0.56],
-        [0.75, 0.8, 0.37, 0.65, 0.69, 0.49, 0.69, 0.77, 0.33, 0.68, 0.78, 0.38, 0.39, 0.34, 0.47, 0.6, 0.75, 0.52, 0.46, 0.62, 0.72, 0.61, 0.46, 0.52, 0.75, 0.41, 0.73, 0.36, 0.38, 0.69],
-        [0.39, 0.37, 0.43, 0.32, 0.46, 0.34, 0.33, 0.71, 0.71, 0.52, 0.5, 0.65, 0.31, 0.76, 0.79, 0.32, 0.38, 0.35, 0.63, 0.55, 0.57, 0.67, 0.43, 0.42, 0.38, 0.79, 0.69, 0.45, 0.72, 0.48],
-        [0.7, 0.71, 0.38, 0.46, 0.7, 0.37, 0.69, 0.7, 0.75, 0.46, 0.62, 0.64, 0.44, 0.69, 0.73, 0.39, 0.45, 0.73, 0.45, 0.52, 0.67, 0.46, 0.68, 0.31, 0.66, 0.7, 0.74, 0.57, 0.76, 0.37],
-        [0.67, 0.53, 0.48, 0.49, 0.43, 0.77, 0.38, 0.56, 0.8, 0.47, 0.63, 0.4, 0.65, 0.36, 0.53, 0.69, 0.69, 0.56, 0.63, 0.5, 0.42, 0.53, 0.68, 0.61, 0.71, 0.55, 0.47, 0.6, 0.71, 0.72]
-    ]
+    @State private var attentionOutputMatrix: VectorListViewModel = VectorListViewModel(
+        matrixWeight: embeddingMatrixWeight)
+    @State private var feedforwardOutputMatrix: VectorListViewModel = VectorListViewModel(
+        matrixWeight: embeddingMatrixWeight)
+    @State private var finalOutputMatrix: VectorListViewModel = VectorListViewModel(
+        matrixWeight: embeddingMatrixWeight)
+    @State private var attentionOutputPosition: CGPoint = CGPoint(x: 0, y: 0)
+    @State private var feedforwardOutputPosition: CGPoint = CGPoint(x: 0, y: 0)
+    @State private var plusSignPosition: CGPoint = CGPoint(x: 0, y: 0)
+    @State private var inputLayerPositions: [CGPoint] = []
+    @State private var hiddenLayerPositions: [CGPoint] = []
+    @State private var finalLayerPosistions: [CGPoint] = []
+    @State private var ffnHiddenConnectProgress: [CGFloat] = Array(repeating: 1.0, count: 14)
+    @State private var ffnFinalConnectProgress: [CGFloat] = Array(repeating: 1.0, count: 10)
+
+    @State private var fillWidth: CGFloat = 0
 
     @Binding var currentView: String
     var animationNamespace: Namespace.ID
-    
+
     var body: some View {
-        HStack(spacing: 20) {
-            // Embedding Matrix + Multi-Head Attention
-            VStack(alignment: .center, spacing: 10) {
-                
-                VStack(spacing: 2) {
-                    Text("Embedding Matrix")
+        ZStack {
+            // Overall is a horizontal view
+            HStack(spacing: 30) {
+                // Represent of Embedding Matrix
+                VectorList(
+                    dimention: 10,
+                    vectors: attentionOutputMatrix,
+                    color: .gray,
+                    defaultWidth: 12,
+                    defaultHeight: 13,
+                    spacing: 2,
+                    title: "Attention Output",
+                    matrixMode: true
+                )
+                .matchedGeometryEffect(id: "Attention Output", in: animationNamespace)
+                .background {
+                    GeometryReader { geo in
+                        Color.clear
+                            .onAppear {
+                                attentionOutputPosition = CGPoint(
+                                    x: geo.frame(in: .named("ffnRootView")).midX,
+                                    y: geo.frame(in: .named("ffnRootView")).maxY
+                                )
+                            }
+                    }
+                }
+
+                // Feed-Forward Network
+                VStack {
+                    Text("Feed-Forward Network")
                         .font(.headline)
-                    
-                    ForEach(tokens.indices, id: \.self) { index in
-                        HStack(spacing: 2) {
-                            ForEach(0..<10, id: \.self) { recIndex in
-                                Rectangle()
-                                    .fill(Color.gray.opacity(QKVMatrixWeight[index][recIndex]))
-                                    .frame(width: 10, height: 12)
+                        .padding()
+
+                    HStack(spacing: 40) {
+                        // Input Layer of FFN
+                        VStack {
+                            ForEach(0..<10) { _ in
+                                Circle()
+                                    .stroke(Color.black, lineWidth: 2)
+                                    .frame(width: 30, height: 30)
+                                    .overlay {
+                                        GeometryReader { geo in
+                                            ZStack {
+                                                Circle().fill(Color.white)
+
+                                                Circle().fill(Color(white: 0.5, opacity: 1.0))
+                                                    .mask(
+                                                        Rectangle()
+                                                            .frame(width: fillWidth, height: 30)
+                                                            .offset(x: -15 + fillWidth / 2)
+                                                    )
+                                                    .animation(
+                                                        .easeInOut(duration: 1), value: fillWidth)
+                                            }
+                                            .onAppear {
+                                                DispatchQueue.main.async {
+                                                    inputLayerPositions.append(
+                                                        CGPoint(
+                                                            x: geo.frame(
+                                                                in: .named("ffnRootView")
+                                                            ).midX,
+                                                            y: geo.frame(
+                                                                in: .named("ffnRootView")
+                                                            ).midY
+                                                        ))
+                                                }
+                                            }
+                                        }
+                                    }
                             }
                         }
-                        .cornerRadius(4)
+
+                        // Hidden Layer of FFN
+                        VStack {
+                            ForEach(0..<7) { _ in
+                                Circle()
+                                    .stroke(Color.black, lineWidth: 2)
+                                    .frame(width: 30, height: 30)
+                                    .background {
+                                        GeometryReader { geo in
+                                            ZStack {
+                                                Circle().fill(Color.white)
+
+                                                Circle().fill(Color(white: 0.5, opacity: 1.0))
+                                                    .mask(
+                                                        Rectangle()
+                                                            .frame(width: fillWidth, height: 30)
+                                                            .offset(x: -15 + fillWidth / 2)
+                                                    )
+                                                    .animation(
+                                                        .easeInOut(duration: 1), value: fillWidth)
+                                            }
+                                            .onAppear {
+                                                DispatchQueue.main.async {
+                                                    hiddenLayerPositions.append(
+                                                        CGPoint(
+                                                            x: geo.frame(
+                                                                in: .named("ffnRootView")
+                                                            ).midX,
+                                                            y: geo.frame(
+                                                                in: .named("ffnRootView")
+                                                            ).midY
+                                                        ))
+                                                }
+                                            }
+                                        }
+                                    }
+                            }
+                            Text("⋮")
+                            ForEach(0..<7) { _ in
+                                Circle()
+                                    .stroke(Color.black, lineWidth: 2)
+                                    .frame(width: 30, height: 30)
+                                    .background {
+                                        GeometryReader { geo in
+                                            ZStack {
+                                                Circle().fill(Color.white)
+
+                                                Circle().fill(Color(white: 0.5, opacity: 1.0))
+                                                    .mask(
+                                                        Rectangle()
+                                                            .frame(width: fillWidth, height: 30)
+                                                            .offset(x: -15 + fillWidth / 2)
+                                                    )
+                                                    .animation(
+                                                        .easeInOut(duration: 1), value: fillWidth)
+                                            }
+                                            .onAppear {
+                                                DispatchQueue.main.async {
+                                                    hiddenLayerPositions.append(
+                                                        CGPoint(
+                                                            x: geo.frame(
+                                                                in: .named("ffnRootView")
+                                                            ).midX,
+                                                            y: geo.frame(
+                                                                in: .named("ffnRootView")
+                                                            ).midY
+                                                        ))
+                                                }
+                                            }
+                                        }
+                                    }
+                            }
+                        }
+                        // Output Layer of FFN
+                        VStack {
+                            ForEach(0..<10) { _ in
+                                Circle()
+                                    .stroke(Color.black, lineWidth: 2)
+                                    .frame(width: 30, height: 30)
+                                    .background {
+                                        GeometryReader { geo in
+                                            ZStack {
+                                                Circle().fill(Color.white)
+
+                                                Circle().fill(Color(white: 0.5, opacity: 1.0))
+                                                    .mask(
+                                                        Rectangle()
+                                                            .frame(width: fillWidth, height: 30)
+                                                            .offset(x: -15 + fillWidth / 2)
+                                                    )
+                                                    .animation(
+                                                        .easeInOut(duration: 1), value: fillWidth)
+                                            }
+                                            .onAppear {
+                                                DispatchQueue.main.async {
+                                                    finalLayerPosistions.append(
+                                                        CGPoint(
+                                                            x: geo.frame(
+                                                                in: .named("ffnRootView")
+                                                            ).midX,
+                                                            y: geo.frame(
+                                                                in: .named("ffnRootView")
+                                                            ).midY
+                                                        ))
+                                                }
+                                            }
+                                        }
+                                    }
+                            }
+                        }
                     }
                 }
                 .padding()
-                .frame(width: 200)
-                
-                VStack(spacing: 2) {
-                    Text("Multi-Head Attention")
-                        .font(.headline)
-                    
-                    ForEach(tokens.indices, id: \.self) { index in
-                        HStack(spacing: 2) {
-                            ForEach(0..<10, id: \.self) { recIndex in
-                                Rectangle()
-                                    .fill(Color.gray.opacity(QKVMatrixWeight[index][recIndex]))
-                                    .frame(width: 10, height: 12)
+
+                // Represent of FFN Output
+                VectorList(
+                    dimention: 10,
+                    vectors: feedforwardOutputMatrix,
+                    color: .gray,
+                    defaultWidth: 12,
+                    defaultHeight: 13,
+                    spacing: 2,
+                    title: "Feed-Forward Output",
+                    matrixMode: true
+                )
+                .matchedGeometryEffect(id: "Feed-Forward Output", in: animationNamespace)
+                .background {
+                    GeometryReader { geo in
+                        Color.clear
+                            .onAppear {
+                                feedforwardOutputPosition = CGPoint(
+                                    x: geo.frame(in: .named("ffnRootView")).maxX,
+                                    y: geo.frame(in: .named("ffnRootView")).midY
+                                )
+                            }
+                    }
+                }
+
+                // Represent of Residential Sign
+                ZStack {
+                    Circle()
+                        .fill(Color.gray.opacity(0.2))
+                        .frame(width: 25, height: 25)
+                    Image(systemName: "plus")
+                        .font(.system(size: 15))
+                        .foregroundColor(.black)
+                        .background {
+                            GeometryReader { geo in
+                                Color.clear
+                                    .onAppear {
+                                        plusSignPosition = CGPoint(
+                                            x: geo.frame(in: .named("ffnRootView")).midX,
+                                            y: geo.frame(in: .named("ffnRootView")).midY
+                                        )
+                                    }
                             }
                         }
-                        .cornerRadius(4)
-                    }
                 }
-                .padding()
-                .frame(width: 200)
+
+                // Transformer output plus residual and Norm
+                VectorList(
+                    dimention: 10,
+                    vectors: finalOutputMatrix,
+                    color: .gray,
+                    defaultWidth: 12,
+                    defaultHeight: 13,
+                    spacing: 2,
+                    title: "Final Output",
+                    matrixMode: true
+                )
+                .matchedGeometryEffect(id: "Final Output", in: animationNamespace)
             }
-            
-            // Residual Connection and Layer Norm
-//            HStack(spacing: 10) {
-//                // Plus sign column
-//                Text("+")
-//                    .font(.title2)
-//                    .frame(width: 30, height: 30)
-//                    .cornerRadius(15)
-//                    .background(Color.gray.opacity(0.
-                // Arrow column
-//                Image(systemName: "arrow.right")
-//                    .frame(width: 30, height: 30)
-//                Text("Layer Norm")
-//                    .font(.title2)
-//                    .padding()
-//                    .background(Color.gray.opacity(0.1))
-//                    .cornerRadius(12)
-//                    .shadow(radius: 2)
-//            }
-            
-            // output after Layer Norm
-            VStack(spacing: 2) {
-                Text("Norm Output")
-                    .font(.headline)
-                
-                ForEach(tokens.indices, id: \.self) { index in
-                    HStack(spacing: 2) {
-                        ForEach(0..<10, id: \.self) { recIndex in
-                            Rectangle()
-                                .fill(Color.gray.opacity(QKVMatrixWeight[index][recIndex]))
-                                .frame(width: 10, height: 12)
-                        }
-                    }
-                    .cornerRadius(4)
-                }
-            }
-            .padding()
-            .frame(width: 200)
-            
-            // Feed-Forward Network
-            VStack(spacing: 20) {
-                Text("Feed-Forward Network")
-                    .font(.headline)
-                    .padding()
-                
-                HStack(spacing: 30) {
-                    // Input Layer (7 dimensions)
-                    FFNLayerView(dimensions: 7, color: .blue)
-                    
-                    // Hidden Layer (14 dimensions)
-                    FFNLayerView(dimensions: 14, color: .orange)
-                    
-                    // Output Layer (7 dimensions)
-                    FFNLayerView(dimensions: 7, color: .green)
-                }
-            }
-            .padding()
-            
-            // FFN output plus residual and Norm
-            VStack(spacing: 2) {
-                Text("FFN Output")
-                    .font(.headline)
-                
-                ForEach(tokens.indices, id: \.self) { index in
-                    HStack(spacing: 2) {
-                        ForEach(0..<10, id: \.self) { recIndex in
-                            Rectangle()
-                                .fill(Color.gray.opacity(QKVMatrixWeight[index][recIndex]))
-                                .frame(width: 10, height: 12)
-                        }
-                    }
-                    .cornerRadius(4)
-                }
-            }
-            .padding()
-            .frame(width: 200)
-            
-            // Transformer output plus residual and Norm
-            VStack(spacing: 2) {
-                Text("Transformer Output")
-                    .font(.headline)
-                
-                ForEach(tokens.indices, id: \.self) { index in
-                    HStack(spacing: 2) {
-                        ForEach(0..<10, id: \.self) { recIndex in
-                            Rectangle()
-                                .fill(Color.gray.opacity(QKVMatrixWeight[index][recIndex]))
-                                .frame(width: 10, height: 12)
-                        }
-                    }
-                    .cornerRadius(4)
-                }
-            }
-            .padding()
-            .frame(width: 200)
         }
-        .padding()
-        .background(Color.gray.opacity(0.1))
-        .cornerRadius(20)
-        .shadow(radius: 2)
+        .coordinateSpace(name: "ffnRootView")
+        .background {
+            if finalLayerPosistions.count == 10 {
+                ForEach(0..<inputLayerPositions.count) { inIdx in
+                    ForEach(0..<hiddenLayerPositions.count) { hidIdx in
+                        Path { path in 
+                            path.move(to: inputLayerPositions[inIdx])
+                            path.addLine(to: hiddenLayerPositions[hidIdx])
+                        }
+                        .trim(from: 0, to: ffnHiddenConnectProgress[hidIdx])
+                        .stroke(ffnHiddenConnectProgress[hidIdx]==1.0 ? Color.gray : Color.yellow, lineWidth: ffnHiddenConnectProgress[hidIdx]==1.0 ? 1 : 2)
+                    }
+                }
+
+                ForEach(0..<hiddenLayerPositions.count) { hidIdx in
+                    ForEach(0..<finalLayerPosistions.count) { outIdx in
+                        Path { path in 
+                            path.move(to: hiddenLayerPositions[hidIdx])
+                            path.addLine(to: finalLayerPosistions[outIdx])
+                        }
+                        .trim(from: 0, to: ffnFinalConnectProgress[outIdx])
+                        .stroke(ffnFinalConnectProgress[outIdx]==1.0 ? Color.gray : Color.yellow, lineWidth: 1)
+                    }
+                }
+            }
+        }
+        .onAppear {
+            for index in 0..<ffnHiddenConnectProgress.count {
+                DispatchQueue.main.asyncAfter(deadline: .now() + 1 + Double(index)) {
+                    ffnHiddenConnectProgress[13-index] = 0
+                    withAnimation(.easeInOut(duration: 0.5)) {
+                        ffnHiddenConnectProgress[13-index] = 1
+                    }
+                }
+            }
+        }
     }
 }
 
@@ -197,7 +332,7 @@ struct ArrowView: View {
 struct FFNLayerView: View {
     let dimensions: Int
     let color: Color
-    
+
     var body: some View {
         VStack(spacing: 5) {
             ForEach(0..<dimensions, id: \.self) { _ in
