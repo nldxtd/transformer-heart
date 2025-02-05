@@ -29,6 +29,11 @@ struct TransformerFFNView: View {
     @State private var outputLayerMask: [CGFloat] = Array(repeating: 0, count: 10)
     @State private var outputLayerGrayer: [CGFloat] = Array(repeating: 0, count: 10)
 
+    // State var to control the whole pipeline
+    @State private var plusSignVisible: Bool = false
+    @State private var attentionOutputMoved: Bool = false
+    @State private var finalOutputVisible: Bool = false
+
     @Binding var currentView: String
     var animationNamespace: Namespace.ID
 
@@ -48,6 +53,10 @@ struct TransformerFFNView: View {
                     matrixMode: true
                 )
                 .matchedGeometryEffect(id: "Attention Output", in: animationNamespace)
+                .offset(
+                    x: attentionOutputMoved ? plusSignPosition.x - attentionOutputPosition.x : 0,
+                    y: attentionOutputMoved ? 70 : 0
+                )
                 .background {
                     GeometryReader { geo in
                         Color.clear
@@ -271,6 +280,7 @@ struct TransformerFFNView: View {
                             }
                         }
                 }
+                .opacity(plusSignVisible ? 1 : 0)
 
                 // Transformer output plus residual and Norm
                 VectorList(
@@ -283,6 +293,7 @@ struct TransformerFFNView: View {
                     title: "Final Output",
                     matrixMode: true
                 )
+                .opacity(finalOutputVisible ? 1 : 0)
                 .matchedGeometryEffect(id: "Final Output", in: animationNamespace)
             }
         }
@@ -325,7 +336,24 @@ struct TransformerFFNView: View {
             animateFeedForwardToOutputLayer(rowIdx: 0, baseDelay: 9.0, startTime: startTime)
             // animation of the rest lines performing feed-forward
             for rowIdx in 1..<tokens.count {
-                animateFeedForwardOnRow(rowIdx: rowIdx, baseDelay: 10.5+3*Double(rowIdx-1), startTime: startTime)
+                animateFeedForwardOnRow(
+                    rowIdx: rowIdx, baseDelay: 10.5 + 3 * Double(rowIdx - 1), startTime: startTime)
+            }
+            // animation of the movement and component appearence
+            DispatchQueue.main.asyncAfter(deadline: startTime + 3 * Double(tokens.count)) {
+                withAnimation(.easeInOut(duration: 0.5)) {
+                    attentionOutputMoved = true
+                }
+            }
+            DispatchQueue.main.asyncAfter(deadline: startTime + 3 * Double(tokens.count) + 0.5) {
+                withAnimation(.easeInOut(duration: 0.5)) {
+                    plusSignVisible = true
+                }
+            }
+            DispatchQueue.main.asyncAfter(deadline: startTime + 3 * Double(tokens.count) + 1) {
+                withAnimation(.easeInOut(duration: 0.5)) {
+                    finalOutputVisible = true
+                }
             }
         }
     }
@@ -334,7 +362,8 @@ struct TransformerFFNView: View {
     func animateLoadingInputIntoFFN(rowIdx: Int, baseDelay: Double, startTime: DispatchTime) {
         let interval: Double = 0.1
         for idx in 0..<10 {
-            DispatchQueue.main.asyncAfter(deadline: startTime + baseDelay + interval * Double(idx)) {
+            DispatchQueue.main.asyncAfter(deadline: startTime + baseDelay + interval * Double(idx))
+            {
                 inputLayerGrayer[idx] = embeddingMatrixWeight[rowIdx][idx]
                 withAnimation(.easeInOut(duration: interval)) {
                     attentionOutputMatrix.vectorListWeight[rowIdx][idx] *= 2
@@ -349,7 +378,8 @@ struct TransformerFFNView: View {
         let interval: Double = 0.4
 
         for idx in 0..<14 {
-            DispatchQueue.main.asyncAfter(deadline: startTime + baseDelay + interval * Double(idx)) {
+            DispatchQueue.main.asyncAfter(deadline: startTime + baseDelay + interval * Double(idx))
+            {
                 hiddenConnectProgress[13 - idx] = 0
                 withAnimation(.easeInOut(duration: 0.2)) {
                     hiddenConnectProgress[13 - idx] = 1
@@ -364,7 +394,7 @@ struct TransformerFFNView: View {
                         hiddenLayerUpperGrayer[idx] = hiddenLayerMatrixWeight[rowIdx][idx]
                         hiddenLayerUpperMask[idx] = 30
                     } else {
-                        hiddenLayerBottomGrayer[idx - 7] = hiddenLayerMatrixWeight[rowIdx][idx-7]
+                        hiddenLayerBottomGrayer[idx - 7] = hiddenLayerMatrixWeight[rowIdx][idx - 7]
                         hiddenLayerBottomMask[idx - 7] = 30
                     }
                 }
@@ -385,9 +415,11 @@ struct TransformerFFNView: View {
             }
             withAnimation(.easeInOut(duration: 1)) {
                 for idx in 0..<7 {
-                    hiddenLayerUpperGrayer[idx] = feedforwardOutputMatrix.vectorListWeight[rowIdx][idx]
+                    hiddenLayerUpperGrayer[idx] =
+                        feedforwardOutputMatrix.vectorListWeight[rowIdx][idx]
                     hiddenLayerUpperMask[idx] = 30
-                    hiddenLayerBottomGrayer[idx] = feedforwardOutputMatrix.vectorListWeight[rowIdx][idx]
+                    hiddenLayerBottomGrayer[idx] =
+                        feedforwardOutputMatrix.vectorListWeight[rowIdx][idx]
                     hiddenLayerBottomMask[idx] = 30
                 }
             }
@@ -413,7 +445,8 @@ struct TransformerFFNView: View {
         let interval: Double = 0.1
 
         for idx in 0..<10 {
-            DispatchQueue.main.asyncAfter(deadline: startTime + baseDelay + interval * Double(idx)) {
+            DispatchQueue.main.asyncAfter(deadline: startTime + baseDelay + interval * Double(idx))
+            {
                 outputLayerGrayer[idx] = feedforwardOutputMatrix.vectorListWeight[rowIdx][idx]
                 withAnimation(.easeInOut(duration: interval)) {
                     outputLayerMask[idx] = 30
@@ -469,7 +502,7 @@ struct TransformerFFNView: View {
                         hiddenLayerUpperGrayer[idx] = hiddenLayerMatrixWeight[rowIdx][idx]
                         hiddenLayerUpperMask[idx] = 30
                     } else {
-                        hiddenLayerBottomGrayer[idx - 7] = hiddenLayerMatrixWeight[rowIdx][idx-7]
+                        hiddenLayerBottomGrayer[idx - 7] = hiddenLayerMatrixWeight[rowIdx][idx - 7]
                         hiddenLayerBottomMask[idx - 7] = 30
                     }
                 }
