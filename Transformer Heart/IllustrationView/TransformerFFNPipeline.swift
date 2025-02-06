@@ -55,7 +55,7 @@ struct TransformerFFNView: View {
                 .matchedGeometryEffect(id: "Attention Output", in: animationNamespace)
                 .offset(
                     x: attentionOutputMoved ? plusSignPosition.x - attentionOutputPosition.x : 0,
-                    y: attentionOutputMoved ? 70 : 0
+                    y: attentionOutputMoved ? -160 : 0
                 )
                 .background {
                     GeometryReader { geo in
@@ -300,8 +300,8 @@ struct TransformerFFNView: View {
         .coordinateSpace(name: "ffnRootView")
         .background {
             if outputLayerPosistions.count == 10 {
-                ForEach(0..<inputLayerPositions.count) { inIdx in
-                    ForEach(0..<hiddenLayerPositions.count) { hidIdx in
+                ForEach(0..<10) { inIdx in
+                    ForEach(0..<14) { hidIdx in
                         Path { path in
                             path.move(to: inputLayerPositions[inIdx])
                             path.addLine(to: hiddenLayerPositions[hidIdx])
@@ -313,44 +313,57 @@ struct TransformerFFNView: View {
                     }
                 }
 
-                ForEach(0..<hiddenLayerPositions.count) { hidIdx in
-                    ForEach(0..<outputLayerPosistions.count) { outIdx in
+                ForEach(0..<14) { hidIdx in
+                    ForEach(0..<10) { outIdx in
                         Path { path in
                             path.move(to: hiddenLayerPositions[hidIdx])
                             path.addLine(to: outputLayerPosistions[outIdx])
                         }
-                        .trim(from: 0, to: finalConnectProgress[outIdx])
+                        .trim(from: 0, to: outputConnectProgress[outIdx])
                         .stroke(
-                            finalConnectProgress[outIdx] == 1.0 ? Color.gray : Color.yellow,
-                            lineWidth: finalConnectProgress[outIdx] == 1.0 ? 1 : 2)
+                            outputConnectProgress[outIdx] == 1.0 ? Color.gray : Color.yellow,
+                            lineWidth: outputConnectProgress[outIdx] == 1.0 ? 1 : 2)
                     }
                 }
             }
         }
         .onAppear {
             // animation of load input into ffn
-            let startTime = DispatchTime.now()
-            animateLoadingInputIntoFFN(rowIdx: 0, baseDelay: 1.0, startTime: startTime)
-            animateFeedForwardToHiddenLayer(rowIdx: 0, baseDelay: 2.0, startTime: startTime)
-            animateFinalConnection(baseDelay: 8.0, startTime: startTime)
-            animateFeedForwardToOutputLayer(rowIdx: 0, baseDelay: 9.0, startTime: startTime)
+            DispatchQueue.main.asyncAfter(deadline: .now()) {
+                let startTime = DispatchTime.now()
+                animateLoadingInputIntoFFN(rowIdx: 0, baseDelay: 1.0, startTime: startTime)
+                animateFeedForwardToHiddenLayer(rowIdx: 0, baseDelay: 2.5, startTime: startTime)
+                animateFinalConnection(baseDelay: 8.5, startTime: startTime)
+                animateFeedForwardToOutputLayer(rowIdx: 0, baseDelay: 10, startTime: startTime)
+            }
             // animation of the rest lines performing feed-forward
-            for rowIdx in 1..<tokens.count {
-                animateFeedForwardOnRow(
-                    rowIdx: rowIdx, baseDelay: 10.5 + 3 * Double(rowIdx - 1), startTime: startTime)
+            DispatchQueue.main.asyncAfter(deadline: .now() + 12) {
+                let startTime = DispatchTime.now()
+                for rowIdx in 1..<3 {
+                    animateFeedForwardOnRow(
+                        rowIdx: rowIdx, baseDelay: 3 * Double(rowIdx - 1), startTime: startTime)
+                }
+            }
+            DispatchQueue.main.asyncAfter(deadline: .now() + 18) {
+                let startTime = DispatchTime.now()
+                for rowIdx in 3..<7 {
+                    animateFeedForwardOnRow(
+                        rowIdx: rowIdx, baseDelay: 1.2 * Double(rowIdx - 3), startTime: startTime,
+                        interval: 0.2)
+                }
             }
             // animation of the movement and component appearence
-            DispatchQueue.main.asyncAfter(deadline: startTime + 3 * Double(tokens.count)) {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 23) {
                 withAnimation(.easeInOut(duration: 0.5)) {
                     attentionOutputMoved = true
                 }
             }
-            DispatchQueue.main.asyncAfter(deadline: startTime + 3 * Double(tokens.count) + 0.5) {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 24) {
                 withAnimation(.easeInOut(duration: 0.5)) {
                     plusSignVisible = true
                 }
             }
-            DispatchQueue.main.asyncAfter(deadline: startTime + 3 * Double(tokens.count) + 1) {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 25.5) {
                 withAnimation(.easeInOut(duration: 0.5)) {
                     finalOutputVisible = true
                 }
@@ -430,11 +443,11 @@ struct TransformerFFNView: View {
     func animateFinalConnection(baseDelay: Double, startTime: DispatchTime) {
         DispatchQueue.main.asyncAfter(deadline: startTime + baseDelay) {
             for idx in 0..<10 {
-                finalConnectProgress[idx] = 0
+                outputConnectProgress[idx] = 0
             }
             withAnimation(.easeInOut(duration: 1)) {
                 for idx in 0..<10 {
-                    finalConnectProgress[idx] = 1
+                    outputConnectProgress[idx] = 1
                 }
             }
         }
@@ -442,13 +455,13 @@ struct TransformerFFNView: View {
 
     /// Animate feedforward to output layer
     func animateFeedForwardToOutputLayer(rowIdx: Int, baseDelay: Double, startTime: DispatchTime) {
-        let interval: Double = 0.1
-
         for idx in 0..<10 {
-            DispatchQueue.main.asyncAfter(deadline: startTime + baseDelay + interval * Double(idx))
-            {
-                outputLayerGrayer[idx] = feedforwardOutputMatrix.vectorListWeight[rowIdx][idx]
-                withAnimation(.easeInOut(duration: interval)) {
+            outputLayerGrayer[idx] = feedforwardOutputMatrix.vectorListWeight[rowIdx][idx]
+        }
+
+        DispatchQueue.main.asyncAfter(deadline: startTime + baseDelay) {
+            withAnimation(.easeInOut(duration: 0.5)) {
+                for idx in 0..<10 {
                     outputLayerMask[idx] = 30
                     feedforwardOutputMatrix.vectorListWeight[rowIdx][idx] *= 2
                 }
@@ -470,56 +483,60 @@ struct TransformerFFNView: View {
     }
 
     /// Animate feedforward on row
-    func animateFeedForwardOnRow(rowIdx: Int, baseDelay: Double, startTime: DispatchTime) {
+    func animateFeedForwardOnRow(
+        rowIdx: Int, baseDelay: Double, startTime: DispatchTime, interval: Double = 0.5
+    ) {
         DispatchQueue.main.asyncAfter(deadline: startTime + baseDelay) {
             for idx in 0..<10 {
                 inputLayerGrayer[idx] = embeddingMatrixWeight[rowIdx][idx]
             }
-            withAnimation(.easeInOut(duration: 0.5)) {
+            withAnimation(.easeInOut(duration: interval)) {
                 for idx in 0..<10 {
                     attentionOutputMatrix.vectorListWeight[rowIdx][idx] *= 2
                     inputLayerMask[idx] = 30
                 }
             }
         }
-        DispatchQueue.main.asyncAfter(deadline: startTime + baseDelay + 0.5) {
+        DispatchQueue.main.asyncAfter(deadline: startTime + baseDelay + interval * 1) {
             for idx in 0..<14 {
                 hiddenConnectProgress[idx] = 0
             }
-            withAnimation(.easeInOut(duration: 0.5)) {
+            withAnimation(.easeInOut(duration: interval)) {
                 for idx in 0..<14 {
                     hiddenConnectProgress[idx] = 1
                 }
             }
         }
-        DispatchQueue.main.asyncAfter(deadline: startTime + baseDelay + 1) {
+        DispatchQueue.main.asyncAfter(deadline: startTime + baseDelay + interval * 2) {
             for idx in 0..<14 {
-                inputLayerGrayer[idx] = embeddingMatrixWeight[rowIdx][idx]
+                if idx < 7 {
+                    hiddenLayerUpperGrayer[idx] = hiddenLayerMatrixWeight[rowIdx][idx]
+                } else {
+                    hiddenLayerBottomGrayer[idx - 7] = hiddenLayerMatrixWeight[rowIdx][idx - 7]
+                }
             }
-            withAnimation(.easeInOut(duration: 0.5)) {
+            withAnimation(.easeInOut(duration: interval)) {
                 for idx in 0..<14 {
                     if idx < 7 {
-                        hiddenLayerUpperGrayer[idx] = hiddenLayerMatrixWeight[rowIdx][idx]
                         hiddenLayerUpperMask[idx] = 30
                     } else {
-                        hiddenLayerBottomGrayer[idx - 7] = hiddenLayerMatrixWeight[rowIdx][idx - 7]
                         hiddenLayerBottomMask[idx - 7] = 30
                     }
                 }
             }
         }
-        DispatchQueue.main.asyncAfter(deadline: startTime + baseDelay + 1.5) {
+        DispatchQueue.main.asyncAfter(deadline: startTime + baseDelay + interval * 3) {
             for idx in 0..<10 {
                 outputConnectProgress[idx] = 0
             }
-            withAnimation(.easeInOut(duration: 0.5)) {
+            withAnimation(.easeInOut(duration: interval)) {
                 for idx in 0..<10 {
                     outputConnectProgress[idx] = 1
                 }
             }
         }
-        DispatchQueue.main.asyncAfter(deadline: startTime + 2) {
-            withAnimation(.easeInOut(duration: 0.5)) {
+        DispatchQueue.main.asyncAfter(deadline: startTime + baseDelay + interval * 4) {
+            withAnimation(.easeInOut(duration: interval)) {
                 for idx in 0..<10 {
                     outputLayerGrayer[idx] = feedforwardOutputMatrix.vectorListWeight[rowIdx][idx]
                     outputLayerMask[idx] = 30
@@ -527,8 +544,8 @@ struct TransformerFFNView: View {
                 }
             }
         }
-        DispatchQueue.main.asyncAfter(deadline: startTime + 2.5) {
-            withAnimation(.easeInOut(duration: 0.2)) {
+        DispatchQueue.main.asyncAfter(deadline: startTime + baseDelay + interval * 5) {
+            withAnimation(.easeInOut(duration: interval)) {
                 clearFFNGrayerStatus()
             }
         }
