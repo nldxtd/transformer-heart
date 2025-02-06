@@ -2,7 +2,7 @@ import SwiftUI
 
 struct IllustrationView: View {
     
-    @State private var currentView = "EmbeddingPipeline"
+    @State private var currentView = "ProbabilityPipeline"
     @Namespace private var animationNamespace
     
     var body: some View {
@@ -15,6 +15,8 @@ struct IllustrationView: View {
                 SingleAttentionHeadView(currentView: $currentView, animationNamespace: animationNamespace)
             } else if currentView == "FeedForwardPipeline" {
                 TransformerFFNView(currentView: $currentView, animationNamespace: animationNamespace)
+            } else if currentView == "ProbabilityPipeline" {
+                ProbabilityOutputView(currentView: $currentView, animationNamespace: animationNamespace)
             }
             HStack(spacing: 10) {
                 Button(action: {
@@ -56,6 +58,17 @@ struct IllustrationView: View {
                     }
                 }) {
                     Text("Go to ffn")
+                        .padding()
+                        .background(Color.red)
+                        .foregroundColor(.white)
+                        .cornerRadius(10)
+                }
+                Button(action: {
+                    withAnimation(.easeInOut(duration: 2.0)) { // 设置持续时间为 1 秒
+                        currentView = "ProbabilityPipeline"
+                    }
+                }) {
+                    Text("Go to prob")
                         .padding()
                         .background(Color.red)
                         .foregroundColor(.white)

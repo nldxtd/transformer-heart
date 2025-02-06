@@ -39,6 +39,23 @@ struct TransformerFFNView: View {
 
     var body: some View {
         ZStack {
+            
+            VectorList(
+                    dimention: 10,
+                    vectors: attentionOutputMatrix,
+                    color: .gray,
+                    defaultWidth: 12,
+                    defaultHeight: 13,
+                    spacing: 2,
+                    title: "Attention Output",
+                    matrixMode: true
+                )
+                .position(
+                    x: attentionOutputMoved ? plusSignPosition.x+10 : attentionOutputPosition.x,
+                    y: attentionOutputMoved ? 180 : attentionOutputPosition.y
+                )
+                .opacity(attentionOutputMoved ? 1 : 0)
+
             // Overall is a horizontal view
             HStack(spacing: 30) {
                 // Represent of Embedding Matrix
@@ -53,10 +70,6 @@ struct TransformerFFNView: View {
                     matrixMode: true
                 )
                 .matchedGeometryEffect(id: "Attention Output", in: animationNamespace)
-                .offset(
-                    x: attentionOutputMoved ? plusSignPosition.x - attentionOutputPosition.x : 0,
-                    y: attentionOutputMoved ? -160 : 0
-                )
                 .background {
                     GeometryReader { geo in
                         Color.clear
@@ -354,7 +367,7 @@ struct TransformerFFNView: View {
             }
             // animation of the movement and component appearence
             DispatchQueue.main.asyncAfter(deadline: .now() + 23) {
-                withAnimation(.easeInOut(duration: 0.5)) {
+                withAnimation(.easeInOut(duration: 1)) {
                     attentionOutputMoved = true
                 }
             }
