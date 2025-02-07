@@ -8,6 +8,20 @@ struct ProbabilityOutputView: View {
 
     @State private var finalOutputPosition: CGPoint = CGPoint(x: 0, y: 0)
     @State private var verticalVectorPosition: CGPoint = CGPoint(x: 0, y: 0)
+    @State private var highlightLastRow: Bool = false
+    @State private var downEmbeddingProgress: CGFloat = 0
+    @State private var verticleVectorVisible: Bool = false
+    @State private var probPredictionVisible: Bool = false
+    @State private var temperature: Double = 1.0
+
+    let fisrtTokenChoices: [String] = ["", "", "", "visualize", "", "", "see", ""]
+    let firstTokenOpacity: [CGFloat] = [0.13, 0.24, 0.31, 0.87, 0.05, 0.15, 0.64, 0.22]
+    let secondTokenChoices: [String] = ["", "understand", "", "create", ""]
+    let secondTokenOpacity: [CGFloat] = [0.27, 0.62, 0.19, 0.52, 0.05]
+    let thirdTokenChoices: [String] = ["", "explore", ""]
+    let thirdTokenOpacity: [CGFloat] = [0.11, 0.68, 0.13]
+    let forthTokenChoices: [String] = ["", "easily", "", "", "build", ""]
+    let forthTokenOpacity: [CGFloat] = [0.1, 0.52, 0.09, 0.21, 0.55, 0.14]
 
     @Binding var currentView: String
     var animationNamespace: Namespace.ID
@@ -27,11 +41,27 @@ struct ProbabilityOutputView: View {
                     defaultHeight: 13,
                     spacing: 2,
                     title: "Final Output",
-                    matrixMode: true
+                    matrixMode: true,
+                    highlightLastRow: highlightLastRow
                 )
                 .matchedGeometryEffect(id: "Final Output", in: animationNamespace)
+                .background {
+                    GeometryReader { geo in
+                        Color.clear
+                            .onAppear {
+                                finalOutputPosition = CGPoint(
+                                    x: geo.frame(in: .named("probRootView")).maxX + 2,
+                                    y: geo.frame(in: .named("probRootView")).maxY
+                                )
+                            }
+                    }
+                }
+                
+                Text("Unembedding")
+                    .font(.subheadline)
+                    .offset(x: 25, y: 80)
+                    .opacity(downEmbeddingProgress)
 
-                // TODO: back ground draw sign lines
                 // each block represent a token
                 VStack {
                     Text("Unembedded Vector")
@@ -39,40 +69,40 @@ struct ProbabilityOutputView: View {
                     VStack(spacing: 2) {
                         ForEach(0..<8, id: \.self) { idx in
                             Rectangle()
-                                .fill(Color.gray.opacity(Double.random(in: 0...1)))
-                                .frame(width: 40, height: 15)
+                                .fill(Color.gray.opacity(firstTokenOpacity[idx]))
+                                .frame(width: 90, height: 20)
                                 .overlay(alignment: .center) {
-                                    Text("\(idx)")
+                                    Text(fisrtTokenChoices[idx])
                                 }
                         }
                         Text("⋮")
                             .frame(height: 20)
                         ForEach(0..<5, id: \.self) { idx in
                             Rectangle()
-                                .fill(Color.gray.opacity(Double.random(in: 0...1)))
-                                .frame(width: 40, height: 15)
+                                .fill(Color.gray.opacity(secondTokenOpacity[idx]))
+                                .frame(width: 90, height: 20)
                                 .overlay(alignment: .center) {
-                                    Text("\(idx)")
+                                    Text(secondTokenChoices[idx])
                                 }
                         }
                         Text("⋮")
                             .frame(height: 20)
                         ForEach(0..<3, id: \.self) { idx in
                             Rectangle()
-                                .fill(Color.gray.opacity(Double.random(in: 0...1)))
-                                .frame(width: 40, height: 15)
+                                .fill(Color.gray.opacity(thirdTokenOpacity[idx]))
+                                .frame(width: 90, height: 20)
                                 .overlay(alignment: .center) {
-                                    Text("\(idx)")
+                                    Text(thirdTokenChoices[idx])
                                 }
                         }
                         Text("⋮")
                             .frame(height: 20)
                         ForEach(0..<6, id: \.self) { idx in
                             Rectangle()
-                                .fill(Color.gray.opacity(Double.random(in: 0...1)))
-                                .frame(width: 40, height: 15)
+                                .fill(Color.gray.opacity(forthTokenOpacity[idx]))
+                                .frame(width: 90, height: 20)
                                 .overlay(alignment: .center) {
-                                    Text("\(idx)")
+                                    Text(forthTokenChoices[idx])
                                 }
                         }
                     }
@@ -81,90 +111,195 @@ struct ProbabilityOutputView: View {
                         RoundedRectangle(cornerRadius: 4)
                             .stroke(Color.white, lineWidth: 1)
                     )
+                    .background {
+                        GeometryReader { geo in
+                            Color.clear
+                                .onAppear {
+                                    verticalVectorPosition = CGPoint(
+                                        x: geo.frame(in: .named("probRootView")).minX - 2,
+                                        y: geo.frame(in: .named("probRootView")).maxY
+                                    )
+                                }
+                        }
+                    }
                     Text("Dimension: D(Dic)")
                         .padding()
                 }
+                .opacity(verticleVectorVisible ? 1 : 0)
 
                 // Output logits and probabilities
-                // TODO: randomly select
                 VStack(alignment: .center, spacing: 2) {
-                    Text("Next token probabilities")
-                        .font(.headline)
-                    ProbabilityView(probs: [66.27, 14.2, 5.93, 2.07, 1.99, 1.77, 1.57])
 
+                    Text("Next token probabilities")
+                        .font(.title)
+                        .padding()
+                    ProbabilityView()
+                }
+                .opacity(probPredictionVisible ? 1 : 0)
+                .offset(x: probPredictionVisible ? 0 : -30)
+                .frame(width: 450)
+            }
+            .background {
+                AnimatedCurveShape(
+                    corner1: CGPoint(x: finalOutputPosition.x, y: finalOutputPosition.y - 13),
+                    corner2: CGPoint(
+                        x: verticalVectorPosition.x, y: verticalVectorPosition.y - 542),
+                    corner3: verticalVectorPosition,
+                    corner4: finalOutputPosition,
+                    progress: downEmbeddingProgress
+                )
+                .fill(Color.blue.opacity(0.3))
+            }
+        }
+        .coordinateSpace(name: "probRootView")
+        .onAppear {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+                withAnimation(.easeInOut(duration: 0.5)) {
+                    highlightLastRow = true
                 }
             }
-
-            // TODO: add a selector here to change the temperature
+            DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+                withAnimation(.easeInOut(duration: 0.5)) {
+                    downEmbeddingProgress = 1.0
+                }
+            }
+            DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
+                withAnimation(.easeInOut(duration: 0.5)) {
+                    verticleVectorVisible = true
+                }
+            }
+            DispatchQueue.main.asyncAfter(deadline: .now() + 4) {
+                withAnimation(.easeInOut(duration: 0.5)) {
+                    probPredictionVisible = true
+                }
+            }
         }
     }
 }
 
 struct ProbabilityView: View {
-
-    let probs: [Double]
-
+    let tokens = ["visualize", "understand", "see", "explore", "create", "easily", "build"]
+    let logits: [Double] = [-0.5, -0.8, -1.0, -1.2, -1.5, -2.0, -2.5]
+    
+    @State private var temperature: Double = 1.0
+    @State private var expos: [Double] = []
+    @State private var probs: [Double] = []
+    @State private var finalTokenIndex: Int? = nil
+    
     var body: some View {
-        HStack(alignment: .center) {
-            VStack(alignment: .trailing) {
-                Text("Tokens")
-                    .font(.subheadline)
-                VStack(alignment: .trailing, spacing: 2) {
-                    ForEach(["USC", "is", "located", "near", "the", "downtown", "of"], id: \.self) {
-                        token in
-                        Text(token)
-                            .font(.caption)
+        VStack {
+            HStack {
+                Text("Temperature: ")
+                Text(String(format: "%.1f", temperature))
+                    .foregroundColor(.green)
+                Slider(value: $temperature, in: 0.5...2.0, step: 0.1)
+                    .frame(width: 200)
+                    .onChange(of: temperature) { _ in
+                        computeSoftmax()
+                    }
+            }
+            .padding(.bottom, 20)
+            
+            HStack(alignment: .center, spacing: 16) {
+                VStack(alignment: .trailing) {
+                    Text("Tokens")
+                        .font(.subheadline)
+                    VStack(alignment: .trailing, spacing: 8) {
+                        ForEach(tokens.indices, id: \.self) { index in
+                            Text(tokens[index])
+                                .font(.body)
+                                .padding(4)
+                                .background(finalTokenIndex == index ? Color.purple.opacity(0.3) : Color.clear)
+                                .cornerRadius(4)
+                        }
                     }
                 }
-            }
-
-            VStack(alignment: .center) {
-                Text("Logits")
-                    .font(.subheadline)
-                VStack(spacing: 2) {
-                    ForEach(
-                        [
-                            "-135.91", "-136.68", "-137.12", "-137.65", "-137.67", "-138.54",
-                            "-147.34",
-                        ], id: \.self
-                    ) { logits in
-                        Text(logits)
-                            .font(.caption)
+                
+                VStack(alignment: .center) {
+                    Text("Logits")
+                        .font(.subheadline)
+                    VStack(spacing: 8) {
+                        ForEach(logits, id: \.self) { logit in
+                            Text(String(format: "%.2f", logit))
+                                .font(.body)
+                                .padding(4)
+                                .frame(width: 75)
+                                .background(Color.gray.opacity(0.2))
+                                .cornerRadius(4)
+                        }
                     }
                 }
-            }
-
-            VStack(alignment: .center) {
-                Text("Exponents")
-                    .font(.subheadline)
-                VStack(spacing: 2) {
-                    ForEach(
-                        [
-                            "1.00e+0", "2.14e-1", "8.94e-2", "3.12e-2", "2.22e-2", "7.35e-3",
-                            "3.31e-3",
-                        ], id: \.self
-                    ) { expo in
-                        Text(expo)
-                            .font(.caption)
+                
+                VStack(alignment: .center) {
+                    Text("Exponents")
+                        .font(.subheadline)
+                    VStack(spacing: 8) {
+                        ForEach(expos.indices, id: \.self) { index in
+                            Text(String(format: "%.2f", expos[index]))
+                                .font(.body)
+                                .padding(4)
+                                .frame(width: 75)
+                                .background(Color.gray.opacity(0.2))
+                                .cornerRadius(4)
+                        }
                     }
                 }
-            }
-
-            VStack(alignment: .center) {
-                Text("Softmax")
-                    .font(.subheadline)
-                VStack(alignment: .leading, spacing: 2) {
-                    ForEach(probs, id: \.self) { prob in
-                        HStack(spacing: 2) {
-                            Rectangle()
-                                .frame(width: CGFloat(prob), height: 3)
-                                .foregroundColor(.blue)
-                            Text(String(format: "%.2f%", prob))
-                                .font(.caption)
+                
+                VStack(alignment: .leading) {
+                    Text("Softmax")
+                        .font(.subheadline)
+                    VStack(alignment: .leading, spacing: 8) {
+                        ForEach(probs.indices, id: \.self) { index in
+                            HStack(spacing: 8) {
+                                Rectangle()
+                                    .frame(width: CGFloat(probs[index] * 1.5), height: 6)
+                                    .foregroundColor(.blue)
+                                Text(String(format: "%.2f%%", probs[index]))
+                                    .font(.body)
+                            }
+                            .padding(4)
+                            .background(finalTokenIndex == index ? Color.purple.opacity(0.3) : Color.clear)
+                            .cornerRadius(4)
                         }
                     }
                 }
             }
+            
+            HStack(spacing: 0) {
+                Text("Transformer visualization empowers user to ")
+                Text(tokens[finalTokenIndex ?? 0])
+                    .foregroundColor(.purple)
+            }
+            .padding(.top, 20)
+            .font(.callout)
         }
+        .onAppear {
+            computeSoftmax()
+        }
+    }
+    
+    private func computeSoftmax() {
+        let scaledLogits = logits.map { $0 / temperature }
+        let expValues = scaledLogits.map { exp($0) }
+        let sumExp = expValues.reduce(0, +)
+        let probabilities = expValues.map { ($0 / sumExp) * 100 }
+        
+        self.expos = expValues
+        self.probs = probabilities
+        self.finalTokenIndex = sampleFromDistribution(probabilities)
+    }
+    
+    private func sampleFromDistribution(_ probabilities: [Double]) -> Int? {
+        let sum = probabilities.reduce(0, +)
+        let threshold = Double.random(in: 0..<sum)
+        var cumulative = 0.0
+        
+        for (index, prob) in probabilities.enumerated() {
+            cumulative += prob
+            if threshold < cumulative {
+                return index
+            }
+        }
+        return nil
     }
 }
