@@ -7,8 +7,6 @@ import SwiftUI
 
 struct InputEmbeddingView: View {
     // Default tokens
-    let tokens: [String] = ["USC", "is", "located", "near", "the", "downtown", "of"]
-    let tokensId: [Int] = [9007, 58, 256, 174, 13, 347, 41]
     let embeddingWeight: [[Double]] = [
         [0.67, 0.47, 0.3, 0.41, 0.67, 0.62, 0.59, 0.66, 0.49, 0.49],
         [0.34, 0.6, 0.38, 0.35, 0.59, 0.63, 0.44, 0.63, 0.42, 0.64],

@@ -59,7 +59,7 @@ struct ProbabilityOutputView: View {
                 
                 Text("Unembedding")
                     .font(.subheadline)
-                    .offset(x: 25, y: 80)
+                    .offset(x: 20, y: 100)
                     .opacity(downEmbeddingProgress)
 
                 // each block represent a token
@@ -137,7 +137,7 @@ struct ProbabilityOutputView: View {
                 }
                 .opacity(probPredictionVisible ? 1 : 0)
                 .offset(x: probPredictionVisible ? 0 : -30)
-                .frame(width: 450)
+                .frame(width: 500)
             }
             .background {
                 AnimatedCurveShape(
