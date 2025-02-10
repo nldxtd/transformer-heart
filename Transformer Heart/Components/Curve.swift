@@ -38,7 +38,7 @@ struct HorizontalCurveConnection: View {
                 )
             )
             if extend {
-                path.addLine(to: CGPoint(x: end.x + 132, y: end.y))
+                path.addLine(to: CGPoint(x: end.x + 110, y: end.y))
             }
         }
         .trim(from: 0, to: progress)
@@ -67,7 +67,7 @@ struct VerticalCurveConnection: View {
                 control2: CGPoint(x: end.x, y: start.y)
             )
             // verticle
-            path.addLine(to: CGPoint(x: end.x, y: end.y + 132))
+            path.addLine(to: CGPoint(x: end.x, y: end.y + 110))
         }
         .trim(from: 0, to: progress)
         .stroke(color, lineWidth: 2)

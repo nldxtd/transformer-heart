@@ -354,29 +354,29 @@ struct TransformerFFNView: View {
                 let startTime = DispatchTime.now()
                 for rowIdx in 1..<3 {
                     animateFeedForwardOnRow(
-                        rowIdx: rowIdx, baseDelay: 3 * Double(rowIdx - 1), startTime: startTime)
+                        rowIdx: rowIdx, baseDelay: 3.5 * Double(rowIdx - 1), startTime: startTime)
                 }
             }
-            DispatchQueue.main.asyncAfter(deadline: .now() + 18) {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 19) {
                 let startTime = DispatchTime.now()
-                for rowIdx in 3..<7 {
+                for rowIdx in 3..<tokens.count {
                     animateFeedForwardOnRow(
-                        rowIdx: rowIdx, baseDelay: 1.2 * Double(rowIdx - 3), startTime: startTime,
+                        rowIdx: rowIdx, baseDelay: 1.5 * Double(rowIdx - 3), startTime: startTime,
                         interval: 0.2)
                 }
             }
             // animation of the movement and component appearence
-            DispatchQueue.main.asyncAfter(deadline: .now() + 23) {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 24) {
                 withAnimation(.easeInOut(duration: 1)) {
                     attentionOutputMoved = true
                 }
             }
-            DispatchQueue.main.asyncAfter(deadline: .now() + 24) {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 25) {
                 withAnimation(.easeInOut(duration: 0.5)) {
                     plusSignVisible = true
                 }
             }
-            DispatchQueue.main.asyncAfter(deadline: .now() + 25.5) {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 26) {
                 withAnimation(.easeInOut(duration: 0.5)) {
                     finalOutputVisible = true
                 }
@@ -499,6 +499,7 @@ struct TransformerFFNView: View {
     func animateFeedForwardOnRow(
         rowIdx: Int, baseDelay: Double, startTime: DispatchTime, interval: Double = 0.5
     ) {
+        // Load data into ffn
         DispatchQueue.main.asyncAfter(deadline: startTime + baseDelay) {
             for idx in 0..<10 {
                 inputLayerGrayer[idx] = embeddingMatrixWeight[rowIdx][idx]
@@ -510,6 +511,7 @@ struct TransformerFFNView: View {
                 }
             }
         }
+        // Do matrix multiplication in hidden layer
         DispatchQueue.main.asyncAfter(deadline: startTime + baseDelay + interval * 1) {
             for idx in 0..<14 {
                 hiddenConnectProgress[idx] = 0
@@ -520,6 +522,7 @@ struct TransformerFFNView: View {
                 }
             }
         }
+        // Load data into hidden layer
         DispatchQueue.main.asyncAfter(deadline: startTime + baseDelay + interval * 2) {
             for idx in 0..<14 {
                 if idx < 7 {
@@ -538,6 +541,7 @@ struct TransformerFFNView: View {
                 }
             }
         }
+        // Perform feedforward to output layer
         DispatchQueue.main.asyncAfter(deadline: startTime + baseDelay + interval * 3) {
             for idx in 0..<10 {
                 outputConnectProgress[idx] = 0
@@ -548,6 +552,7 @@ struct TransformerFFNView: View {
                 }
             }
         }
+        // Load data into output layer and matrix
         DispatchQueue.main.asyncAfter(deadline: startTime + baseDelay + interval * 4) {
             withAnimation(.easeInOut(duration: interval)) {
                 for idx in 0..<10 {
@@ -557,6 +562,7 @@ struct TransformerFFNView: View {
                 }
             }
         }
+        // Clear grayer status
         DispatchQueue.main.asyncAfter(deadline: startTime + baseDelay + interval * 5) {
             withAnimation(.easeInOut(duration: interval)) {
                 clearFFNGrayerStatus()

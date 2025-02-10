@@ -71,7 +71,6 @@ struct VerticalVectorView: View {
                 Text(title)
                     .padding()
                     .font(titleFont)
-                    .frame(width: titleWidth)
             }
 
             // Vector view

@@ -1,82 +1,112 @@
 import SwiftUI
 
 struct IllustrationView: View {
-    
-    @State private var currentView = "ProbabilityPipeline"
+
+    @State private var currentView = "Transformer Overview"
     @Namespace private var animationNamespace
-    
+
+    let pipelineNames = [
+        "Embedding Pipeline",
+        "KQV Matrix Pipeline",
+        "Cross Attention Pipeline",
+        "Feed-Forward Network Pipeline",
+        "Prediction Pipeline",
+    ]
+
     var body: some View {
         VStack {
-            if currentView == "EmbeddingPipeline" {
-                InputEmbeddingView(currentView: $currentView, animationNamespace: animationNamespace)
-            } else if currentView == "AttentionKQVPipeline" {
-                AttentionQKVView(currentView: $currentView, animationNamespace: animationNamespace)
-            } else if currentView == "AttentionHeadPipiline" {
-                SingleAttentionHeadView(currentView: $currentView, animationNamespace: animationNamespace)
-            } else if currentView == "FeedForwardPipeline" {
-                TransformerFFNView(currentView: $currentView, animationNamespace: animationNamespace)
-            } else if currentView == "ProbabilityPipeline" {
-                ProbabilityOutputView(currentView: $currentView, animationNamespace: animationNamespace)
-            }
-            HStack(spacing: 10) {
-                Button(action: {
-                    withAnimation(.easeInOut(duration: 2.0)) { // 设置持续时间为 1 秒
-                        currentView = "EmbeddingPipeline"
+            // menu bar
+            HStack {
+                HStack(spacing: 30) {
+                    Button(action: {
+                        let curIdx = pipelineNames.firstIndex(of: currentView)!
+                        currentView = pipelineNames[curIdx == 0 ? 0 : curIdx - 1]
+                    }) {
+                        Image(systemName: "triangle.fill")
+                            .rotationEffect(.degrees(-90))
+                            .foregroundColor(
+                                (currentView == "Transformer Overview"
+                                    || currentView == "Embedding Pipeline") ? .gray : .blue)
                     }
-                }) {
-                    Text("Go to embedding")
-                        .padding()
-                        .background(Color.red)
-                        .foregroundColor(.white)
-                        .cornerRadius(10)
-                }
-                Button(action: {
-                    withAnimation(.easeInOut(duration: 2.0)) { // 设置持续时间为 1 秒
-                        currentView = "AttentionKQVPipeline"
+                    .disabled(
+                        currentView == "Transformer Overview" || currentView == "Embedding Pipeline"
+                    )
+
+                    Button(action: {
+                        currentView = "Transformer Overview"
+                    }) {
+                        Image(systemName: "house.fill")
+                            .foregroundColor(
+                                (currentView == "Transformer Overview") ? .gray : .blue)
                     }
-                }) {
-                    Text("Go to kqv")
-                        .padding()
-                        .background(Color.red)
-                        .foregroundColor(.white)
-                        .cornerRadius(10)
-                }
-                Button(action: {
-                    withAnimation(.easeInOut(duration: 2.0)) { // 设置持续时间为 1 秒
-                        currentView = "AttentionHeadPipiline"
+                    .disabled(currentView == "Transformer Overview")
+
+                    Button(action: {
+                        let curIdx = pipelineNames.firstIndex(of: currentView)!
+                        currentView =
+                            pipelineNames[
+                                curIdx == pipelineNames.count - 1
+                                    ? pipelineNames.count - 1 : curIdx + 1]
+                    }) {
+                        Image(systemName: "triangle.fill")
+                            .rotationEffect(.degrees(90))
+                            .foregroundColor(
+                                (currentView == "Transformer Overview"
+                                    || currentView == "Prediction Pipeline") ? .gray : .blue)
                     }
-                }) {
-                    Text("Go to head")
-                        .padding()
-                        .background(Color.red)
-                        .foregroundColor(.white)
-                        .cornerRadius(10)
+                    .disabled(
+                        currentView == "Transformer Overview"
+                            || currentView == "Prediction Pipeline")
                 }
-                Button(action: {
-                    withAnimation(.easeInOut(duration: 2.0)) { // 设置持续时间为 1 秒
-                        currentView = "FeedForwardPipeline"
+                .frame(maxWidth: .infinity)
+                .overlay(
+                    HStack {
+                        Text(currentView)
+                            .foregroundColor(.white)
+                            .padding()  // Aligns to leading edge
+
+                        Spacer()
+
+                        Button(action: {
+                        }) {
+                            Image(systemName: "info.circle.fill")
+                                .foregroundColor(.blue)
+                        }
+                        .padding()  // Aligns to trailing edge
                     }
-                }) {
-                    Text("Go to ffn")
-                        .padding()
-                        .background(Color.red)
-                        .foregroundColor(.white)
-                        .cornerRadius(10)
-                }
-                Button(action: {
-                    withAnimation(.easeInOut(duration: 2.0)) { // 设置持续时间为 1 秒
-                        currentView = "ProbabilityPipeline"
-                    }
-                }) {
-                    Text("Go to prob")
-                        .padding()
-                        .background(Color.red)
-                        .foregroundColor(.white)
-                        .cornerRadius(10)
-                }
+                )
             }
             .padding()
+            .background(Color.gray.opacity(0.2))
+
+            HStack {
+                Spacer()
+                VStack {
+                    Spacer()
+                    if currentView == "Transformer Overview" {
+                        OverviewView(
+                            currentView: $currentView, animationNamespace: animationNamespace)
+                    } else if currentView == "Embedding Pipeline" {
+                        InputEmbeddingView(
+                            currentView: $currentView, animationNamespace: animationNamespace)
+                    } else if currentView == "KQV Matrix Pipeline" {
+                        AttentionQKVView(
+                            currentView: $currentView, animationNamespace: animationNamespace)
+                    } else if currentView == "Cross Attention Pipeline" {
+                        SingleAttentionHeadView(
+                            currentView: $currentView, animationNamespace: animationNamespace)
+                    } else if currentView == "Feed-Forward Network Pipeline" {
+                        TransformerFFNView(
+                            currentView: $currentView, animationNamespace: animationNamespace)
+                    } else if currentView == "Prediction Pipeline" {
+                        ProbabilityOutputView(
+                            currentView: $currentView, animationNamespace: animationNamespace)
+                    }
+                    Spacer()
+                }
+                Spacer()
+            }
         }
-        .animation(.easeInOut, value: currentView) // Smooth transition
+        .animation(.easeInOut, value: currentView)  // Smooth transition
     }
 }
