@@ -23,6 +23,7 @@ struct VectorView: View {
     var titleWidth: CGFloat = 140
     var matrixMode: Bool = false
     var highlightRow: Bool = false
+    var withLabel: Bool = false
 
     var body: some View {
         VStack {
@@ -39,6 +40,11 @@ struct VectorView: View {
                     Rectangle()
                         .fill(color.opacity(vectorWeight[index]))
                         .frame(width: defaultWidth*zoom, height: defaultHeight*zoom)
+                        .overlay(
+                            Text(String(format: "%.2f", vectorWeight[index]))
+                                .font(.caption)
+                                .opacity(withLabel ? 1 : 0)
+                        )
                 }
             }
             .frame(width: CGFloat(CGFloat(dimention)*defaultWidth*zoom+spacing*CGFloat(dimention-1)*zoom), height: CGFloat(defaultHeight*zoom))
@@ -64,6 +70,7 @@ struct VerticalVectorView: View {
     var titleFont: Font = .headline
     var titleWidth: CGFloat = 140
     var matrixMode: Bool = false
+    var withLabel: Bool = false
 
     var body: some View {
         VStack {
@@ -112,6 +119,7 @@ struct VectorList: View {
     var titleHeight: CGFloat = 60
     var matrixMode: Bool = false
     var highlightLastRow: Bool = false
+    var withLabel: Bool = false
 
     var body: some View {
         VStack(alignment: .center, spacing: 5) {
@@ -130,7 +138,8 @@ struct VectorList: View {
                         defaultHeight: defaultHeight,
                         spacing: vectorSpacing,
                         matrixMode: matrixMode,
-                        highlightRow: index==vectors.vectorListWeight.count-1 ? highlightLastRow : false
+                        highlightRow: index==vectors.vectorListWeight.count-1 ? highlightLastRow : false,
+                        withLabel: withLabel
                     )
                 }
             }

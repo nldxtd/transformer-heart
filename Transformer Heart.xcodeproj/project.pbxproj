@@ -10,6 +10,8 @@
 		8A3DAC462D50C8E00009E7E6 /* Constant.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A3DAC452D50C8DD0009E7E6 /* Constant.swift */; };
 		8A40A8482D3708AD004BA5F6 /* ProbabilityOutputPipeline.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A40A8472D37087F004BA5F6 /* ProbabilityOutputPipeline.swift */; };
 		8A57F7A02D59F60D00253362 /* OverviewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A57F79F2D59F60D00253362 /* OverviewView.swift */; };
+		8A57F7A32D5AC85800253362 /* VectorMatrix.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A57F7A22D5AC85400253362 /* VectorMatrix.swift */; };
+		8A57F7A62D5ADBCB00253362 /* MathPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A57F7A52D5ADBC600253362 /* MathPage.swift */; };
 		8A65C84D2D31220C0093E12A /* Transformer_HeartApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A65C84C2D31220C0093E12A /* Transformer_HeartApp.swift */; };
 		8A65C8512D31220E0093E12A /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 8A65C8502D31220E0093E12A /* Assets.xcassets */; };
 		8A65C8542D31220E0093E12A /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 8A65C8532D31220E0093E12A /* Preview Assets.xcassets */; };
@@ -29,6 +31,8 @@
 		8A3DAC452D50C8DD0009E7E6 /* Constant.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constant.swift; sourceTree = "<group>"; };
 		8A40A8472D37087F004BA5F6 /* ProbabilityOutputPipeline.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProbabilityOutputPipeline.swift; sourceTree = "<group>"; };
 		8A57F79F2D59F60D00253362 /* OverviewView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OverviewView.swift; sourceTree = "<group>"; };
+		8A57F7A22D5AC85400253362 /* VectorMatrix.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VectorMatrix.swift; sourceTree = "<group>"; };
+		8A57F7A52D5ADBC600253362 /* MathPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MathPage.swift; sourceTree = "<group>"; };
 		8A65C8492D31220C0093E12A /* Transformer Heart.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Transformer Heart.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		8A65C84C2D31220C0093E12A /* Transformer_HeartApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Transformer_HeartApp.swift; sourceTree = "<group>"; };
 		8A65C8502D31220E0093E12A /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -56,6 +60,14 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		8A57F7A12D5AC81200253362 /* MathBasic */ = {
+			isa = PBXGroup;
+			children = (
+				8A57F7A22D5AC85400253362 /* VectorMatrix.swift */,
+			);
+			path = MathBasic;
+			sourceTree = "<group>";
+		};
 		8A65C8402D31220C0093E12A = {
 			isa = PBXGroup;
 			children = (
@@ -75,11 +87,13 @@
 		8A65C84B2D31220C0093E12A /* Transformer Heart */ = {
 			isa = PBXGroup;
 			children = (
+				8A57F7A12D5AC81200253362 /* MathBasic */,
 				8A7B331E2D3C9D590071ADF8 /* IllustrationView */,
 				8A7B330D2D3A40AA0071ADF8 /* Components */,
-				8A65C84C2D31220C0093E12A /* Transformer_HeartApp.swift */,
 				8A3DAC452D50C8DD0009E7E6 /* Constant.swift */,
 				8A7B331F2D3C9D730071ADF8 /* Illustration.swift */,
+				8A57F7A52D5ADBC600253362 /* MathPage.swift */,
+				8A65C84C2D31220C0093E12A /* Transformer_HeartApp.swift */,
 				8A65C8502D31220E0093E12A /* Assets.xcassets */,
 				8A65C8522D31220E0093E12A /* Preview Content */,
 			);
@@ -189,9 +203,11 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				8A57F7A62D5ADBCB00253362 /* MathPage.swift in Sources */,
 				8A40A8482D3708AD004BA5F6 /* ProbabilityOutputPipeline.swift in Sources */,
 				8A7B33142D3A457D0071ADF8 /* Matrix.swift in Sources */,
 				8A7B33152D3A457D0071ADF8 /* AttentionHead.swift in Sources */,
+				8A57F7A32D5AC85800253362 /* VectorMatrix.swift in Sources */,
 				8A7B33162D3A457D0071ADF8 /* TokenList.swift in Sources */,
 				8A7B33202D3C9D970071ADF8 /* Illustration.swift in Sources */,
 				8A7B33172D3A457D0071ADF8 /* Vector.swift in Sources */,
