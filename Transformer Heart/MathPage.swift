@@ -9,7 +9,7 @@ import SwiftUI
 
 struct MathPageView: View {
     @State private var selectedPage: Page? = Page.allCases.first
-    
+
     var body: some View {
         NavigationView {
             List(Page.allCases, selection: $selectedPage) { page in
@@ -18,22 +18,34 @@ struct MathPageView: View {
             }
             .listStyle(SidebarListStyle())
             .frame(minWidth: 200)
-            
-            // if let page = selectedPage {
-            //     PageDetailView(page: page)
-            // } else {
-            //     Text("Select a page").frame(maxWidth: .infinity, maxHeight: .infinity)
-            // }
-            VectorMatrixIntroduction()
+
+            if let selectedPage = selectedPage {
+                switch selectedPage {
+                case .vecMat:
+                    VectorMatrixView()
+                case .innProSim:
+                    InnerProductSimilarityView()
+                case .matMul:
+                    MatrixMultiplicationView()
+                case .ffnAct:
+                    FeedforwardNetworkActivationView()
+                case .sofCls:
+                    SoftmaxClassificationView()
+                case .drpNorm:
+                    DropoutNormalizationView()
+                }
+            } else {
+                Text("Select a page")
+            }
         }
     }
 }
 
 enum Page: String, CaseIterable, Identifiable {
     case vecMat, innProSim, matMul, ffnAct, sofCls, drpNorm
-    
+
     var id: String { rawValue }
-    
+
     var title: String {
         switch self {
         case .vecMat: return "Vector & Matrix"
@@ -45,4 +57,3 @@ enum Page: String, CaseIterable, Identifiable {
         }
     }
 }
-

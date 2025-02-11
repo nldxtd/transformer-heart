@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct VectorMatrixIntroduction: View {
+struct VectorMatrixView: View {
 
     @State private var xValue = 1.3
     @State private var yValue = 0.7

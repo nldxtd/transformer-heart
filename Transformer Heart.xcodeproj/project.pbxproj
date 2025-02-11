@@ -12,6 +12,12 @@
 		8A57F7A02D59F60D00253362 /* OverviewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A57F79F2D59F60D00253362 /* OverviewView.swift */; };
 		8A57F7A32D5AC85800253362 /* VectorMatrix.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A57F7A22D5AC85400253362 /* VectorMatrix.swift */; };
 		8A57F7A62D5ADBCB00253362 /* MathPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A57F7A52D5ADBC600253362 /* MathPage.swift */; };
+		8A57F7A82D5AE96F00253362 /* InnerProductSimilarity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A57F7A72D5AE96500253362 /* InnerProductSimilarity.swift */; };
+		8A57F7AA2D5AE97E00253362 /* MatrixMultiplication.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A57F7A92D5AE97300253362 /* MatrixMultiplication.swift */; };
+		8A57F7AC2D5AE99700253362 /* FeedforwardNetworkActivation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A57F7AB2D5AE98E00253362 /* FeedforwardNetworkActivation.swift */; };
+		8A57F7AE2D5AE9AE00253362 /* SoftmaxClassification.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A57F7AD2D5AE9A300253362 /* SoftmaxClassification.swift */; };
+		8A57F7B02D5AE9B900253362 /* DropoutNormalization.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A57F7AF2D5AE9B400253362 /* DropoutNormalization.swift */; };
+		8A57F7B22D5AF2CE00253362 /* InnerProductPlayground.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A57F7B12D5AF2C400253362 /* InnerProductPlayground.swift */; };
 		8A65C84D2D31220C0093E12A /* Transformer_HeartApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A65C84C2D31220C0093E12A /* Transformer_HeartApp.swift */; };
 		8A65C8512D31220E0093E12A /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 8A65C8502D31220E0093E12A /* Assets.xcassets */; };
 		8A65C8542D31220E0093E12A /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 8A65C8532D31220E0093E12A /* Preview Assets.xcassets */; };
@@ -33,6 +39,12 @@
 		8A57F79F2D59F60D00253362 /* OverviewView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OverviewView.swift; sourceTree = "<group>"; };
 		8A57F7A22D5AC85400253362 /* VectorMatrix.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VectorMatrix.swift; sourceTree = "<group>"; };
 		8A57F7A52D5ADBC600253362 /* MathPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MathPage.swift; sourceTree = "<group>"; };
+		8A57F7A72D5AE96500253362 /* InnerProductSimilarity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InnerProductSimilarity.swift; sourceTree = "<group>"; };
+		8A57F7A92D5AE97300253362 /* MatrixMultiplication.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MatrixMultiplication.swift; sourceTree = "<group>"; };
+		8A57F7AB2D5AE98E00253362 /* FeedforwardNetworkActivation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedforwardNetworkActivation.swift; sourceTree = "<group>"; };
+		8A57F7AD2D5AE9A300253362 /* SoftmaxClassification.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SoftmaxClassification.swift; sourceTree = "<group>"; };
+		8A57F7AF2D5AE9B400253362 /* DropoutNormalization.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DropoutNormalization.swift; sourceTree = "<group>"; };
+		8A57F7B12D5AF2C400253362 /* InnerProductPlayground.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InnerProductPlayground.swift; sourceTree = "<group>"; };
 		8A65C8492D31220C0093E12A /* Transformer Heart.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Transformer Heart.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		8A65C84C2D31220C0093E12A /* Transformer_HeartApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Transformer_HeartApp.swift; sourceTree = "<group>"; };
 		8A65C8502D31220E0093E12A /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -63,7 +75,13 @@
 		8A57F7A12D5AC81200253362 /* MathBasic */ = {
 			isa = PBXGroup;
 			children = (
+				8A57F7B12D5AF2C400253362 /* InnerProductPlayground.swift */,
 				8A57F7A22D5AC85400253362 /* VectorMatrix.swift */,
+				8A57F7A72D5AE96500253362 /* InnerProductSimilarity.swift */,
+				8A57F7A92D5AE97300253362 /* MatrixMultiplication.swift */,
+				8A57F7AB2D5AE98E00253362 /* FeedforwardNetworkActivation.swift */,
+				8A57F7AD2D5AE9A300253362 /* SoftmaxClassification.swift */,
+				8A57F7AF2D5AE9B400253362 /* DropoutNormalization.swift */,
 			);
 			path = MathBasic;
 			sourceTree = "<group>";
@@ -211,14 +229,20 @@
 				8A7B33162D3A457D0071ADF8 /* TokenList.swift in Sources */,
 				8A7B33202D3C9D970071ADF8 /* Illustration.swift in Sources */,
 				8A7B33172D3A457D0071ADF8 /* Vector.swift in Sources */,
+				8A57F7AE2D5AE9AE00253362 /* SoftmaxClassification.swift in Sources */,
 				8A3DAC462D50C8E00009E7E6 /* Constant.swift in Sources */,
 				8A7B331D2D3A47E60071ADF8 /* EmbeddingPipeline.swift in Sources */,
+				8A57F7B02D5AE9B900253362 /* DropoutNormalization.swift in Sources */,
 				8A8FA7C62D462BA70079583F /* Curve.swift in Sources */,
 				8A830B972D33B23F004DEE43 /* AttentionHeadPipeline.swift in Sources */,
 				8AC7B97A2D35EABC00249EDC /* TransformerFFNPipeline.swift in Sources */,
+				8A57F7A82D5AE96F00253362 /* InnerProductSimilarity.swift in Sources */,
 				8A74ADFC2D333C9B00E6B06B /* AttentionKQVPipeline.swift in Sources */,
 				8A65C84D2D31220C0093E12A /* Transformer_HeartApp.swift in Sources */,
+				8A57F7AC2D5AE99700253362 /* FeedforwardNetworkActivation.swift in Sources */,
+				8A57F7AA2D5AE97E00253362 /* MatrixMultiplication.swift in Sources */,
 				8A57F7A02D59F60D00253362 /* OverviewView.swift in Sources */,
+				8A57F7B22D5AF2CE00253362 /* InnerProductPlayground.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
