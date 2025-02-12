@@ -32,10 +32,10 @@ struct ProbabilityOutputView: View {
         ZStack {
             HStack {
                 // Represent of final tansformer output
-                // TODO: add a parameter to control the last row vector highligted
                 VectorList(
                     dimention: 10,
                     vectors: finalOutputMatrix,
+                    labels: feedForwardOutputMatrixWeight,
                     color: .gray,
                     defaultWidth: 12,
                     defaultHeight: 13,

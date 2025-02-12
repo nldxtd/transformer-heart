@@ -35,6 +35,7 @@ struct AttentionQKVView: View {
                 VectorList(
                     dimention: 10,
                     vectors: embeddingMatrix,
+                    labels: embeddingMatrixWeight,
                     color: .gray,
                     defaultWidth: 12,
                     defaultHeight: 13,
@@ -66,7 +67,7 @@ struct AttentionQKVView: View {
                         .frame(width: 30, alignment: .center)
 
                     // Bias vector
-                    VerticalVectorView(dimention: 30, vector: biasVector, title: "Bias")
+                    VerticalVectorView(dimention: 30, vector: biasVector, labels: biasVectorWeight, title: "Bias")
                         .offset(y: -13)
 
                     Text("=")  // Plus sign
@@ -82,6 +83,7 @@ struct AttentionQKVView: View {
                     VectorList(
                         dimention: 10,
                         vectors: qMatrixView,
+                        labels: qMatrix,
                         color: .orange,
                         defaultWidth: 3,
                         defaultHeight: 10,
@@ -93,6 +95,7 @@ struct AttentionQKVView: View {
                     VectorList(
                         dimention: 10,
                         vectors: kMatrixView,
+                        labels: kMatrix,
                         color: .green,
                         defaultWidth: 3,
                         defaultHeight: 10,
@@ -104,6 +107,7 @@ struct AttentionQKVView: View {
                     VectorList(
                         dimention: 10,
                         vectors: vMatrixView,
+                        labels: vMatrix,
                         color: .purple,
                         defaultWidth: 3,
                         defaultHeight: 10,

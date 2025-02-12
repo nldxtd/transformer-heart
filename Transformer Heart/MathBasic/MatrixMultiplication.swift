@@ -9,19 +9,25 @@ import SwiftUI
 
 struct MatrixMultiplicationView: View {
 
-    @State private var xValue = 1.3
-    @State private var yValue = 0.7
-    @State private var matrix: VectorListViewModel = VectorListViewModel(matrixWeight: [
-        [0.67, 0.47, 0.3, 0.41, 0.67, 0.62, 0.59, 0.66],
-        [0.34, 0.6, 0.38, 0.35, 0.59, 0.63, 0.44, 0.63],
-        [0.37, 0.41, 0.41, 0.68, 0.51, 0.64, 0.69, 0.48],
-        [0.66, 0.51, 0.55, 0.56, 0.44, 0.58, 0.63, 0.57],
-    ])
+    @State private var matrix: VectorListViewModel = VectorListViewModel(matrixWeight: firstMatrixWeight)
+
+    @State private var vec: VectorViewModel = VectorViewModel(weight: vecWeight)
+ 
+    @State private var res: VectorViewModel = VectorViewModel(weight: resWeight)
+
+    @State private var firstMatrix: VectorListViewModel = VectorListViewModel(matrixWeight: firstMatrixWeight)
+
+    @State private var secondMatrix: VectorListViewModel = VectorListViewModel(matrixWeight: secondMatrixWeight)
+
+    @State private var resultMatrix: VectorListViewModel = VectorListViewModel(matrixWeight: resultMatrixWeight)
+
+    @State private var firstAnimationEnable: Bool = true
+
+    @State private var secondAnimationEnable: Bool = true
 
     var body: some View {
         ScrollView {
             VStack(spacing: 30) {
-                // 标题部分
                 VStack(spacing: 10) {
                     Text("Matrix Multiplication")
                         .font(.largeTitle)
@@ -34,39 +40,255 @@ struct MatrixMultiplicationView: View {
                 }
                 .padding(.top, 40)
 
-                // 向量部分
                 VStack(alignment: .leading, spacing: 20) {
                     Text("1. Matrix * Vector")
                         .font(.title)
                         .fontWeight(.semibold)
 
                     Text(
-                        "In machine learning, we represent a vector using an array of numbers. The numbers in the array are called components of the vector. The size of a vector is defined by the number of components it contains. For example, a vector with 3 components is called a 3D vector. We can use the following coordinate system to represent a 2D vector which has x coordinate and y coordinate."
+                        "Matrix vector multiplication is a special case of matrix multiplication. You can see matrix as row vectors stack up in verticle direction and the vector as a column vector. Apply vector inner product to each row with the column vector, and the result is a new vector. The size of the new vector is the same as the number of rows in the matrix."
                     )
                     .font(.body)
                     .lineSpacing(8)
+
+                    Text(
+                        "The following animation can help you understand this process:"
+                    )
+                    .font(.body)
+                    .lineSpacing(8)
+
+
+                    VStack {
+                        HStack {
+                            Spacer()
+                            // Display the matrix
+                            VectorList(
+                                dimention: 3,
+                                vectors: matrix,
+                                labels: firstMatrixWeight,
+                                color: .green,
+                                defaultWidth: 30,
+                                defaultHeight: 40,
+                                spacing: 2,
+                                vectorSpacing: 2,
+                                matrixMode: true,
+                                withLabel: true
+                            )
+                            .padding()
+
+                            Text("\u{00D7}")
+
+                            // Display the vector
+                            VerticalVectorView(
+                                dimention: 3,
+                                vector: vec,
+                                labels: vecWeight,
+                                color: .yellow,
+                                zoom: 1.0,
+                                defaultWidth: 30,
+                                defaultHeight: 40,
+                                spacing: 2,
+                                cornerRadius: 4,
+                                withLabel: true
+                            )
+                            .padding()
+
+
+                            Text("=")
+
+                            // Display the result vector
+                            VerticalVectorView(
+                                dimention: 2,
+                                vector: res,
+                                labels: resWeight,
+                                color: .blue,
+                                zoom: 1.0,
+                                defaultWidth: 30,
+                                defaultHeight: 40,
+                                spacing: 2,
+                                cornerRadius: 4,
+                                withLabel: true
+                            )
+                            .padding()
+                            Spacer()
+                        }
+
+                        Button(action: {
+                            playMatVecMultiplication()
+                        }) {
+                            Image(systemName: "play.fill")
+                                .font(.system(size: 20))
+                                .foregroundColor(.white)
+                                .frame(width: 30, height: 30)
+                                .background(
+                                    Circle()
+                                        .fill(firstAnimationEnable ? Color.blue : Color.gray)
+                                )
+                                .shadow(radius: 4)
+                        }
+                        .disabled(!firstAnimationEnable)
+                    }
                 }
                 .padding()
 
                 Divider()
                     .padding(.horizontal)
 
-                // 矩阵部分
                 VStack(alignment: .leading, spacing: 20) {
                     Text("2. Matrix * Matrix")
                         .font(.title)
                         .fontWeight(.semibold)
 
                     Text(
-                        "A matrix is a rectangular array of numbers arranged in rows and columns. You can see matrix as row vectors stack up in verticle direction or column vectors in horizontal direction. The numbers in the matrix are called elements. The size of a matrix is defined by the number of rows and columns it contains. A matrix with 4 rows and 8 columns can look like this:"
+                        "Matrix multiplication is a more general case of matrix vector multiplication. The result of matrix multiplication is a new matrix. The size of the new matrix is the same as the number of rows in the first matrix and the number of columns in the second matrix. The element in the i-th row and j-th column of the new matrix is the inner product of the i-th row of the first matrix and the j-th column of the second matrix."
                     )
                     .font(.body)
                     .lineSpacing(8)
+
+                    Text(
+                        "The following animation can help you understand this process:"
+                    )
+                    .font(.body)
+                    .lineSpacing(8)
+                    
+                    VStack {
+                        HStack {
+                            Spacer()
+                            // Display the matrix
+                            VectorList(
+                                dimention: 3,
+                                vectors: firstMatrix,
+                                labels: firstMatrixWeight,
+                                color: .green,
+                                defaultWidth: 30,
+                                defaultHeight: 40,
+                                spacing: 2,
+                                vectorSpacing: 2,
+                                matrixMode: true,
+                                withLabel: true
+                            )
+                            .padding()
+
+                            Text("\u{00D7}")
+
+                            // Display the second matrix
+                            VectorList(
+                                dimention: 2,
+                                vectors: secondMatrix,
+                                labels: secondMatrixWeight,
+                                color: .yellow,
+                                defaultWidth: 30,
+                                defaultHeight: 40,
+                                spacing: 2,
+                                vectorSpacing: 2,
+                                matrixMode: true,
+                                withLabel: true
+                            )
+                            .padding()
+
+                            Text("=")
+
+                            // Display the result matrix
+                            VectorList(
+                                dimention: 2,
+                                vectors: resultMatrix,
+                                labels: resultMatrixWeight,
+                                color: .blue,
+                                defaultWidth: 30,
+                                defaultHeight: 40,
+                                spacing: 2,
+                                vectorSpacing: 2,
+                                matrixMode: true,
+                                withLabel: true
+                            )
+                            .padding()
+                            Spacer()
+                        }
+
+                        Button(action: {
+                            playMatMatMultiplication()
+                        }) {
+                            Image(systemName: "play.fill")
+                                .font(.system(size: 20))
+                                .foregroundColor(.white)
+                                .frame(width: 30, height: 30)
+                                .background(
+                                    Circle()
+                                        .fill(secondAnimationEnable ? Color.blue : Color.gray)
+                                )
+                                .shadow(radius: 4)
+                        }
+                        .disabled(!secondAnimationEnable)
+                    }
                 }
                 .padding()
             }
             .background(Color.white)
         }
         .background(Color.gray.opacity(0.1))
+    }
+
+    func playMatVecMultiplication() {
+        let row = 2
+        let col = 3
+        var rowIndex = 0
+        var colIndex = 0
+        firstAnimationEnable = false
+        Timer.scheduledTimer(withTimeInterval: 0.5, repeats: true) { timer in
+            if rowIndex == row {
+                timer.invalidate()
+                res.weight = resWeight
+                firstAnimationEnable = true
+            } else {
+                let currentRowIndex = rowIndex
+                let currentColIndex = colIndex
+                if currentColIndex == col {
+                    res.weight[currentRowIndex] *= 2
+                    matrix.vectorListWeight[currentRowIndex] = vecMatrixWeight[currentRowIndex]
+                    print(vecMatrixWeight[currentRowIndex])
+                    vec.weight = vecWeight
+                    colIndex = 0
+                    rowIndex += 1
+                } else {
+                    matrix.vectorListWeight[currentRowIndex][currentColIndex] *= 2
+                    vec.weight[colIndex] *= 2
+                    colIndex += 1
+                }
+            }
+        }
+    }
+
+    func playMatMatMultiplication() {
+        let row = 2
+        let k = 3
+        var rowIndex = 0
+        var kIndex = 0
+        var colIndex = 0
+        secondAnimationEnable = false
+        Timer.scheduledTimer(withTimeInterval: 0.5, repeats: true) { timer in
+            if rowIndex == row {
+                timer.invalidate()
+                resultMatrix.vectorListWeight = resultMatrixWeight
+                secondAnimationEnable = true
+            } else {
+                let currentRowIndex = rowIndex
+                let currentKIndex = kIndex
+                let currentColIndex = colIndex
+                if currentKIndex == k {
+                    resultMatrix.vectorListWeight[currentRowIndex][currentColIndex] *= 2
+                    firstMatrix.vectorListWeight[currentRowIndex] = firstMatrixWeight[currentRowIndex]
+                    for idx in 0..<3 {
+                        secondMatrix.vectorListWeight[idx][currentColIndex] = secondMatrixWeight[idx][currentColIndex]
+                    }
+                    rowIndex += currentColIndex
+                    colIndex = 1-currentColIndex
+                    kIndex = 0
+                } else {
+                    firstMatrix.vectorListWeight[currentRowIndex][currentKIndex] *= 2
+                    secondMatrix.vectorListWeight[currentKIndex][currentColIndex] *= 2
+                    kIndex += 1
+                }
+            }
+        }
     }
 }

@@ -43,6 +43,7 @@ struct TransformerFFNView: View {
             VectorList(
                     dimention: 10,
                     vectors: attentionOutputMatrix,
+                    labels: embeddingMatrixWeight,
                     color: .gray,
                     defaultWidth: 12,
                     defaultHeight: 13,
@@ -62,6 +63,7 @@ struct TransformerFFNView: View {
                 VectorList(
                     dimention: 10,
                     vectors: attentionOutputMatrix,
+                    labels: embeddingMatrixWeight,
                     color: .gray,
                     defaultWidth: 12,
                     defaultHeight: 13,
@@ -253,6 +255,7 @@ struct TransformerFFNView: View {
                 VectorList(
                     dimention: 10,
                     vectors: feedforwardOutputMatrix,
+                    labels: feedForwardOutputMatrixWeight,
                     color: .gray,
                     defaultWidth: 12,
                     defaultHeight: 13,
@@ -299,6 +302,7 @@ struct TransformerFFNView: View {
                 VectorList(
                     dimention: 10,
                     vectors: finalOutputMatrix,
+                    labels: feedForwardOutputMatrixWeight,
                     color: .gray,
                     defaultWidth: 12,
                     defaultHeight: 13,

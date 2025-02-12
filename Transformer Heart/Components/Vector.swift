@@ -11,6 +11,7 @@ class VectorViewModel: ObservableObject {
 struct VectorView: View {
     var dimention: Int
     var vectorWeight: [Double]
+    var labels: [Double]
     var color: Color
     var backgroundColor: Color = Color.gray
     var zoom: CGFloat = 1.0
@@ -41,7 +42,7 @@ struct VectorView: View {
                         .fill(color.opacity(vectorWeight[index]))
                         .frame(width: defaultWidth*zoom, height: defaultHeight*zoom)
                         .overlay(
-                            Text(String(format: "%.2f", vectorWeight[index]))
+                            Text(String(format: "%.2f", labels[index]))
                                 .font(.caption)
                                 .opacity(withLabel ? 1 : 0)
                         )
@@ -60,6 +61,7 @@ struct VectorView: View {
 struct VerticalVectorView: View {
     var dimention: Int
     @ObservedObject var vector: VectorViewModel
+    var labels: [Double]
     var color: Color = .gray
     var zoom: CGFloat = 1.0
     var defaultWidth: CGFloat = 12
@@ -86,6 +88,11 @@ struct VerticalVectorView: View {
                     Rectangle()
                         .fill(color.opacity(vector.weight[index]))
                         .frame(width: defaultWidth*zoom, height: defaultHeight*zoom)
+                        .overlay(
+                            Text(String(format: "%.2f", labels[index]))
+                                .font(.caption)
+                                .opacity(withLabel ? 1 : 0)
+                        )
                 }
             }
             .frame(width: CGFloat(defaultWidth*zoom), height: CGFloat(CGFloat(dimention)*defaultHeight*zoom+spacing*CGFloat(dimention-1)*zoom))
@@ -105,6 +112,7 @@ class VectorListViewModel: ObservableObject {
 struct VectorList: View {
     var dimention: Int
     @ObservedObject var vectors: VectorListViewModel
+    var labels: [[Double]]
     var color: Color
     var backgroundColor: Color = Color.gray
     var zoom: CGFloat = 1.0
@@ -123,9 +131,11 @@ struct VectorList: View {
 
     var body: some View {
         VStack(alignment: .center, spacing: 5) {
-            Text(title)
-                .font(titleFont)
-                .frame(width: titleWidth, height: titleHeight)
+            if title != "" {
+                Text(title)
+                    .font(titleFont)
+                    .frame(width: titleWidth, height: titleHeight)
+            }
 
             // Vector into a vertical list
             VStack(alignment: .center, spacing: spacing*zoom) {
@@ -133,6 +143,7 @@ struct VectorList: View {
                     VectorView(
                         dimention: dimention, 
                         vectorWeight: vectors.vectorListWeight[index], 
+                        labels: labels[index],
                         color: color,
                         defaultWidth: defaultWidth, 
                         defaultHeight: defaultHeight,

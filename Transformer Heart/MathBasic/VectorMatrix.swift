@@ -11,12 +11,7 @@ struct VectorMatrixView: View {
 
     @State private var xValue = 1.3
     @State private var yValue = 0.7
-    @State private var matrix: VectorListViewModel = VectorListViewModel(matrixWeight: [
-        [0.67, 0.47, 0.3, 0.41, 0.67, 0.62, 0.59, 0.66],
-        [0.34, 0.6, 0.38, 0.35, 0.59, 0.63, 0.44, 0.63],
-        [0.37, 0.41, 0.41, 0.68, 0.51, 0.64, 0.69, 0.48],
-        [0.66, 0.51, 0.55, 0.56, 0.44, 0.58, 0.63, 0.57],
-    ])
+    @State private var matrix: VectorListViewModel = VectorListViewModel(matrixWeight: vecMatrixWeight)
 
     var body: some View {
         ScrollView {
@@ -157,6 +152,7 @@ struct VectorMatrixView: View {
                         VectorList(
                             dimention: 8,
                             vectors: matrix,
+                            labels: vecMatrixWeight,
                             color: .green,
                             defaultWidth: 30,
                             defaultHeight: 40,

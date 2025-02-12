@@ -100,3 +100,28 @@ let hiddenLayerMatrixWeight: [[Double]] = [
     [0.47, 0.48, 0.7, 0.32, 0.56, 0.4, 0.54, 0.36, 0.39, 0.5],
     [0.31, 0.54, 0.59, 0.7, 0.37, 0.49, 0.39, 0.34, 0.53, 0.37]
 ]
+
+let firstMatrixWeight: [[Double]] = [
+    [0.6, 0.7, 0.3],
+    [0.8, 0.1, 0.2]
+]
+
+let secondMatrixWeight: [[Double]] = [
+    [0.5, 0.2],
+    [0.4, 0.7],
+    [0.1, 1.0]
+]
+
+let resultMatrixWeight: [[Double]] = [
+    [0.61, 0.91],
+    [0.46, 0.43]
+]
+
+let vecMatrixWeight: [[Double]] = [
+    [0.6, 0.7, 0.3],
+    [0.8, 0.1, 0.2]
+]
+
+let vecWeight: [Double] = [0.5, 0.4, 0.1]
+ 
+let resWeight: [Double] = [0.61, 0.46]

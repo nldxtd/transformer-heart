@@ -54,7 +54,7 @@ struct InputEmbeddingView: View {
                                     .frame(width: 30, height: 30)
                                 
                                 // Embedding Matrix
-                                VectorList(dimention: 10, vectors: embeddingMatrix, color: .green, title: "Token Embedding")
+                                VectorList(dimention: 10, vectors: embeddingMatrix, labels: embeddingMatrixWeight, color: .green, title: "Token Embedding")
                                     .offset(y: -28)
                             }
                             .opacity(showComponents[0] ? 1 : 0)
@@ -70,7 +70,7 @@ struct InputEmbeddingView: View {
                                     .frame(width: 30, height: 30)
                                 
                                 // Position Encoding
-                                VectorList(dimention: 10, vectors: embeddingMatrix, color: .orange, title: "Positional Encoding")
+                                VectorList(dimention: 10, vectors: embeddingMatrix, labels: embeddingMatrixWeight, color: .orange, title: "Positional Encoding")
                                     .offset(y: -28)
                             }
                             .opacity(showComponents[1] ? 1 : 0)
@@ -87,6 +87,7 @@ struct InputEmbeddingView: View {
                                 VectorList(
                                     dimention: 10,
                                     vectors: embeddingMatrix,
+                                    labels: embeddingMatrixWeight,
                                     color: .gray,
                                     defaultWidth: isMatrixMode ? 12 : 10,
                                     defaultHeight: isMatrixMode ? 13 : 30,
