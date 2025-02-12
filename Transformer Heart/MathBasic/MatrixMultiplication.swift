@@ -57,8 +57,22 @@ struct MatrixMultiplicationView: View {
                     .font(.body)
                     .lineSpacing(8)
 
-
                     VStack {
+                        Button(action: {
+                            playMatVecMultiplication()
+                        }) {
+                            Image(systemName: "play.fill")
+                                .font(.system(size: 20))
+                                .foregroundColor(.white)
+                                .frame(width: 30, height: 30)
+                                .background(
+                                    Circle()
+                                        .fill(firstAnimationEnable ? Color.blue : Color.gray)
+                                )
+                                .shadow(radius: 4)
+                        }
+                        .disabled(!firstAnimationEnable)
+
                         HStack {
                             Spacer()
                             // Display the matrix
@@ -112,21 +126,7 @@ struct MatrixMultiplicationView: View {
                             .padding()
                             Spacer()
                         }
-
-                        Button(action: {
-                            playMatVecMultiplication()
-                        }) {
-                            Image(systemName: "play.fill")
-                                .font(.system(size: 20))
-                                .foregroundColor(.white)
-                                .frame(width: 30, height: 30)
-                                .background(
-                                    Circle()
-                                        .fill(firstAnimationEnable ? Color.blue : Color.gray)
-                                )
-                                .shadow(radius: 4)
-                        }
-                        .disabled(!firstAnimationEnable)
+                        .background(Color.gray)
                     }
                 }
                 .padding()
@@ -152,6 +152,21 @@ struct MatrixMultiplicationView: View {
                     .lineSpacing(8)
                     
                     VStack {
+                        Button(action: {
+                            playMatMatMultiplication()
+                        }) {
+                            Image(systemName: "play.fill")
+                                .font(.system(size: 20))
+                                .foregroundColor(.white)
+                                .frame(width: 30, height: 30)
+                                .background(
+                                    Circle()
+                                        .fill(secondAnimationEnable ? Color.blue : Color.gray)
+                                )
+                                .shadow(radius: 4)
+                        }
+                        .disabled(!secondAnimationEnable)
+
                         HStack {
                             Spacer()
                             // Display the matrix
@@ -204,24 +219,11 @@ struct MatrixMultiplicationView: View {
                             .padding()
                             Spacer()
                         }
-
-                        Button(action: {
-                            playMatMatMultiplication()
-                        }) {
-                            Image(systemName: "play.fill")
-                                .font(.system(size: 20))
-                                .foregroundColor(.white)
-                                .frame(width: 30, height: 30)
-                                .background(
-                                    Circle()
-                                        .fill(secondAnimationEnable ? Color.blue : Color.gray)
-                                )
-                                .shadow(radius: 4)
-                        }
-                        .disabled(!secondAnimationEnable)
+                        .background(Color.gray)
                     }
                 }
                 .padding()
+                
             }
             .background(Color.white)
         }
@@ -244,8 +246,7 @@ struct MatrixMultiplicationView: View {
                 let currentColIndex = colIndex
                 if currentColIndex == col {
                     res.weight[currentRowIndex] *= 2
-                    matrix.vectorListWeight[currentRowIndex] = vecMatrixWeight[currentRowIndex]
-                    print(vecMatrixWeight[currentRowIndex])
+                    matrix.vectorListWeight[currentRowIndex] = firstMatrixWeight[currentRowIndex]
                     vec.weight = vecWeight
                     colIndex = 0
                     rowIndex += 1
