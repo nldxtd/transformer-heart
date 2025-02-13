@@ -100,9 +100,17 @@ struct VectorMatrixView: View {
                             .frame(width: 300, height: 150)
                             .padding()
                         }
-                        .background(Color.gray.opacity(0.1))
-                        .cornerRadius(15)
-                        .padding()
+                        .padding(20)
+                        .background(
+                            RoundedRectangle(cornerRadius: 15)
+                                .fill(Color.white)
+                                .shadow(
+                                    color: Color.black.opacity(0.1),
+                                    radius: 10,
+                                    x: 0,
+                                    y: 5
+                                )
+                        )
 
                         // 滑块控制部分
                         VStack(spacing: 15) {
@@ -123,10 +131,17 @@ struct VectorMatrixView: View {
                                 Slider(value: $yValue, in: 0...2, step: 0.1)
                             }
                         }
-                        .padding()
-                        .background(Color.white)
-                        .cornerRadius(10)
-                        .shadow(radius: 2)
+                        .padding(20)
+                        .background(
+                            RoundedRectangle(cornerRadius: 15)
+                                .fill(Color.white)
+                                .shadow(
+                                    color: Color.black.opacity(0.1),
+                                    radius: 10,
+                                    x: 0,
+                                    y: 5
+                                )
+                        )
                     }
                     .padding()
                 }
@@ -162,9 +177,17 @@ struct VectorMatrixView: View {
                             matrixMode: true,
                             withLabel: true
                         )
-                        .padding()
-                        .background(Color.gray.opacity(0.1))
-                        .cornerRadius(15)
+                        .padding(20)
+                        .background(
+                            RoundedRectangle(cornerRadius: 15)
+                                .fill(Color.white)
+                                .shadow(
+                                    color: Color.black.opacity(0.1),
+                                    radius: 10,
+                                    x: 0,
+                                    y: 5
+                                )
+                        )
                         Spacer()
                     }
                 }

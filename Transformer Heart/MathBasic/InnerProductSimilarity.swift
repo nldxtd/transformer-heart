@@ -54,15 +54,30 @@ struct InnerProductSimilarityView: View {
                             .font(.body)
                             .fontWeight(.semibold)
                             .foregroundColor(.blue)
+                            .padding()
+                            .background(
+                                RoundedRectangle(cornerRadius: 8)
+                                    .fill(Color.gray.opacity(0.1))
+                            )
                         Spacer()
                     }
 
                     Text(
                         "You can use the following coordinate system to see how the inner product with (1, 1) changes with the vector. You will notice when the vector is orthogonal to (1, 1), the inner product is 0. And this divide the plane into positive and negative regions."
                     )
+                    .lineSpacing(8)
 
                     InnerProductPlayground()
-                    .padding()
+                        .background(
+                            RoundedRectangle(cornerRadius: 15)
+                                .fill(Color.white)
+                                .shadow(
+                                    color: Color.black.opacity(0.1),
+                                    radius: 10,
+                                    x: 0,
+                                    y: 5
+                                )
+                        )
                 }
                 .padding()
 
@@ -84,13 +99,20 @@ struct InnerProductSimilarityView: View {
 
                     HStack {
                         Spacer()
-                        Text("Cosine Similarity: ")
-                            .font(.body)
-                            .fontWeight(.semibold)
-                        Text("cos(θ) = (a · b) / (|a| |b|)")
-                            .font(.body)
-                            .fontWeight(.semibold)
-                            .foregroundColor(.blue)
+                        VStack(spacing: 10) {
+                            Text("Cosine Similarity: ")
+                                .font(.body)
+                                .fontWeight(.semibold)
+                            Text("cos(θ) = (a · b) / (|a| |b|)")
+                                .font(.system(.body, design: .monospaced))
+                                .fontWeight(.semibold)
+                                .foregroundColor(.blue)
+                        }
+                        .padding()
+                        .background(
+                            RoundedRectangle(cornerRadius: 8)
+                                .fill(Color.gray.opacity(0.1))
+                        )
                         Spacer()
                     }
 
@@ -100,17 +122,28 @@ struct InnerProductSimilarityView: View {
                     .font(.body)
                     .lineSpacing(8)
 
-                    HStack {
-                        Spacer()
-                        VStack(spacing: 20) {
-                            Text("Sim([1, 2, 3], [2, 3, 1]) = (1\u{00D7}2 + 2\u{00D7}3 + 3\u{00D7}1)/14 = 11/14 ≈ 0.79")
-                                .font(.body)
-                                .fontWeight(.semibold)
-                            Text("Sim([1, 2, 3], [1, 3, 2]) = (1\u{00D7}1 + 2\u{00D7}3 + 3\u{00D7}2)/14 = 13/14 ≈ 0.93")
-                                .font(.body)
-                                .fontWeight(.semibold)
+                    VStack(spacing: 20) {
+                        Text("Examples:")
+                            .font(.headline)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                        
+                        VStack(spacing: 15) {
+                            Text("Sim([1, 2, 3], [2, 3, 1]) = (1×2 + 2×3 + 3×1)/14 = 11/14 ≈ 0.79")
+                                .font(.system(.body, design: .monospaced))
+                            Text("Sim([1, 2, 3], [1, 3, 2]) = (1×1 + 2×3 + 3×2)/14 = 13/14 ≈ 0.93")
+                                .font(.system(.body, design: .monospaced))
                         }
-                        Spacer()
+                        .padding(20)
+                        .background(
+                            RoundedRectangle(cornerRadius: 15)
+                                .fill(Color.white)
+                                .shadow(
+                                    color: Color.black.opacity(0.1),
+                                    radius: 10,
+                                    x: 0,
+                                    y: 5
+                                )
+                        )
                     }
 
                     Text("Which means [1,3,2] is more similar to [1,2,3].")

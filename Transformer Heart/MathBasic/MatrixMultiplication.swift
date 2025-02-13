@@ -57,7 +57,7 @@ struct MatrixMultiplicationView: View {
                     .font(.body)
                     .lineSpacing(8)
 
-                    VStack {
+                    VStack(spacing: 20) {
                         Button(action: {
                             playMatVecMultiplication()
                         }) {
@@ -75,58 +75,62 @@ struct MatrixMultiplicationView: View {
 
                         HStack {
                             Spacer()
-                            // Display the matrix
-                            VectorList(
-                                dimention: 3,
-                                vectors: matrix,
-                                labels: firstMatrixWeight,
-                                color: .green,
-                                defaultWidth: 30,
-                                defaultHeight: 40,
-                                spacing: 2,
-                                vectorSpacing: 2,
-                                matrixMode: true,
-                                withLabel: true
+                            // Matrix multiplication visualization
+                            HStack(spacing: 20) {
+                                VectorList(
+                                    dimention: 3,
+                                    vectors: matrix,
+                                    labels: firstMatrixWeight,
+                                    color: .green,
+                                    defaultWidth: 30,
+                                    defaultHeight: 40,
+                                    spacing: 2,
+                                    vectorSpacing: 2,
+                                    matrixMode: true,
+                                    withLabel: true
+                                )
+                                Text("×")
+                                    .font(.title)
+                                VerticalVectorView(
+                                    dimention: 3,
+                                    vector: vec,
+                                    labels: vecWeight,
+                                    color: .yellow,
+                                    zoom: 1.0,
+                                    defaultWidth: 30,
+                                    defaultHeight: 40,
+                                    spacing: 2,
+                                    cornerRadius: 4,
+                                    withLabel: true
+                                )
+                                Text("=")
+                                    .font(.title)
+                                VerticalVectorView(
+                                    dimention: 2,
+                                    vector: res,
+                                    labels: resWeight,
+                                    color: .blue,
+                                    zoom: 1.0,
+                                    defaultWidth: 30,
+                                    defaultHeight: 40,
+                                    spacing: 2,
+                                    cornerRadius: 4,
+                                    withLabel: true
+                                )
+                            }
+                            .padding(20)
+                            .background(
+                                RoundedRectangle(cornerRadius: 15)
+                                    .fill(Color.white)
+                                    .shadow(
+                                        color: Color.black.opacity(0.1),
+                                        radius: 10,
+                                        x: 0,
+                                        y: 5
+                                    )
                             )
-                            .padding()
-
-                            Text("\u{00D7}")
-
-                            // Display the vector
-                            VerticalVectorView(
-                                dimention: 3,
-                                vector: vec,
-                                labels: vecWeight,
-                                color: .yellow,
-                                zoom: 1.0,
-                                defaultWidth: 30,
-                                defaultHeight: 40,
-                                spacing: 2,
-                                cornerRadius: 4,
-                                withLabel: true
-                            )
-                            .padding()
-
-
-                            Text("=")
-
-                            // Display the result vector
-                            VerticalVectorView(
-                                dimention: 2,
-                                vector: res,
-                                labels: resWeight,
-                                color: .blue,
-                                zoom: 1.0,
-                                defaultWidth: 30,
-                                defaultHeight: 40,
-                                spacing: 2,
-                                cornerRadius: 4,
-                                withLabel: true
-                            )
-                            .padding()
                             Spacer()
                         }
-                        .background(Color.gray)
                     }
                 }
                 .padding()
@@ -151,7 +155,7 @@ struct MatrixMultiplicationView: View {
                     .font(.body)
                     .lineSpacing(8)
                     
-                    VStack {
+                    VStack(spacing: 20) {
                         Button(action: {
                             playMatMatMultiplication()
                         }) {
@@ -169,57 +173,62 @@ struct MatrixMultiplicationView: View {
 
                         HStack {
                             Spacer()
-                            // Display the matrix
-                            VectorList(
-                                dimention: 3,
-                                vectors: firstMatrix,
-                                labels: firstMatrixWeight,
-                                color: .green,
-                                defaultWidth: 30,
-                                defaultHeight: 40,
-                                spacing: 2,
-                                vectorSpacing: 2,
-                                matrixMode: true,
-                                withLabel: true
+                            // Matrix multiplication visualization
+                            HStack(spacing: 20) {
+                                VectorList(
+                                    dimention: 3,
+                                    vectors: firstMatrix,
+                                    labels: firstMatrixWeight,
+                                    color: .green,
+                                    defaultWidth: 30,
+                                    defaultHeight: 40,
+                                    spacing: 2,
+                                    vectorSpacing: 2,
+                                    matrixMode: true,
+                                    withLabel: true
+                                )
+                                Text("×")
+                                    .font(.title)
+                                VectorList(
+                                    dimention: 2,
+                                    vectors: secondMatrix,
+                                    labels: secondMatrixWeight,
+                                    color: .yellow,
+                                    defaultWidth: 30,
+                                    defaultHeight: 40,
+                                    spacing: 2,
+                                    vectorSpacing: 2,
+                                    matrixMode: true,
+                                    withLabel: true
+                                )
+                                Text("=")
+                                    .font(.title)
+                                VectorList(
+                                    dimention: 2,
+                                    vectors: resultMatrix,
+                                    labels: resultMatrixWeight,
+                                    color: .blue,
+                                    defaultWidth: 30,
+                                    defaultHeight: 40,
+                                    spacing: 2,
+                                    vectorSpacing: 2,
+                                    matrixMode: true,
+                                    withLabel: true
+                                )
+                            }
+                            .padding(20)
+                            .background(
+                                RoundedRectangle(cornerRadius: 15)
+                                    .fill(Color.white)
+                                    .shadow(
+                                        color: Color.black.opacity(0.1),
+                                        radius: 10,
+                                        x: 0,
+                                        y: 5
+                                    )
                             )
-                            .padding()
-
-                            Text("\u{00D7}")
-
-                            // Display the second matrix
-                            VectorList(
-                                dimention: 2,
-                                vectors: secondMatrix,
-                                labels: secondMatrixWeight,
-                                color: .yellow,
-                                defaultWidth: 30,
-                                defaultHeight: 40,
-                                spacing: 2,
-                                vectorSpacing: 2,
-                                matrixMode: true,
-                                withLabel: true
-                            )
-                            .padding()
-
-                            Text("=")
-
-                            // Display the result matrix
-                            VectorList(
-                                dimention: 2,
-                                vectors: resultMatrix,
-                                labels: resultMatrixWeight,
-                                color: .blue,
-                                defaultWidth: 30,
-                                defaultHeight: 40,
-                                spacing: 2,
-                                vectorSpacing: 2,
-                                matrixMode: true,
-                                withLabel: true
-                            )
-                            .padding()
                             Spacer()
                         }
-                        .background(Color.gray)
                     }
                 }
                 .padding()

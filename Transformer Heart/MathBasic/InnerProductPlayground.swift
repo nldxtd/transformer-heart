@@ -9,16 +9,55 @@ struct InnerProductPlayground: View {
     }
 
     var body: some View {
-        HStack {
-            CoordinateSystemView(xValue: xValue, yValue: yValue)
+        ScrollView {
+            VStack(spacing: 30) {
 
-            ControlsView(xValue: $xValue, yValue: $yValue, innerProduct: innerProduct)
+                // Main content
+                VStack(alignment: .leading, spacing: 20) {
+                    Text("Interactive Visualization")
+                        .font(.title2)
+                        .fontWeight(.semibold)
+
+                    Text("Explore how inner product changes as you adjust the vector components. The reference vector [1.0, 1.0] is shown in blue, and your adjustable vector is shown in green when the inner product is positive, red when negative.")
+                        .font(.body)
+                        .lineSpacing(8)
+
+                    HStack {
+                        // Coordinate system
+                        CoordinateSystemView(xValue: xValue, yValue: yValue)
+                            .padding(20)
+                            .background(
+                                RoundedRectangle(cornerRadius: 15)
+                                    .fill(Color.white)
+                                    .shadow(
+                                        color: Color.black.opacity(0.1),
+                                        radius: 10,
+                                        x: 0,
+                                        y: 5
+                                    )
+                            )
+
+                        // Controls
+                        ControlsView(xValue: $xValue, yValue: $yValue, innerProduct: innerProduct)
+                            .padding(20)
+                            .background(
+                                RoundedRectangle(cornerRadius: 15)
+                                    .fill(Color.white)
+                                    .shadow(
+                                        color: Color.black.opacity(0.1),
+                                        radius: 10,
+                                        x: 0,
+                                        y: 5
+                                    )
+                            )
+                    }
+                    .padding()
+                }
                 .padding()
-                .background(Color.white)
-                .cornerRadius(10)
-                .shadow(radius: 2)
+            }
+            .background(Color.white)
         }
-        .padding()
+        .background(Color.gray.opacity(0.1))
     }
 }
 
@@ -104,13 +143,15 @@ struct ControlsView: View {
         VStack(spacing: 15) {
             SliderView(title: "x coordinate:", value: $xValue, range: -2...2)
             SliderView(title: "y coordinate:", value: $yValue, range: 0...2)
-            HStack {
-                Text(
-                    "Inner Product: 1 * \(xValue, specifier: "%.1f") + 1 * \(yValue, specifier: "%.1f") = "
-                )
-                Text("\(innerProduct, specifier: "%.1f")")
+            
+            VStack(alignment: .leading, spacing: 8) {
+                Text("Inner Product:")
+                    .font(.headline)
+                Text("1 * \(xValue, specifier: "%.1f") + 1 * \(yValue, specifier: "%.1f") = \(innerProduct, specifier: "%.1f")")
                     .foregroundColor(innerProduct >= 0 ? .green : .red)
+                    .font(.system(.body, design: .monospaced))
             }
+            .padding(.top, 8)
         }
     }
 }
