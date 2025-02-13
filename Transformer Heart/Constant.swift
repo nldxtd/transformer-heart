@@ -109,12 +109,12 @@ let firstMatrixWeight: [[Double]] = [
 let secondMatrixWeight: [[Double]] = [
     [0.5, 0.2],
     [0.4, 0.7],
-    [0.1, 1.0]
+    [0.75, 1.0]
 ]
 
 let resultMatrixWeight: [[Double]] = [
     [0.61, 0.91],
-    [0.46, 0.43]
+    [0.59, 0.43]
 ]
 
 let vecMatrixWeight: [[Double]] = [
@@ -124,6 +124,6 @@ let vecMatrixWeight: [[Double]] = [
     [0.66, 0.51, 0.55, 0.56, 0.44, 0.58, 0.63, 0.57],
 ]
 
-let vecWeight: [Double] = [0.5, 0.4, 0.1]
+let vecWeight: [Double] = [0.5, 0.4, 0.75]
  
-let resWeight: [Double] = [0.61, 0.46]
+let resWeight: [Double] = [0.61, 0.59]

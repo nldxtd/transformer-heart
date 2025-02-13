@@ -86,7 +86,7 @@ struct VerticalVectorView: View {
             VStack(spacing: spacing*zoom) {
                 ForEach(0..<dimention, id: \.self) { index in
                     Rectangle()
-                        .fill(color.opacity(vector.weight[index]))
+                        .fill(color.opacity(abs(vector.weight[index])))
                         .frame(width: defaultWidth*zoom, height: defaultHeight*zoom)
                         .overlay(
                             Text(String(format: "%.2f", labels[index]))
