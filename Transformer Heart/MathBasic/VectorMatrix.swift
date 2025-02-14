@@ -18,7 +18,7 @@ struct VectorMatrixView: View {
             VStack(spacing: 30) {
                 // 标题部分
                 VStack(spacing: 10) {
-                    Text("Vector and Matrix")
+                    Text("I. Vector and Matrix")
                         .font(.largeTitle)
                         .fontWeight(.bold)
 

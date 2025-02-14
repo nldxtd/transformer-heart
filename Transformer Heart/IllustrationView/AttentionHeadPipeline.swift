@@ -415,13 +415,3 @@ struct SingleAttentionHeadView: View {
         }
     }
 }
-
-struct AttentionHeadPipeline_Previews: PreviewProvider {
-    static var previews: some View {
-        @Namespace var namespace
-        return SingleAttentionHeadView(
-            currentView: .constant("Cross Attention Pipeline"),
-            animationNamespace: namespace
-        )
-    }
-}

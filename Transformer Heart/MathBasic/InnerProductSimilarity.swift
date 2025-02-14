@@ -25,7 +25,7 @@ struct InnerProductSimilarityView: View {
             VStack(spacing: 30) {
                 // 标题部分
                 VStack(spacing: 10) {
-                    Text("Inner Product and Similarity")
+                    Text("II. Inner Product and Similarity")
                         .font(.largeTitle)
                         .fontWeight(.bold)
 

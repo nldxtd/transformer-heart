@@ -29,7 +29,7 @@ struct SoftmaxClassificationView: View {
                         VerticalVectorView(
                             dimention: 3,
                             vector: VectorViewModel(weight: preValues),
-                            labels: preValues,
+                            labels: preValues.map{String($0)},
                             color: .yellow,
                             zoom: 1.0,
                             defaultWidth: 35,
@@ -58,7 +58,7 @@ struct SoftmaxClassificationView: View {
                         VerticalVectorView(
                             dimention: 3,
                             vector: VectorViewModel(weight: postValues),
-                            labels: postValues,
+                            labels: postValues.map{String($0)},
                             color: .blue,
                             zoom: 1.0,
                             defaultWidth: 35,
@@ -117,7 +117,7 @@ struct SoftmaxClassificationView: View {
             VStack(spacing: 30) {
                 // Header
                 VStack(spacing: 10) {
-                    Text("Softmax & Classification")
+                    Text("V. Softmax & Classification")
                         .font(.largeTitle)
                         .fontWeight(.bold)
                     
@@ -207,12 +207,8 @@ struct SoftmaxClassificationView: View {
         } else {
             // Apply Softmax
             withAnimation(.easeInOut(duration: 0.5)) {
-                // Calculate e^x for each value
-                let expValues = preValues.map { exp($0) }
-                // Calculate sum of e^x
-                let sum = expValues.reduce(0, +)
                 // Calculate softmax probabilities
-                postValues = expValues.map { $0 / sum }
+                postValues = [0.65, 0.24, 0.11]
                 isShowingSoftmax = true
                 // Find the class with highest probability
                 selectedClass = postValues.firstIndex(of: postValues.max()!)

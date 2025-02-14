@@ -18,6 +18,7 @@ struct MathPageView: View {
             }
             .listStyle(SidebarListStyle())
             .frame(minWidth: 200)
+            .navigationTitle("Select Chapters")
 
             if let selectedPage = selectedPage {
                 switch selectedPage {
@@ -48,12 +49,12 @@ enum Page: String, CaseIterable, Identifiable {
 
     var title: String {
         switch self {
-        case .vecMat: return "Vector & Matrix"
-        case .innProSim: return "Inner Product & Similarity"
-        case .matMul: return "Matrix Multiplication"
-        case .ffnAct: return "Feedforward Network & Activation"
-        case .sofCls: return "Softmax & Classification"
-        case .drpNorm: return "Dropout & Normalization"
+        case .vecMat: return "I. Vector & Matrix"
+        case .innProSim: return "II. Inner Product & Similarity"
+        case .matMul: return "III. Matrix Multiplication"
+        case .ffnAct: return "IV. Feedforward Network & Activation"
+        case .sofCls: return "V. Softmax & Classification"
+        case .drpNorm: return "VI. Dropout & Normalization"
         }
     }
 }

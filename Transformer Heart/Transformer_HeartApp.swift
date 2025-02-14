@@ -12,7 +12,10 @@ struct Transformer_HeartApp: App {
     
     var body: some Scene {
         WindowGroup {
-            MathPageView()
+            NavigationView {
+                LaunchPage()
+            }
+            .navigationViewStyle(StackNavigationViewStyle())
         }
     }
 }

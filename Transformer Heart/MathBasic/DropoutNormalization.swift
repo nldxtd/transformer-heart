@@ -13,7 +13,7 @@ struct DropoutNormalizationView: View {
             VStack(spacing: 30) {
                 // Header
                 VStack(spacing: 10) {
-                    Text("Dropout & Normalization")
+                    Text("VI. Dropout & Normalization")
                         .font(.largeTitle)
                         .fontWeight(.bold)
                     

@@ -29,7 +29,7 @@ struct MatrixMultiplicationView: View {
         ScrollView {
             VStack(spacing: 30) {
                 VStack(spacing: 10) {
-                    Text("Matrix Multiplication")
+                    Text("III. Matrix Multiplication")
                         .font(.largeTitle)
                         .fontWeight(.bold)
 
@@ -94,7 +94,7 @@ struct MatrixMultiplicationView: View {
                                 VerticalVectorView(
                                     dimention: 3,
                                     vector: vec,
-                                    labels: vecWeight,
+                                    labels: vecWeight.map{String($0)},
                                     color: .yellow,
                                     zoom: 1.0,
                                     defaultWidth: 30,
@@ -108,7 +108,7 @@ struct MatrixMultiplicationView: View {
                                 VerticalVectorView(
                                     dimention: 2,
                                     vector: res,
-                                    labels: resWeight,
+                                    labels: resWeight.map{String($0)},
                                     color: .blue,
                                     zoom: 1.0,
                                     defaultWidth: 30,

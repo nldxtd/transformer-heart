@@ -27,7 +27,7 @@ struct FeedforwardNetworkActivationView: View {
     // MARK: - View Components
     private var headerView: some View {
         VStack(spacing: 10) {
-            Text("Feed-Forward Network & Activation")
+            Text("IV. Feed-Forward Network & Activation")
                 .font(.largeTitle)
                 .fontWeight(.bold)
 
@@ -61,7 +61,7 @@ struct FeedforwardNetworkActivationView: View {
             VerticalVectorView(
                 dimention: 3,
                 vector: vec,
-                labels: vecWeight,
+                labels: vecWeight.map{String($0)},
                 color: .yellow,
                 zoom: 1.0,
                 defaultWidth: 30,
@@ -77,7 +77,7 @@ struct FeedforwardNetworkActivationView: View {
             VerticalVectorView(
                 dimention: 2,
                 vector: res,
-                labels: resWeight,
+                labels: resWeight.map{String($0)},
                 color: .blue,
                 zoom: 1.0,
                 defaultWidth: 30,
@@ -232,7 +232,7 @@ struct FeedforwardNetworkActivationView: View {
                         VerticalVectorView(
                             dimention: 4,
                             vector: VectorViewModel(weight: preReluValues),
-                            labels: preReluValues,
+                            labels: preReluValues.map{String($0)},
                             color: .yellow,
                             zoom: 1.0,
                             defaultWidth: 40,
@@ -261,7 +261,7 @@ struct FeedforwardNetworkActivationView: View {
                         VerticalVectorView(
                             dimention: 4,
                             vector: VectorViewModel(weight: postReluValues),
-                            labels: postReluValues,
+                            labels: postReluValues.map{String($0)},
                             color: .blue,
                             zoom: 1.0,
                             defaultWidth: 40,
@@ -318,7 +318,7 @@ struct FeedforwardNetworkActivationView: View {
                         VerticalVectorView(
                             dimention: 4,
                             vector: VectorViewModel(weight: preSigmoidValues),
-                            labels: preSigmoidValues,
+                            labels: preSigmoidValues.map{String($0)},
                             color: .yellow,
                             zoom: 1.0,
                             defaultWidth: 40,
@@ -347,7 +347,7 @@ struct FeedforwardNetworkActivationView: View {
                         VerticalVectorView(
                             dimention: 4,
                             vector: VectorViewModel(weight: postSigmoidValues),
-                            labels: postSigmoidValues,
+                            labels: postSigmoidValues.map{String($0)},
                             color: .purple,
                             zoom: 1.0,
                             defaultWidth: 40,
@@ -679,7 +679,8 @@ struct FeedforwardNetworkActivationView: View {
         } else {
             // Apply Sigmoid
             withAnimation(.easeInOut(duration: 0.5)) {
-                postSigmoidValues = preSigmoidValues.map { 1.0 / (1.0 + exp(-$0)) }
+                postSigmoidValues = preSigmoidValues.map { 1.0 / (1.0 + exp(-$0))}
+                postSigmoidValues = postSigmoidValues.map {Double(round(100 * $0) / 100)}
                 isShowingSigmoid = true
             }
         }

@@ -18,6 +18,7 @@
 		8A57F7AE2D5AE9AE00253362 /* SoftmaxClassification.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A57F7AD2D5AE9A300253362 /* SoftmaxClassification.swift */; };
 		8A57F7B02D5AE9B900253362 /* DropoutNormalization.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A57F7AF2D5AE9B400253362 /* DropoutNormalization.swift */; };
 		8A57F7B22D5AF2CE00253362 /* InnerProductPlayground.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A57F7B12D5AF2C400253362 /* InnerProductPlayground.swift */; };
+		8A57F7B42D5D89F800253362 /* LaunchPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A57F7B32D5D89EE00253362 /* LaunchPage.swift */; };
 		8A65C84D2D31220C0093E12A /* Transformer_HeartApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A65C84C2D31220C0093E12A /* Transformer_HeartApp.swift */; };
 		8A65C8512D31220E0093E12A /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 8A65C8502D31220E0093E12A /* Assets.xcassets */; };
 		8A65C8542D31220E0093E12A /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 8A65C8532D31220E0093E12A /* Preview Assets.xcassets */; };
@@ -45,6 +46,7 @@
 		8A57F7AD2D5AE9A300253362 /* SoftmaxClassification.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SoftmaxClassification.swift; sourceTree = "<group>"; };
 		8A57F7AF2D5AE9B400253362 /* DropoutNormalization.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DropoutNormalization.swift; sourceTree = "<group>"; };
 		8A57F7B12D5AF2C400253362 /* InnerProductPlayground.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InnerProductPlayground.swift; sourceTree = "<group>"; };
+		8A57F7B32D5D89EE00253362 /* LaunchPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LaunchPage.swift; sourceTree = "<group>"; };
 		8A65C8492D31220C0093E12A /* Transformer Heart.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Transformer Heart.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		8A65C84C2D31220C0093E12A /* Transformer_HeartApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Transformer_HeartApp.swift; sourceTree = "<group>"; };
 		8A65C8502D31220E0093E12A /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -111,6 +113,7 @@
 				8A3DAC452D50C8DD0009E7E6 /* Constant.swift */,
 				8A7B331F2D3C9D730071ADF8 /* Illustration.swift */,
 				8A57F7A52D5ADBC600253362 /* MathPage.swift */,
+				8A57F7B32D5D89EE00253362 /* LaunchPage.swift */,
 				8A65C84C2D31220C0093E12A /* Transformer_HeartApp.swift */,
 				8A65C8502D31220E0093E12A /* Assets.xcassets */,
 				8A65C8522D31220E0093E12A /* Preview Content */,
@@ -233,6 +236,7 @@
 				8A3DAC462D50C8E00009E7E6 /* Constant.swift in Sources */,
 				8A7B331D2D3A47E60071ADF8 /* EmbeddingPipeline.swift in Sources */,
 				8A57F7B02D5AE9B900253362 /* DropoutNormalization.swift in Sources */,
+				8A57F7B42D5D89F800253362 /* LaunchPage.swift in Sources */,
 				8A8FA7C62D462BA70079583F /* Curve.swift in Sources */,
 				8A830B972D33B23F004DEE43 /* AttentionHeadPipeline.swift in Sources */,
 				8AC7B97A2D35EABC00249EDC /* TransformerFFNPipeline.swift in Sources */,

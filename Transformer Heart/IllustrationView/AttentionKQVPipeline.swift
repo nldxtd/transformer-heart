@@ -13,11 +13,11 @@ struct AttentionQKVView: View {
         matrixWeight: embeddingMatrixWeight)
     @State private var QKVMatrix = MatrixViewModel(matrixWeight: QKVMatrixWeight)
     @State private var qMatrixView: VectorListViewModel = VectorListViewModel(
-        matrixWeight: Array(repeating: Array(repeating: 0, count: 10), count: 7))
+        matrixWeight: Array(repeating: Array(repeating: 0, count: 10), count: 6))
     @State private var kMatrixView: VectorListViewModel = VectorListViewModel(
-        matrixWeight: Array(repeating: Array(repeating: 0, count: 10), count: 7))
+        matrixWeight: Array(repeating: Array(repeating: 0, count: 10), count: 6))
     @State private var vMatrixView: VectorListViewModel = VectorListViewModel(
-        matrixWeight: Array(repeating: Array(repeating: 0, count: 10), count: 7))
+        matrixWeight: Array(repeating: Array(repeating: 0, count: 10), count: 6))
     @State private var biasVector: VectorViewModel = VectorViewModel(weight: biasVectorWeight)
     let isMatrixMode = true
 
@@ -67,7 +67,7 @@ struct AttentionQKVView: View {
                         .frame(width: 30, alignment: .center)
 
                     // Bias vector
-                    VerticalVectorView(dimention: 30, vector: biasVector, labels: biasVectorWeight, title: "Bias")
+                    VerticalVectorView(dimention: 30, vector: biasVector, labels: biasVectorWeight.map{String($0)}, title: "Bias")
                         .offset(y: -13)
 
                     Text("=")  // Plus sign
