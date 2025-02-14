@@ -104,7 +104,7 @@ struct GPTIllustrationView: View {
                             withAnimation {
                                 indexSelected = Int.random(in: 0..<7)
                                 scale = 0.8
-                                offset = CGSize(width: -105, height: -25)
+                                offset = CGSize(width: -105, height: -10)
                                 lastOffset = .zero
                             }
                         }
