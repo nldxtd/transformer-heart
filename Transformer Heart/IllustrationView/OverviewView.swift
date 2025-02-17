@@ -10,6 +10,7 @@ import SwiftUI
 
 struct EmbeddingSubView: View {
 
+    @Binding var embeddingOutputPosition: CGPoint
     @State private var embeddingMatrix: VectorListViewModel = VectorListViewModel(matrixWeight: embeddingMatrixWeight)
 
     var body: some View {
@@ -25,7 +26,7 @@ struct EmbeddingSubView: View {
                         Text(token)
                             .font(.system(size: 10, weight: .medium, design: .monospaced))
                             .padding(.horizontal, 8)
-                            .frame(height: 15)
+                            .frame(height: 16)
                             .background(
                                 RoundedRectangle(cornerRadius: 4)
                                     .fill(Color.blue.opacity(0.1))
@@ -50,12 +51,23 @@ struct EmbeddingSubView: View {
                     vectors: embeddingMatrix,
                     labels: embeddingMatrixWeight,
                     color: .green,
-                    defaultWidth: 5,
-                    defaultHeight: 15,
+                    defaultWidth: 6,
+                    defaultHeight: 16,
                     spacing: 8,
                     title: "",
                     matrixMode: false
                 )
+                .background {
+                    GeometryReader { geo in
+                        Color.clear
+                        .onAppear {
+                            embeddingOutputPosition = CGPoint(
+                                x: geo.frame(in: .named("contentRootView")).maxX+5,
+                                y: geo.frame(in: .named("contentRootView")).maxY-8
+                            )
+                        }
+                    }
+                }
             }
         }
         .padding(20)
@@ -63,6 +75,11 @@ struct EmbeddingSubView: View {
 }
 
 struct AttentionKQVSubView: View {
+
+    @Binding var keyInputPosition: CGPoint
+    @Binding var queryInputPosition: CGPoint
+    @Binding var valueInputPosition: CGPoint
+    @Binding var attentionOutputPosition: CGPoint
 
     @State private var qMatrixView: VectorListViewModel = VectorListViewModel(matrixWeight: qMatrix)
     @State private var kMatrixView: VectorListViewModel = VectorListViewModel(matrixWeight: kMatrix)
@@ -107,6 +124,10 @@ struct AttentionKQVSubView: View {
                                     x: geo.frame(in: .named("attentionBlock")).maxX+5,
                                     y: geo.frame(in: .named("attentionBlock")).maxY-5
                                 )
+                                keyInputPosition = CGPoint(
+                                    x: geo.frame(in: .named("contentRootView")).minX-5,
+                                    y: geo.frame(in: .named("contentRootView")).maxY-5
+                                )
                             }
                         }
                     }
@@ -131,6 +152,10 @@ struct AttentionKQVSubView: View {
                                     x: geo.frame(in: .named("attentionBlock")).maxX+5,
                                     y: geo.frame(in: .named("attentionBlock")).maxY-5
                                 )
+                                queryInputPosition = CGPoint(
+                                    x: geo.frame(in: .named("contentRootView")).minX-5,
+                                    y: geo.frame(in: .named("contentRootView")).maxY-5
+                                )
                             }
                         }
                     }
@@ -154,6 +179,10 @@ struct AttentionKQVSubView: View {
                                 vPosition = CGPoint(
                                     x: geo.frame(in: .named("attentionBlock")).maxX+5,
                                     y: geo.frame(in: .named("attentionBlock")).maxY-5
+                                )
+                                valueInputPosition = CGPoint(
+                                    x: geo.frame(in: .named("contentRootView")).minX-5,
+                                    y: geo.frame(in: .named("contentRootView")).maxY-5
                                 )
                             }
                         }
@@ -199,6 +228,17 @@ struct AttentionKQVSubView: View {
                     title: "out",
                     matrixMode: false
                 )
+                .background {
+                    GeometryReader { geo in
+                        Color.clear
+                        .onAppear {
+                            attentionOutputPosition = CGPoint(
+                                x: geo.frame(in: .named("contentRootView")).maxX+5,
+                                y: geo.frame(in: .named("contentRootView")).maxY-5
+                            )
+                        }
+                    }
+                }
                 .padding(.trailing, 10)
             }
             .background {
@@ -245,6 +285,18 @@ struct AttentionKQVSubView: View {
                 }
             }
         }
+        .overlay {
+            VStack {
+                Spacer()
+                HStack {
+                    Spacer()
+                    Text("1 of 12 Attention Head")
+                        .font(.headline)
+                        .foregroundColor(.gray)
+                        .padding()
+                }
+            }
+        }
         .coordinateSpace(name: "attentionBlock")
         .onAppear {
             // withAnimation(.easeInOut(duration: 1.0).delay(1.0)) {
@@ -277,6 +329,10 @@ struct AttentionKQVSubView: View {
 }
 
 struct FFNSubView: View {
+
+    @Binding var hiddenInputPosition: CGPoint
+    @Binding var ffnOutputPosition: CGPoint
+
     @State private var outputVectors: VectorListViewModel = VectorListViewModel(matrixWeight: feedForwardMatrixWeight)
     @State private var hiddenVectors: [VectorViewModel] = (0..<6).map { idx in 
         VectorViewModel(weight: hiddenLayerMatrixWeight[idx])
@@ -314,6 +370,10 @@ struct FFNSubView: View {
                             Color.clear
                                 .onAppear {
                                     hiddenVectorPosition = CGPoint(x: geo.frame(in: .named("ffnBlock")).maxX, y: geo.frame(in: .named("ffnBlock")).maxY)
+                                    hiddenInputPosition = CGPoint(
+                                        x: geo.frame(in: .named("contentRootView")).minX-5,
+                                        y: geo.frame(in: .named("contentRootView")).maxY
+                                    )
                                 }
                         }
                     }
@@ -336,6 +396,10 @@ struct FFNSubView: View {
                         Color.clear
                             .onAppear {
                                 outputVectorPosition = CGPoint(x: geo.frame(in: .named("ffnBlock")).minX, y: geo.frame(in: .named("ffnBlock")).maxY)
+                                ffnOutputPosition = CGPoint(
+                                    x: geo.frame(in: .named("contentRootView")).maxX+5,
+                                    y: geo.frame(in: .named("contentRootView")).maxY-5
+                                )
                             }
                     }
                 }
@@ -409,6 +473,7 @@ struct PredictionSubView: View {
     @State private var labelVector: [String] = mockLabelVector
     @State private var showProbabilities = false
     @Binding var indexSelected: Int
+    @Binding var logitsInputPosition: CGPoint
     
     var body: some View {
         HStack(spacing: 40) {
@@ -428,6 +493,17 @@ struct PredictionSubView: View {
                     spacing: 1,
                     withLabel: true
                 )
+                .background {
+                    GeometryReader { geo in
+                        Color.clear
+                        .onAppear {
+                            logitsInputPosition = CGPoint(
+                                x: geo.frame(in: .named("contentRootView")).minX-5,
+                                y: geo.frame(in: .named("contentRootView")).maxY
+                            )
+                        }
+                    }
+                }
             }
 
             // Token probabilities
@@ -491,6 +567,7 @@ struct PredictionSubView: View {
 }
 
 struct StackedBackground: View {
+
     var body: some View {
         ZStack {
             // Bottom layer (5th)
@@ -551,6 +628,27 @@ struct OverviewView: View {
     @State private var lastScale: CGFloat = 1.0
     @Binding var indexSelected: Int
 
+    // Position of the Embedding Layer
+    @State var embeddingOutputPosition: CGPoint = CGPoint(x: 0, y: 0)
+    @State var embeddingOutputPositions: [CGPoint] = []
+    // Position of the Attention Head
+    @State var keyInputPosition: CGPoint = CGPoint(x: 0, y: 0)
+    @State var keyInputPositions: [CGPoint] = []
+    @State var queryInputPosition: CGPoint = CGPoint(x: 0, y: 0)
+    @State var queryInputPositions: [CGPoint] = []
+    @State var valueInputPosition: CGPoint = CGPoint(x: 0, y: 0)
+    @State var valueInputPositions: [CGPoint] = []
+    @State var attentionOutputPosition: CGPoint = CGPoint(x: 0, y: 0)
+    @State var attentionOutputPositions: [CGPoint] = []
+    // Position of the FFN Layer
+    @State var hiddenInputPosition: CGPoint = CGPoint(x: 0, y: 0)
+    @State var hiddenInputPositions: [CGPoint] = []
+    @State var ffnOutputPosition: CGPoint = CGPoint(x: 0, y: 0)
+    // Position of the Prediction Layer
+    @State var logitsInputPosition: CGPoint = CGPoint(x: 0, y: 0)
+
+    @State var overallConnectionProgress: CGFloat = 0.0
+
     var body: some View {
         ScrollView([.horizontal, .vertical], showsIndicators: true) {
             content
@@ -589,7 +687,7 @@ struct OverviewView: View {
             HStack(alignment: .top, spacing: 40) {
                 // Embedding section
                 
-                EmbeddingSubView()
+                EmbeddingSubView(embeddingOutputPosition: $embeddingOutputPosition)
                     .background {
                         RoundedRectangle(cornerRadius: 16)
                             .fill(Color.white)
@@ -599,13 +697,13 @@ struct OverviewView: View {
                         currentView = "Embedding Pipeline"
                     }
 
-                AttentionKQVSubView()
+                AttentionKQVSubView(keyInputPosition: $keyInputPosition, queryInputPosition: $queryInputPosition, valueInputPosition: $valueInputPosition, attentionOutputPosition: $attentionOutputPosition)
                     .background(StackedBackground())
                     .onTapGesture {
                         currentView = "KQV Matrix Pipeline"
                     }
 
-                FFNSubView()
+                FFNSubView(hiddenInputPosition: $hiddenInputPosition, ffnOutputPosition: $ffnOutputPosition)
                     .background {
                         RoundedRectangle(cornerRadius: 16)
                             .fill(Color.white)
@@ -614,8 +712,9 @@ struct OverviewView: View {
                     .onTapGesture {
                         currentView = "Feed-Forward Network Pipeline"
                     }
+                
 
-                PredictionSubView(indexSelected: $indexSelected)
+                PredictionSubView(indexSelected: $indexSelected, logitsInputPosition: $logitsInputPosition)
                     .background {
                         RoundedRectangle(cornerRadius: 16)
                             .fill(Color.white)
@@ -626,7 +725,79 @@ struct OverviewView: View {
                     }
             }
         }
+        .overlay {
+            if hiddenInputPositions.count == 2*tokens.count {
+                ForEach(0..<tokens.count) { i in
+                    AnimatedCurveShape(
+                        corner1: embeddingOutputPositions[2*i],
+                        corner2: keyInputPositions[2*i],
+                        corner3: keyInputPositions[2*i+1],
+                        corner4: embeddingOutputPositions[2*i+1],
+                        progress: overallConnectionProgress
+                    )
+                    .fill(Color.green.opacity(0.3))
+                    AnimatedCurveShape(
+                        corner1: embeddingOutputPositions[2*i],
+                        corner2: queryInputPositions[2*i],
+                        corner3: queryInputPositions[2*i+1],
+                        corner4: embeddingOutputPositions[2*i+1],
+                        progress: overallConnectionProgress
+                    )
+                    .fill(Color.orange.opacity(0.3))
+                    AnimatedCurveShape(
+                        corner1: embeddingOutputPositions[2*i],
+                        corner2: valueInputPositions[2*i],
+                        corner3: valueInputPositions[2*i+1],
+                        corner4: embeddingOutputPositions[2*i+1],
+                        progress: overallConnectionProgress
+                    )
+                    .fill(Color.purple.opacity(0.3))
+                    AnimatedCurveShape(
+                        corner1: attentionOutputPositions[2*i],
+                        corner2: hiddenInputPositions[2*i],
+                        corner3: hiddenInputPositions[2*i+1],
+                        corner4: attentionOutputPositions[2*i+1],
+                        progress: overallConnectionProgress
+                    )
+                    .fill(Color.green.opacity(0.3))
+                }
+                AnimatedCurveShape(
+                    corner1: CGPoint(x: ffnOutputPosition.x, y: ffnOutputPosition.y+5),
+                    corner2: CGPoint(x: logitsInputPosition.x-5, y: logitsInputPosition.y),
+                    corner3: CGPoint(x: logitsInputPosition.x-5, y: logitsInputPosition.y-649),
+                    corner4: CGPoint(x: ffnOutputPosition.x, y: ffnOutputPosition.y-5),
+                    progress: overallConnectionProgress
+                )
+                .fill(Color.blue.opacity(0.3))
+            }
+        }
+        .onAppear {
+            DispatchQueue.main.asyncAfter(deadline: .now()+0.5) {
+                calculatePositions()
+                withAnimation(.easeInOut(duration: 1.0)) {
+                    overallConnectionProgress = 1.0
+                }
+            }
+        }
+        .coordinateSpace(name: "contentRootView")
         .padding(.horizontal, 10)
         .padding(.top, 20)
+    }
+
+    private func calculatePositions() {
+        for i in 0..<tokens.count {
+            embeddingOutputPositions.append(CGPoint(x: embeddingOutputPosition.x, y: embeddingOutputPosition.y+8-CGFloat(i*24)))
+            embeddingOutputPositions.append(CGPoint(x: embeddingOutputPosition.x, y: embeddingOutputPosition.y-8-CGFloat(i*24)))
+            keyInputPositions.append(CGPoint(x: keyInputPosition.x, y: keyInputPosition.y+5-CGFloat(i*15)))
+            keyInputPositions.append(CGPoint(x: keyInputPosition.x, y: keyInputPosition.y-5-CGFloat(i*15)))
+            queryInputPositions.append(CGPoint(x: queryInputPosition.x, y: queryInputPosition.y+5-CGFloat(i*15)))
+            queryInputPositions.append(CGPoint(x: queryInputPosition.x, y: queryInputPosition.y-5-CGFloat(i*15)))
+            valueInputPositions.append(CGPoint(x: valueInputPosition.x, y: valueInputPosition.y+5-CGFloat(i*15)))
+            valueInputPositions.append(CGPoint(x: valueInputPosition.x, y: valueInputPosition.y-5-CGFloat(i*15)))
+            attentionOutputPositions.append(CGPoint(x: attentionOutputPosition.x, y: attentionOutputPosition.y+5-CGFloat(i*15)))
+            attentionOutputPositions.append(CGPoint(x: attentionOutputPosition.x, y: attentionOutputPosition.y-5-CGFloat(i*15)))
+            hiddenInputPositions.append(CGPoint(x: hiddenInputPosition.x, y: hiddenInputPosition.y-CGFloat(i*83)))
+            hiddenInputPositions.append(CGPoint(x: hiddenInputPosition.x, y: hiddenInputPosition.y-75-CGFloat(i*83)))
+        }
     }
 }
