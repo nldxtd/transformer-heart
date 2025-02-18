@@ -78,7 +78,6 @@ struct VerticalVectorView: View {
             if title != "" {
                 Text(title)
                     .font(titleFont)
-                    .frame(maxWidth: titleWidth, minHeight: titleHeight)
             }
 
             // Vector view

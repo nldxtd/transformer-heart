@@ -21,7 +21,6 @@ struct TokenList: View {
             
             if title != "" {
                 Text(title)
-                    .padding()
                     .font(titleFont)
                     .frame(width: isHorizontal ? titleWidth * 2 : titleWidth)
                     .id("title-\(title)")

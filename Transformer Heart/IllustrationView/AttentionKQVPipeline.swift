@@ -28,6 +28,9 @@ struct AttentionQKVView: View {
     @Binding var currentView: String
     var animationNamespace: Namespace.ID
 
+    let vectorListHeight: CGFloat = CGFloat(15 * tokens.count + 20)
+    let vectorListWidth: CGFloat = 48
+
     var body: some View {
         ZStack {
             HStack {
@@ -43,7 +46,7 @@ struct AttentionQKVView: View {
                     title: "Embedding Matrix",
                     matrixMode: isMatrixMode
                 )
-                .offset(y: -34)
+                .offset(y: -20)
                 .matchedGeometryEffect(id: "EmbeddingMatrix", in: animationNamespace)
 
                 Text("\u{00D7}")  // Multiple sign column header
@@ -88,9 +91,10 @@ struct AttentionQKVView: View {
                         defaultWidth: 3,
                         defaultHeight: 10,
                         spacing: 5,
-                        title: "q",
+                        title: "query",
                         titleWidth: 43
                     )
+                    .frame(width: vectorListWidth, height: vectorListHeight)
                     .matchedGeometryEffect(id: "qMatrix", in: animationNamespace)
                     VectorList(
                         dimention: 10,
@@ -100,9 +104,10 @@ struct AttentionQKVView: View {
                         defaultWidth: 3,
                         defaultHeight: 10,
                         spacing: 5,
-                        title: "k",
+                        title: "key",
                         titleWidth: 43
                     )
+                    .frame(width: vectorListWidth, height: vectorListHeight)
                     .matchedGeometryEffect(id: "kMatix", in: animationNamespace)
                     VectorList(
                         dimention: 10,
@@ -112,13 +117,14 @@ struct AttentionQKVView: View {
                         defaultWidth: 3,
                         defaultHeight: 10,
                         spacing: 5,
-                        title: "v",
+                        title: "value",
                         titleWidth: 43
                     )
+                    .frame(width: vectorListWidth, height: vectorListHeight)
                     .matchedGeometryEffect(id: "vMatrix", in: animationNamespace)
                 }
                 .padding(.leading, 20)
-                .offset(x: qkvVectorVisible ? 0 : -20, y: -20)
+                .offset(x: qkvVectorVisible ? 0 : -20, y: -10)
                 .opacity(qkvVectorVisible ? 1 : 0)
                 .animation(.easeInOut(duration: 0.5), value: qkvVectorVisible)
             }

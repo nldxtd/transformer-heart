@@ -141,38 +141,54 @@ struct SingleAttentionHeadView: View {
 
                     // Represent of attention head stack
                     HStack {
-                        // Represent of dot-product calculation
-                        AttentionHeadView(
-                            head: tokens.count,
-                            headViewModel: dotHeadView,
-                            title: "Dot Product",
-                            circleScale: $scale
-                        )
-                        .overlay(
-                            GeometryReader { geo in
-                                Color.clear
-                                    .onAppear {
-                                        dpHeadPosition = CGPoint(
-                                            x: geo.frame(in: .named("rootView")).minX + 10,
-                                            y: geo.frame(in: .named("rootView")).minY + 10
-                                        )
-                                    }
-                            }
-                        )
+                        VStack {
+                            // Represent of dot-product calculation
+                            AttentionHeadView(
+                                head: tokens.count,
+                                headViewModel: dotHeadView,
+                                title: "Dot Product",
+                                circleScale: $scale
+                            )
+                            .overlay(
+                                GeometryReader { geo in
+                                    Color.clear
+                                        .onAppear {
+                                            dpHeadPosition = CGPoint(
+                                                x: geo.frame(in: .named("rootView")).minX + 10,
+                                                y: geo.frame(in: .named("rootView")).minY + 10
+                                            )
+                                        }
+                                }
+                            )
+
+                            Text("Dot product")
+                                .frame(width: 130)
+                                .lineLimit(1)
+                                .font(.subheadline)
+                                .foregroundColor(.gray)
+                        }
 
                         // Represent of scaling and mask
                         HStack {
                             // Right arrow
                             Image(systemName: "arrow.right")
-                                .offset(y: -25)
+                                .offset(y: -12)
 
-                            // Represent of scaling and mask
-                            AttentionHeadView(
-                                head: tokens.count,
-                                headViewModel: maskHeadView,
-                                title: "Scaling · Mask",
-                                circleScale: $scale
-                            )
+                            VStack {
+                                // Represent of scaling and mask
+                                AttentionHeadView(
+                                    head: tokens.count,
+                                    headViewModel: maskHeadView,
+                                    title: "Scaling · Mask",
+                                    circleScale: $scale
+                                )
+
+                                Text("Scaling · Mask")
+                                    .frame(width: 130)
+                                    .lineLimit(1)
+                                    .font(.subheadline)
+                                    .foregroundColor(.gray)
+                            }
                         }
                         .opacity(maskVisible ? 1 : 0)
                         .offset(x: maskVisible ? 0 : -30)
@@ -181,15 +197,22 @@ struct SingleAttentionHeadView: View {
                         HStack {
                             // Right arrow
                             Image(systemName: "arrow.right")
-                                .offset(y: -25)
+                                .offset(y: -12)
 
-                            // Represent of Softmax and dropout
-                            AttentionHeadView(
-                                head: tokens.count,
-                                headViewModel: softHeadView,
-                                title: "Softmax",
-                                circleScale: $scale
-                            )
+                            VStack {
+                                // Represent of Softmax and dropout
+                                AttentionHeadView(
+                                    head: tokens.count,
+                                    headViewModel: softHeadView,
+                                    title: "Softmax",
+                                    circleScale: $scale
+                                )
+                                Text("Softmax")
+                                    .frame(width: 130)
+                                    .lineLimit(1)
+                                    .font(.subheadline)
+                                    .foregroundColor(.gray)
+                            }
                             .overlay(
                                 GeometryReader { geo in
                                     Color.clear
@@ -245,9 +268,9 @@ struct SingleAttentionHeadView: View {
                         }
 
                         // Represent of Softmax and final residual connection
-                        HStack {
+                        HStack(spacing: 20) {
                             Text("")
-                                .frame(width: 45)
+                                .frame(width: 30)
 
                             ZStack {
                                 Circle()
@@ -286,12 +309,12 @@ struct SingleAttentionHeadView: View {
                                 title: "Attention Output",
                                 matrixMode: true
                             )
-                            .offset(y: -60)
+                            .offset(y: -45)
                             .opacity(attentionOutputVisible ? 1 : 0)
                             .matchedGeometryEffect(id: "Attention Output", in: animationNamespace)
                         }
                     }
-                    .offset(y: -87.5)
+                    .offset(y: -37.5)
                 }
                 .offset(y: 25)
             }
@@ -313,13 +336,13 @@ struct SingleAttentionHeadView: View {
                     }
                 }
                 if smHeadPosition != .zero {
-                    let vTopPosition: CGPoint = CGPoint(x: vPosition.x, y: vPosition.y - 90)
+                    let vTopPosition: CGPoint = CGPoint(x: vPosition.x, y: vPosition.y - 75)
                     let smBottomPosition: CGPoint = CGPoint(
-                        x: smHeadPosition.x, y: smHeadPosition.y + 132)
+                        x: smHeadPosition.x, y: smHeadPosition.y + 110)
                     let valueTopEndPosition: CGPoint = CGPoint(
                         x: smHeadPosition.x + 40, y: smHeadPosition.y + 22)
                     let valueBottomEndPotision: CGPoint = CGPoint(
-                        x: smHeadPosition.x + 40, y: smHeadPosition.y + 110)
+                        x: smHeadPosition.x + 40, y: smHeadPosition.y + 88)
                     AnimatedCurveShape(
                         corner1: vTopPosition,
                         corner2: valueTopEndPosition,

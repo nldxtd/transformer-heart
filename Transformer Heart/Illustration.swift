@@ -54,8 +54,8 @@ struct GPTIllustrationView: View {
 
     @State private var currentView = "Transformer Overview"
     @Namespace private var animationNamespace
-    @State private var scale: CGFloat = 0.8
-    @State private var offset: CGSize = CGSize(width: -105, height: -10)
+    @State private var scale: CGFloat = 0.7
+    @State private var offset: CGSize = CGSize(width: -170, height: -30)
     @State private var lastOffset: CGSize = .zero
     @State private var indexSelected: Int = Int.random(in: 0..<7)
 
@@ -68,11 +68,10 @@ struct GPTIllustrationView: View {
         "Prediction Pipeline",
     ]
 
-    var body: some View {
-        ZStack(alignment: .top) {
-            OverviewView(currentView: $currentView, animationNamespace: animationNamespace, scale: $scale, offset: $offset, lastOffset: $lastOffset, indexSelected: $indexSelected)
-            
+    var body: some View {     
+        ZStack(alignment: .top)  { 
             if currentView == "Transformer Overview" {
+                OverviewView(currentView: $currentView, animationNamespace: animationNamespace, scale: $scale, offset: $offset, lastOffset: $lastOffset, indexSelected: $indexSelected)
                 VStack {
                     HStack {
                         // Chat-like input box
@@ -103,16 +102,30 @@ struct GPTIllustrationView: View {
                         ZoomResetButton {
                             withAnimation {
                                 indexSelected = Int.random(in: 0..<7)
-                                scale = 0.8
-                                offset = CGSize(width: -105, height: -10)
+                                scale = 0.7
+                                offset = CGSize(width: -170, height: -30)
                                 lastOffset = .zero
                             }
                         }
                     }
-                    
                     Spacer()
                 }
                 .padding(.top, 20)
+            } else if currentView == "Embedding Pipeline" {
+                InputEmbeddingView(
+                    currentView: $currentView, animationNamespace: animationNamespace)
+            } else if currentView == "KQV Matrix Pipeline" {
+                AttentionQKVView(
+                    currentView: $currentView, animationNamespace: animationNamespace)
+            } else if currentView == "Cross Attention Pipeline" {
+                SingleAttentionHeadView(
+                    currentView: $currentView, animationNamespace: animationNamespace)
+            } else if currentView == "Feed-Forward Network Pipeline" {
+                TransformerFFNView(
+                    currentView: $currentView, animationNamespace: animationNamespace)
+            } else if currentView == "Prediction Pipeline" {
+                ProbabilityOutputView(
+                    currentView: $currentView, animationNamespace: animationNamespace)
             }
         }
         .toolbar {

@@ -169,3 +169,4 @@ struct VerticleAnimatedCurveShape: Shape {
         return path
     }
 }
+

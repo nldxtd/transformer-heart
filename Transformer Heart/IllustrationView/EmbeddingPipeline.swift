@@ -39,10 +39,25 @@ struct InputEmbeddingView: View {
     }
 
     var body: some View {
-        ZStack {
+        VStack(alignment: .center, spacing: 20) {
+            if isHorizontal {
+                Text("Input Sentence")
+                    .font(.headline)
+                Text("Transforomer visualization empowers user to")
+                    .padding()
+                    .font(.subheadline)
+                    .foregroundColor(.blue)
+                    .background {
+                        RoundedRectangle(cornerRadius: 5)
+                            .fill(Color.white)
+                            .shadow(radius: 5)
+                    }
+                Image(systemName: "arrow.down")
+                    .frame(width: 30, height: 30)
+            }
             HStack(spacing: 20) {
+
                 TokenList(tokens: tokens, title: "Input Tokens", isHorizontal: isHorizontal)
-                    .offset(y: -28)
                     .animation(.easeInOut(duration: 0.5), value: isHorizontal)
 
                 if !isHorizontal {
@@ -55,7 +70,6 @@ struct InputEmbeddingView: View {
                                 
                                 // Embedding Matrix
                                 VectorList(dimention: 10, vectors: embeddingMatrix, labels: embeddingMatrixWeight, color: .green, title: "Token Embedding")
-                                    .offset(y: -28)
                             }
                             .opacity(showComponents[0] ? 1 : 0)
                             .offset(x: showComponents[0] ? 0 : -30)
@@ -70,9 +84,7 @@ struct InputEmbeddingView: View {
                                     .frame(width: 30, height: 30)
                                 
                                 // Position Encoding
-                                VectorList(dimention: 10, vectors: embeddingMatrix, labels: embeddingMatrixWeight, color: .orange, title: "Positional Encoding")
-                                    .offset(y: -28)
-                            }
+                                VectorList(dimention: 10, vectors: embeddingMatrix, labels: embeddingMatrixWeight, color: .orange, title: "Positional Encoding")                            }
                             .opacity(showComponents[1] ? 1 : 0)
                             .offset(x: showComponents[1] ? 0 : -30)
                             .animation(.easeInOut(duration: 0.5), value: showComponents[1])
@@ -95,7 +107,6 @@ struct InputEmbeddingView: View {
                                     title: isMatrixMode ? "Embedding Matrix" : "Embedding Output",
                                     matrixMode: isMatrixMode
                                 )
-                                .offset(y: isMatrixMode ? -32 : -28)
                                 .matchedGeometryEffect(id: "EmbeddingMatrix", in: animationNamespace)
                             }
                             .opacity(showComponents[2] ? 1 : 0)
@@ -124,18 +135,5 @@ struct InputEmbeddingView: View {
                 }
             }
         }
-    }
-}
-
-struct CurveBetweenPointsView: View {
-    var point1: CGPoint
-    var point2: CGPoint
-    
-    var body: some View {
-        Path { path in
-            path.move(to: point1)  // Start at point1
-            path.addQuadCurve(to: point2, control: CGPoint(x: (point1.x + point2.x) / 2, y: (point1.y + point2.y)/2-(point2.y-point1.y)/5)) // Control point for curve
-        }
-        .stroke(Color.gray, lineWidth: 2)  // Customize the color and width of the curve
     }
 }

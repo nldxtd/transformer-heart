@@ -14,7 +14,7 @@ struct EmbeddingSubView: View {
     @State private var embeddingMatrix: VectorListViewModel = VectorListViewModel(matrixWeight: embeddingMatrixWeight)
 
     var body: some View {
-        HStack(spacing: 30) {
+        HStack(spacing: 15) {
             // Input Tokens to embedding process
             VStack(alignment: .trailing, spacing: 20) {
                 Text("Tokens")
@@ -80,13 +80,15 @@ struct AttentionKQVSubView: View {
     @Binding var queryInputPosition: CGPoint
     @Binding var valueInputPosition: CGPoint
     @Binding var attentionOutputPosition: CGPoint
+    @Binding var headConnectionProgress: CGFloat
+    @Binding var headOutputConnectionProgress: CGFloat
+    @State private var headScale: CGFloat = 1.0
 
     @State private var qMatrixView: VectorListViewModel = VectorListViewModel(matrixWeight: qMatrix)
     @State private var kMatrixView: VectorListViewModel = VectorListViewModel(matrixWeight: kMatrix)
     @State private var vMatrixView: VectorListViewModel = VectorListViewModel(matrixWeight: vMatrix)
     @State private var dotHeadView: AttentionHeadViewModel = AttentionHeadViewModel(headWeight: dotHeadWeight)
 
-    @State private var scale: CGFloat = 1.0
     @State private var kPosition: CGPoint = CGPoint(x: 0, y: 0)
     @State private var qPosition: CGPoint = CGPoint(x: 0, y: 0)
     @State private var vPosition: CGPoint = CGPoint(x: 0, y: 0)
@@ -95,8 +97,6 @@ struct AttentionKQVSubView: View {
     @State private var qPositions: [CGPoint] = []
     @State private var horizontalHeadPositions: [CGPoint] = []
     @State private var verticalHeadPositions: [CGPoint] = []
-    @State private var attentionProgress: CGFloat = 0
-    @State private var smMultipleProgress: CGFloat = 0
 
     var body: some View {
         // KQV section
@@ -200,7 +200,7 @@ struct AttentionKQVSubView: View {
                         head: tokens.count,
                         headViewModel: dotHeadView,
                         title: "",
-                        circleScale: $scale
+                        circleScale: $headScale
                     )
                     .background(
                         GeometryReader { geo in
@@ -216,30 +216,39 @@ struct AttentionKQVSubView: View {
                 }
                 .offset(y: -4)
                 .padding()
+                
+                VStack(alignment: .center, spacing: 8) {
+                    Text("Attention Residual Output")
+                        .frame(width: 60)
+                        .lineLimit(3)
+                        .font(.caption)
+                        .foregroundColor(.gray)
 
-                VectorList(
-                    dimention: 10,
-                    vectors: kMatrixView,
-                    labels: kMatrix,
-                    color: .gray,
-                    defaultWidth: 3,
-                    defaultHeight: 10,
-                    spacing: 5,
-                    title: "out",
-                    matrixMode: false
-                )
-                .background {
-                    GeometryReader { geo in
-                        Color.clear
-                        .onAppear {
-                            attentionOutputPosition = CGPoint(
-                                x: geo.frame(in: .named("contentRootView")).maxX+5,
-                                y: geo.frame(in: .named("contentRootView")).maxY-5
-                            )
+                    VectorList(
+                        dimention: 10,
+                        vectors: kMatrixView,
+                        labels: kMatrix,
+                        color: .gray,
+                        defaultWidth: 3,
+                        defaultHeight: 10,
+                        spacing: 5,
+                        title: "",
+                        matrixMode: false
+                    )
+                    .background {
+                        GeometryReader { geo in
+                            Color.clear
+                            .onAppear {
+                                attentionOutputPosition = CGPoint(
+                                    x: geo.frame(in: .named("contentRootView")).maxX+5,
+                                    y: geo.frame(in: .named("contentRootView")).maxY-5
+                                )
+                            }
                         }
                     }
+                    .padding(.trailing, 10)
                 }
-                .padding(.trailing, 10)
+                .offset(y: -20)
             }
             .background {
                 if verticalHeadPositions.count == tokens.count {
@@ -248,13 +257,13 @@ struct AttentionKQVSubView: View {
                             start: qPositions[i],
                             end: verticalHeadPositions[tokens.count - 1 - i],
                             color: .orange,
-                            progress: attentionProgress
+                            progress: headConnectionProgress
                         )
                         VerticalCurveConnection(
                             start: kPositions[i],
                             end: horizontalHeadPositions[tokens.count - 1 - i],
                             color: .green,
-                            progress: attentionProgress
+                            progress: headConnectionProgress
                         )
                     }
                     let vTopPosition: CGPoint = CGPoint(x: vPosition.x, y: vPosition.y - 75)
@@ -271,7 +280,7 @@ struct AttentionKQVSubView: View {
                         corner2: valueTopEndPosition,
                         corner3: valueBottomEndPotision,
                         corner4: vPosition,
-                        progress: smMultipleProgress
+                        progress: headOutputConnectionProgress
                     )
                     .fill(Color.purple.opacity(0.3))
                     AnimatedCurveShape(
@@ -279,7 +288,7 @@ struct AttentionKQVSubView: View {
                         corner2: valueTopEndPosition,
                         corner3: valueBottomEndPotision,
                         corner4: smBottomPosition,
-                        progress: smMultipleProgress
+                        progress: headOutputConnectionProgress
                     )
                     .fill(Color.blue.opacity(0.3))
                 }
@@ -299,19 +308,8 @@ struct AttentionKQVSubView: View {
         }
         .coordinateSpace(name: "attentionBlock")
         .onAppear {
-            // withAnimation(.easeInOut(duration: 1.0).delay(1.0)) {
-            //     scale = 1.0
-            // }
-            DispatchQueue.main.asyncAfter(deadline: .now()+1.5) {
+            DispatchQueue.main.asyncAfter(deadline: .now()+0.1) {
                 calculatePositions()
-                withAnimation(.easeInOut(duration: 1.0)) {
-                    attentionProgress = 1.0
-                }
-            }
-            DispatchQueue.main.asyncAfter(deadline: .now()+2.5) {
-                withAnimation(.easeInOut(duration: 1.0)) {
-                    smMultipleProgress = 1.0
-                }
             }
         }
     }
@@ -332,6 +330,7 @@ struct FFNSubView: View {
 
     @Binding var hiddenInputPosition: CGPoint
     @Binding var ffnOutputPosition: CGPoint
+    @Binding var ffnOutputConnectionProgress: CGFloat
 
     @State private var outputVectors: VectorListViewModel = VectorListViewModel(matrixWeight: feedForwardMatrixWeight)
     @State private var hiddenVectors: [VectorViewModel] = (0..<6).map { idx in 
@@ -341,7 +340,6 @@ struct FFNSubView: View {
     @State private var outputVectorPosition: CGPoint = CGPoint(x: 0, y: 0)
     @State private var hiddenVectorPositions: [CGPoint] = []
     @State private var outputVectorPositions: [CGPoint] = []
-    @State private var outputProgress: CGFloat = 0
     
     var body: some View {
         ZStack {
@@ -378,31 +376,39 @@ struct FFNSubView: View {
                         }
                     }
                 }
-                
-                // Output vectors
-                VectorList(
-                    dimention: 10,
-                    vectors: outputVectors,
-                    labels: feedForwardMatrixWeight,
-                    color: .green,
-                    defaultWidth: 3,
-                    defaultHeight: 10,
-                    spacing: 5,
-                    title: "output",
-                    matrixMode: false
-                )
-                .background {
-                    GeometryReader { geo in
-                        Color.clear
-                            .onAppear {
-                                outputVectorPosition = CGPoint(x: geo.frame(in: .named("ffnBlock")).minX, y: geo.frame(in: .named("ffnBlock")).maxY)
-                                ffnOutputPosition = CGPoint(
-                                    x: geo.frame(in: .named("contentRootView")).maxX+5,
-                                    y: geo.frame(in: .named("contentRootView")).maxY-5
-                                )
-                            }
+
+                VStack(alignment: .center, spacing: 8) {
+                    Text("FFN Residual Output")
+                        .frame(width: 60)
+                        .lineLimit(3)
+                        .font(.caption)
+                        .foregroundColor(.gray)
+                    // Output vectors
+                    VectorList(
+                        dimention: 10,
+                        vectors: outputVectors,
+                        labels: feedForwardMatrixWeight,
+                        color: .green,
+                        defaultWidth: 3,
+                        defaultHeight: 10,
+                        spacing: 5,
+                        title: "",
+                        matrixMode: false
+                    )
+                    .background {
+                        GeometryReader { geo in
+                            Color.clear
+                                .onAppear {
+                                    outputVectorPosition = CGPoint(x: geo.frame(in: .named("ffnBlock")).minX, y: geo.frame(in: .named("ffnBlock")).maxY)
+                                    ffnOutputPosition = CGPoint(
+                                        x: geo.frame(in: .named("contentRootView")).maxX+8,
+                                        y: geo.frame(in: .named("contentRootView")).maxY
+                                    )
+                                }
+                        }
                     }
                 }
+                .offset(y: -20)
             }
             .background {
                 if hiddenVectorPositions.count == 2*hiddenVectors.count {
@@ -412,7 +418,7 @@ struct FFNSubView: View {
                             corner2: outputVectorPositions[2*i],
                             corner3: outputVectorPositions[2*i+1],
                             corner4: hiddenVectorPositions[2*i+1],
-                            progress: outputProgress
+                            progress: ffnOutputConnectionProgress
                         )
                         .fill(Color.green.opacity(0.3))
                     }
@@ -422,11 +428,8 @@ struct FFNSubView: View {
         .coordinateSpace(name: "ffnBlock")
         .padding()
         .onAppear {
-            DispatchQueue.main.asyncAfter(deadline: .now()+1.5) {
+            DispatchQueue.main.asyncAfter(deadline: .now()+0.1) {
                 calculatePositions()
-                withAnimation(.easeInOut(duration: 1.0)) {
-                    outputProgress = 1.0
-                }
             }
         }
     }
@@ -469,14 +472,54 @@ struct PredictionSubView: View {
         return labelVector
     }()
 
+    @State private var outputVectors: VectorListViewModel = VectorListViewModel(matrixWeight: feedForwardMatrixWeight)
     @State private var logitVector: VectorViewModel = VectorViewModel(weight: mockLogitVector.map { $0+0.1 })
     @State private var labelVector: [String] = mockLabelVector
     @State private var showProbabilities = false
+    @State private var lastOutputPosition: CGPoint = CGPoint(x: 0, y: 0)
+    @State private var logisPosition: CGPoint = CGPoint(x: 0, y: 0)
+
     @Binding var indexSelected: Int
     @Binding var logitsInputPosition: CGPoint
+    @Binding var outputLogitsConnectionProgress: CGFloat
     
     var body: some View {
-        HStack(spacing: 40) {
+        HStack(spacing: 30) {
+
+            VStack(alignment: .leading, spacing: 8) {
+                Text("Final Transformer Output")
+                        .frame(width: 70)
+                        .lineLimit(3)
+                        .font(.caption)
+                        .foregroundColor(.gray)
+
+                // Output vectors
+                VectorList(
+                    dimention: 10,
+                    vectors: outputVectors,
+                    labels: feedForwardMatrixWeight,
+                    color: .blue,
+                    defaultWidth: 3,
+                    defaultHeight: 10,
+                    spacing: 5,
+                    title: "",
+                    matrixMode: false
+                )
+                .background {
+                    GeometryReader { geo in
+                        Color.clear
+                            .onAppear {
+                                lastOutputPosition = CGPoint(x: geo.frame(in: .named("outputBlock")).maxX+5, y: geo.frame(in: .named("outputBlock")).maxY)
+                                logitsInputPosition = CGPoint(
+                                    x: geo.frame(in: .named("contentRootView")).minX-8,
+                                    y: geo.frame(in: .named("contentRootView")).maxY
+                                )
+                            }
+                    }
+                }
+            }
+            .offset(y: -20)
+
             // Logit vector
             VStack(spacing: 15) {
                 Text("logits")
@@ -497,9 +540,9 @@ struct PredictionSubView: View {
                     GeometryReader { geo in
                         Color.clear
                         .onAppear {
-                            logitsInputPosition = CGPoint(
-                                x: geo.frame(in: .named("contentRootView")).minX-5,
-                                y: geo.frame(in: .named("contentRootView")).maxY
+                            logisPosition = CGPoint(
+                                x: geo.frame(in: .named("outputBlock")).minX-5,
+                                y: geo.frame(in: .named("outputBlock")).maxY
                             )
                         }
                     }
@@ -533,13 +576,13 @@ struct PredictionSubView: View {
                         .font(.subheadline)
                     VStack(alignment: .leading, spacing: 8) {
                         ForEach(Self.probabilities.indices, id: \.self) { index in
-                            HStack(spacing: 8) {
+                            HStack(spacing: 4) {
                                 Rectangle()
                                     .frame(width: CGFloat(Self.probabilities[index] * 150), height: 6)
                                     .foregroundColor(.blue)
                                 Text(String(format: "%.2f%%", Self.probabilities[index]))
                                     .font(.system(size: 10, weight: .medium, design: .monospaced))
-                                    .padding(.horizontal, 8)
+                                    .padding(.horizontal, 4)
                                     .frame(height: 15)
                             }
                             .padding(.horizontal, 8)
@@ -556,8 +599,19 @@ struct PredictionSubView: View {
                 }
             }
         }
+        .coordinateSpace(name: "outputBlock")
+        .background {
+            AnimatedCurveShape(
+                corner1: CGPoint(x: lastOutputPosition.x, y: lastOutputPosition.y-10),
+                corner2: CGPoint(x: logisPosition.x, y: logisPosition.y-649),
+                corner3: CGPoint(x: logisPosition.x, y: logisPosition.y),
+                corner4: CGPoint(x: lastOutputPosition.x, y: lastOutputPosition.y),
+                progress: outputLogitsConnectionProgress
+            )
+            .fill(Color.blue.opacity(0.3))
+        }
         .padding(.horizontal, 30)
-        .padding(.vertical, 20)
+        .padding(.vertical, 10)
         .onAppear {
             withAnimation(.easeInOut(duration: 0.8).delay(0.3)) {
                 showProbabilities = true
@@ -647,7 +701,13 @@ struct OverviewView: View {
     // Position of the Prediction Layer
     @State var logitsInputPosition: CGPoint = CGPoint(x: 0, y: 0)
 
-    @State var overallConnectionProgress: CGFloat = 0.0
+    @State var kqvConnectionProgress: CGFloat = 0.0
+    @State var headConnectionProgress: CGFloat = 0.0
+    @State var headOutputConnectionProgress: CGFloat = 0.0
+    @State var hiddenConnectionProgress: CGFloat = 0.0
+    @State var ffnOutputConnectionProgress: CGFloat = 0.0
+    @State var logitsConnectionProgress: Double = 0.0
+    @State var outputLogitsConnectionProgress: CGFloat = 0.0
 
     var body: some View {
         ScrollView([.horizontal, .vertical], showsIndicators: true) {
@@ -682,9 +742,9 @@ struct OverviewView: View {
     }
     
     private var content: some View {
-        VStack(alignment: .leading, spacing: 20) {
+        VStack(alignment: .center, spacing: 20) {
             // Existing pipeline views
-            HStack(alignment: .top, spacing: 40) {
+            HStack(alignment: .center, spacing: 20) {
                 // Embedding section
                 
                 EmbeddingSubView(embeddingOutputPosition: $embeddingOutputPosition)
@@ -693,28 +753,52 @@ struct OverviewView: View {
                             .fill(Color.white)
                             .shadow(radius: 5)
                     }
+                    .offset(y: -80)
                     .onTapGesture {
                         currentView = "Embedding Pipeline"
                     }
 
-                AttentionKQVSubView(keyInputPosition: $keyInputPosition, queryInputPosition: $queryInputPosition, valueInputPosition: $valueInputPosition, attentionOutputPosition: $attentionOutputPosition)
-                    .background(StackedBackground())
-                    .onTapGesture {
-                        currentView = "KQV Matrix Pipeline"
-                    }
 
-                FFNSubView(hiddenInputPosition: $hiddenInputPosition, ffnOutputPosition: $ffnOutputPosition)
-                    .background {
+                HStack {
+                    AttentionKQVSubView(keyInputPosition: $keyInputPosition, queryInputPosition: $queryInputPosition, valueInputPosition: $valueInputPosition, attentionOutputPosition: $attentionOutputPosition, headConnectionProgress: $headConnectionProgress, headOutputConnectionProgress: $headOutputConnectionProgress)
+                        .background(StackedBackground())
+                        .padding(20)
+                        .onTapGesture {
+                            currentView = "KQV Matrix Pipeline"
+                        }
+
+                    FFNSubView(hiddenInputPosition: $hiddenInputPosition, ffnOutputPosition: $ffnOutputPosition, ffnOutputConnectionProgress: $ffnOutputConnectionProgress)
+                        .background {
+                            RoundedRectangle(cornerRadius: 16)
+                                .fill(Color.white)
+                                .shadow(radius: 5)
+                        }
+                        .padding(20)
+                        .onTapGesture {
+                            currentView = "Feed-Forward Network Pipeline"
+                        }
+                }
+                .background{
+                    ZStack {
                         RoundedRectangle(cornerRadius: 16)
                             .fill(Color.white)
                             .shadow(radius: 5)
+                        
+                        VStack {
+                            HStack {
+                                Text("Transformer Block")
+                                    .font(.headline)
+                                    .foregroundColor(.gray)
+                                    .padding()
+                                Spacer()
+                            }
+                            Spacer()
+                        }
                     }
-                    .onTapGesture {
-                        currentView = "Feed-Forward Network Pipeline"
-                    }
-                
+                }
+                .padding(.trailing, 50)
 
-                PredictionSubView(indexSelected: $indexSelected, logitsInputPosition: $logitsInputPosition)
+                PredictionSubView(indexSelected: $indexSelected, logitsInputPosition: $logitsInputPosition, outputLogitsConnectionProgress: $outputLogitsConnectionProgress)
                     .background {
                         RoundedRectangle(cornerRadius: 16)
                             .fill(Color.white)
@@ -724,59 +808,71 @@ struct OverviewView: View {
                         currentView = "Prediction Pipeline"
                     }
             }
-        }
-        .overlay {
-            if hiddenInputPositions.count == 2*tokens.count {
-                ForEach(0..<tokens.count) { i in
-                    AnimatedCurveShape(
-                        corner1: embeddingOutputPositions[2*i],
-                        corner2: keyInputPositions[2*i],
-                        corner3: keyInputPositions[2*i+1],
-                        corner4: embeddingOutputPositions[2*i+1],
-                        progress: overallConnectionProgress
-                    )
-                    .fill(Color.green.opacity(0.3))
-                    AnimatedCurveShape(
-                        corner1: embeddingOutputPositions[2*i],
-                        corner2: queryInputPositions[2*i],
-                        corner3: queryInputPositions[2*i+1],
-                        corner4: embeddingOutputPositions[2*i+1],
-                        progress: overallConnectionProgress
-                    )
-                    .fill(Color.orange.opacity(0.3))
-                    AnimatedCurveShape(
-                        corner1: embeddingOutputPositions[2*i],
-                        corner2: valueInputPositions[2*i],
-                        corner3: valueInputPositions[2*i+1],
-                        corner4: embeddingOutputPositions[2*i+1],
-                        progress: overallConnectionProgress
-                    )
-                    .fill(Color.purple.opacity(0.3))
-                    AnimatedCurveShape(
-                        corner1: attentionOutputPositions[2*i],
-                        corner2: hiddenInputPositions[2*i],
-                        corner3: hiddenInputPositions[2*i+1],
-                        corner4: attentionOutputPositions[2*i+1],
-                        progress: overallConnectionProgress
-                    )
-                    .fill(Color.green.opacity(0.3))
+            .overlay {
+                if hiddenInputPositions.count == 2*tokens.count {
+                    ForEach(0..<tokens.count) { i in
+                        AnimatedCurveShape(
+                            corner1: embeddingOutputPositions[2*i],
+                            corner2: keyInputPositions[2*i],
+                            corner3: keyInputPositions[2*i+1],
+                            corner4: embeddingOutputPositions[2*i+1],
+                            progress: kqvConnectionProgress
+                        )
+                        .fill(Color.green.opacity(0.3))
+                        AnimatedCurveShape(
+                            corner1: embeddingOutputPositions[2*i],
+                            corner2: queryInputPositions[2*i],
+                            corner3: queryInputPositions[2*i+1],
+                            corner4: embeddingOutputPositions[2*i+1],
+                            progress: kqvConnectionProgress
+                        )
+                        .fill(Color.orange.opacity(0.3))
+                        AnimatedCurveShape(
+                            corner1: embeddingOutputPositions[2*i],
+                            corner2: valueInputPositions[2*i],
+                            corner3: valueInputPositions[2*i+1],
+                            corner4: embeddingOutputPositions[2*i+1],
+                            progress: kqvConnectionProgress
+                        )
+                        .fill(Color.purple.opacity(0.3))
+                        AnimatedCurveShape(
+                            corner1: attentionOutputPositions[2*i],
+                            corner2: hiddenInputPositions[2*i],
+                            corner3: hiddenInputPositions[2*i+1],
+                            corner4: attentionOutputPositions[2*i+1],
+                            progress: hiddenConnectionProgress
+                        )
+                        .fill(Color.green.opacity(0.3))
+                    }
                 }
-                AnimatedCurveShape(
-                    corner1: CGPoint(x: ffnOutputPosition.x, y: ffnOutputPosition.y+5),
-                    corner2: CGPoint(x: logitsInputPosition.x-5, y: logitsInputPosition.y),
-                    corner3: CGPoint(x: logitsInputPosition.x-5, y: logitsInputPosition.y-649),
-                    corner4: CGPoint(x: ffnOutputPosition.x, y: ffnOutputPosition.y-5),
-                    progress: overallConnectionProgress
-                )
-                .fill(Color.blue.opacity(0.3))
+                if logitsInputPosition != CGPoint(x: 0, y: 0) {
+                    Rectangle()
+                        .fill(
+                            LinearGradient(
+                                gradient: Gradient(colors: [Color.green.opacity(0.3), Color.blue.opacity(0.3)]),
+                                startPoint: .leading,
+                                endPoint: .trailing
+                            )
+                        )
+                        .frame(width: abs(logitsInputPosition.x - ffnOutputPosition.x) * logitsConnectionProgress, height: 85)
+                        .position(x: ffnOutputPosition.x + abs(logitsInputPosition.x - ffnOutputPosition.x) * logitsConnectionProgress / 2, y: ffnOutputPosition.y - 85 / 2)
+                        .opacity(logitsConnectionProgress)
+
+                    Text("11 more Transformer Blocks here")
+                        .font(.caption)
+                        .frame(width: abs(logitsInputPosition.x - ffnOutputPosition.x))
+                        .position(x: ffnOutputPosition.x + abs(logitsInputPosition.x - ffnOutputPosition.x) * logitsConnectionProgress / 2, y: ffnOutputPosition.y - 85 / 2)
+                        .opacity(logitsConnectionProgress)
+                }
             }
         }
+        
         .onAppear {
-            DispatchQueue.main.asyncAfter(deadline: .now()+0.5) {
+            DispatchQueue.main.asyncAfter(deadline: .now()+0.1) {
                 calculatePositions()
-                withAnimation(.easeInOut(duration: 1.0)) {
-                    overallConnectionProgress = 1.0
-                }
+            }
+            DispatchQueue.main.asyncAfter(deadline: .now()+0.5) {
+                playAnimation()
             }
         }
         .coordinateSpace(name: "contentRootView")
@@ -798,6 +894,50 @@ struct OverviewView: View {
             attentionOutputPositions.append(CGPoint(x: attentionOutputPosition.x, y: attentionOutputPosition.y-5-CGFloat(i*15)))
             hiddenInputPositions.append(CGPoint(x: hiddenInputPosition.x, y: hiddenInputPosition.y-CGFloat(i*83)))
             hiddenInputPositions.append(CGPoint(x: hiddenInputPosition.x, y: hiddenInputPosition.y-75-CGFloat(i*83)))
+        }
+    }
+
+    private func playAnimation() {
+        kqvConnectionProgress = 0
+        headConnectionProgress = 0
+        headOutputConnectionProgress = 0
+        hiddenConnectionProgress = 0
+        ffnOutputConnectionProgress = 0
+        logitsConnectionProgress = 0
+        DispatchQueue.main.asyncAfter(deadline: .now()+1) {
+            withAnimation(.easeInOut(duration: 0.5)) {
+                kqvConnectionProgress = 1.0
+            }
+        }
+        DispatchQueue.main.asyncAfter(deadline: .now()+1.5) {
+            withAnimation(.easeInOut(duration: 0.5)) {
+                headConnectionProgress = 1.0
+            }
+        }
+        DispatchQueue.main.asyncAfter(deadline: .now()+2) {
+            withAnimation(.easeInOut(duration: 0.5)) {
+                headOutputConnectionProgress = 1.0
+            }
+        }
+        DispatchQueue.main.asyncAfter(deadline: .now()+2.5) {
+            withAnimation(.easeInOut(duration: 0.5)) {
+                hiddenConnectionProgress = 1.0
+            }
+        }
+        DispatchQueue.main.asyncAfter(deadline: .now()+3) {
+            withAnimation(.easeInOut(duration: 0.5)) {
+                ffnOutputConnectionProgress = 1.0
+            }
+        }
+        DispatchQueue.main.asyncAfter(deadline: .now()+3.5) {
+            withAnimation(.easeInOut(duration: 0.5)) {
+                logitsConnectionProgress = 1.0
+            }
+        }
+        DispatchQueue.main.asyncAfter(deadline: .now()+4.0) {
+            withAnimation(.easeInOut(duration: 0.5)) {
+                outputLogitsConnectionProgress = 1.0
+            }
         }
     }
 }
