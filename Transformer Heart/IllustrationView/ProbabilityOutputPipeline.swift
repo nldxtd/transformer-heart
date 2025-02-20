@@ -25,6 +25,7 @@ struct ProbabilityOutputView: View {
 
     @Binding var currentView: String
     var animationNamespace: Namespace.ID
+    @Binding var selectedComponent: ModelComponent
 
     var body: some View {
 
@@ -61,6 +62,9 @@ struct ProbabilityOutputView: View {
                     .font(.subheadline)
                     .offset(x: 20, y: 100)
                     .opacity(downEmbeddingProgress)
+                    .onTapGesture {
+                        selectedComponent = .unembeddingMatrix
+                    }
 
                 // each block represent a token
                 VStack {
@@ -133,10 +137,10 @@ struct ProbabilityOutputView: View {
                     Text("Next token probabilities")
                         .font(.title)
                         .padding()
-                    ProbabilityView()
+                    ProbabilityView(selectedComponent: $selectedComponent)
                 }
                 .opacity(probPredictionVisible ? 1 : 0)
-                .offset(x: probPredictionVisible ? 0 : -30)
+                .offset(x: probPredictionVisible ? 0 : -30, y: -40)
                 .frame(width: 500)
             }
             .background {
@@ -153,6 +157,7 @@ struct ProbabilityOutputView: View {
         }
         .coordinateSpace(name: "probRootView")
         .onAppear {
+            selectedComponent = .outputProbability
             DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
                 withAnimation(.easeInOut(duration: 0.5)) {
                     highlightLastRow = true
@@ -185,11 +190,15 @@ struct ProbabilityView: View {
     @State private var expos: [Double] = []
     @State private var probs: [Double] = []
     @State private var finalTokenIndex: Int? = nil
+    @Binding var selectedComponent: ModelComponent
     
     var body: some View {
         VStack {
             HStack {
                 Text("Temperature: ")
+                    .onTapGesture {
+                        selectedComponent = .temperature
+                    }
                 Text(String(format: "%.1f", temperature))
                     .foregroundColor(.green)
                 Slider(value: $temperature, in: 0.5...2.0, step: 0.1)
@@ -248,6 +257,9 @@ struct ProbabilityView: View {
                 VStack(alignment: .leading) {
                     Text("Softmax")
                         .font(.subheadline)
+                        .onTapGesture {
+                            selectedComponent = .softmaxProbability
+                        }
                     VStack(alignment: .leading, spacing: 8) {
                         ForEach(probs.indices, id: \.self) { index in
                             HStack(spacing: 8) {

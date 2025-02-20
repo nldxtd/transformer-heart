@@ -1,64 +1,35 @@
 import SwiftUI
 
-/// Todo
-/// Modify the hard-encoding of the embeddingWeight, turn into dictionary
-/// Modify the bezeir curve part on the screen, still got some bugs in the coordinates
-/// Add detail in the graph and
-
 struct InputEmbeddingView: View {
     @State private var embeddingMatrix: VectorListViewModel = VectorListViewModel(matrixWeight: embeddingMatrixWeight)
     @State private var isHorizontal = true // Toggle between horizontal and vertical views
     @State private var showComponents = [false, false, false, false] // Controls visibility of components
     @State private var isMatrixMode = false // Controls the mode of embedding output
-    @State private var animationEnded = true
     
     @Binding var currentView: String
     var animationNamespace: Namespace.ID
-
-    private func revealComponents() {
-        guard !isHorizontal else { return }
-        for index in showComponents.indices {
-            let delay = Double(index)
-            withAnimation(.easeInOut(duration: 0.5).delay(delay)) {
-                showComponents[index] = true
-            }
-        }
-
-        // Calculate the total time for all animations to complete
-        let totalDuration = Double(showComponents.count)-0.5
-        DispatchQueue.main.asyncAfter(deadline: .now() + totalDuration) {
-            isMatrixMode = true
-            animationEnded = true  // Set the flag to true when all animations finish
-        }
-    }
-
-    private func hideComponents() {
-        showComponents = [false, false, false, false]
-        animationEnded = true
-        isMatrixMode = false
-    }
+    @Binding var selectedComponent: ModelComponent
 
     var body: some View {
         VStack(alignment: .center, spacing: 20) {
-            if isHorizontal {
-                Text("Input Sentence")
-                    .font(.headline)
-                Text("Transforomer visualization empowers user to")
-                    .padding()
-                    .font(.subheadline)
-                    .foregroundColor(.blue)
-                    .background {
-                        RoundedRectangle(cornerRadius: 5)
-                            .fill(Color.white)
-                            .shadow(radius: 5)
-                    }
-                Image(systemName: "arrow.down")
-                    .frame(width: 30, height: 30)
-            }
+            Text("Input Sentence")
+                .font(.headline)
+            // Example prompt
+            Text("\"Data visualization empowers users to\"")
+                .font(.system(.body, design: .monospaced))
+                .padding(12)
+                .background(Color.blue.opacity(0.1))
+                .cornerRadius(8)
+
+            Image(systemName: "arrow.down")
+                .frame(width: 30, height: 30)
             HStack(spacing: 20) {
 
-                TokenList(tokens: tokens, title: "Input Tokens", isHorizontal: isHorizontal)
+                TokenList(tokens: tokens, title: "Tokenization", isHorizontal: isHorizontal)
                     .animation(.easeInOut(duration: 0.5), value: isHorizontal)
+                    .onTapGesture {
+                        selectedComponent = .tokenization
+                    }
 
                 if !isHorizontal {
                     HStack{
@@ -68,12 +39,15 @@ struct InputEmbeddingView: View {
                                 Image(systemName: "arrow.right")
                                     .frame(width: 30, height: 30)
                                 
-                                // Embedding Matrix
+                                // Final Embedding
                                 VectorList(dimention: 10, vectors: embeddingMatrix, labels: embeddingMatrixWeight, color: .green, title: "Token Embedding")
                             }
                             .opacity(showComponents[0] ? 1 : 0)
                             .offset(x: showComponents[0] ? 0 : -30)
                             .animation(.easeInOut(duration: 0.5), value: showComponents[0])
+                            .onTapGesture {
+                                selectedComponent = .tokenEmbedding
+                            }
                         }
 
                         if showComponents[1] {
@@ -88,6 +62,9 @@ struct InputEmbeddingView: View {
                             .opacity(showComponents[1] ? 1 : 0)
                             .offset(x: showComponents[1] ? 0 : -30)
                             .animation(.easeInOut(duration: 0.5), value: showComponents[1])
+                            .onTapGesture {
+                                selectedComponent = .positionEncoding
+                            }
                         }
 
                         if showComponents[2] {
@@ -104,7 +81,7 @@ struct InputEmbeddingView: View {
                                     defaultWidth: isMatrixMode ? 12 : 10,
                                     defaultHeight: isMatrixMode ? 13 : 30,
                                     spacing: isMatrixMode ? 2 : 16,
-                                    title: isMatrixMode ? "Embedding Matrix" : "Embedding Output",
+                                    title: isMatrixMode ? "Final Embedding" : "Embedding Output",
                                     matrixMode: isMatrixMode
                                 )
                                 .matchedGeometryEffect(id: "EmbeddingMatrix", in: animationNamespace)
@@ -113,26 +90,32 @@ struct InputEmbeddingView: View {
                             .offset(x: showComponents[2] ? 0 : -30)
                             .animation(.easeInOut(duration: 0.5), value: showComponents[2])
                             .animation(.spring(duration: 0.3), value: isMatrixMode)
+                            .onTapGesture {
+                                selectedComponent = .finalEmbedding
+                            }
                         }
                     }
                     .transition(.move(edge: .leading).combined(with: .opacity))
                 }
             }
         }
-        .onTapGesture {
-            if animationEnded {
-                animationEnded = false
-                // Cancel the outer animation and toggle isHorizontal
-                isHorizontal.toggle() // No animation applied to this state change
-                
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) {
-                    // Trigger the sequential component animations after the state toggle
-                    if isHorizontal {
-                        hideComponents()
-                    } else {
-                        revealComponents()
-                    }
-                }
+        .offset(y: -80)
+        .onAppear {
+            selectedComponent = .embedding
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                isHorizontal = false
+            }
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+                showComponents[0] = true
+            }
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
+                showComponents[1] = true
+            }
+            DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
+                showComponents[2] = true
+            }
+            DispatchQueue.main.asyncAfter(deadline: .now() + 2.5) {
+                isMatrixMode = true
             }
         }
     }

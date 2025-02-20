@@ -36,6 +36,7 @@ struct TransformerFFNView: View {
 
     @Binding var currentView: String
     var animationNamespace: Namespace.ID
+    @Binding var selectedComponent: ModelComponent
 
     var body: some View {
         ZStack {
@@ -297,6 +298,9 @@ struct TransformerFFNView: View {
                         }
                 }
                 .opacity(plusSignVisible ? 1 : 0)
+                .onTapGesture {
+                    selectedComponent = .residualConnection
+                }
 
                 // Transformer output plus residual and Norm
                 VectorList(
@@ -345,6 +349,7 @@ struct TransformerFFNView: View {
             }
         }
         .onAppear {
+            selectedComponent = .ffn
             // animation of load input into ffn
             DispatchQueue.main.asyncAfter(deadline: .now()) {
                 let startTime = DispatchTime.now()

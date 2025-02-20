@@ -42,6 +42,7 @@ struct SingleAttentionHeadView: View {
 
     @Binding var currentView: String
     var animationNamespace: Namespace.ID
+    @Binding var selectedComponent: ModelComponent
 
     var body: some View {
 
@@ -167,6 +168,9 @@ struct SingleAttentionHeadView: View {
                                 .font(.subheadline)
                                 .foregroundColor(.gray)
                         }
+                        .onTapGesture {
+                            selectedComponent = .attentionScore
+                        }
 
                         // Represent of scaling and mask
                         HStack {
@@ -192,6 +196,9 @@ struct SingleAttentionHeadView: View {
                         }
                         .opacity(maskVisible ? 1 : 0)
                         .offset(x: maskVisible ? 0 : -30)
+                        .onTapGesture {
+                            selectedComponent = .masking
+                        }
 
                         // Represent of Softmax
                         HStack {
@@ -234,6 +241,9 @@ struct SingleAttentionHeadView: View {
                         }
                         .opacity(softmaxVisible ? 1 : 0)
                         .offset(x: softmaxVisible ? 0 : -30)
+                        .onTapGesture {
+                            selectedComponent = .softmax
+                        }
                     }
                     .padding()
                     .border(attentionHeadBorderVisible ? Color.black : Color.clear, width: 7)
@@ -315,6 +325,9 @@ struct SingleAttentionHeadView: View {
                         }
                     }
                     .offset(y: -37.5)
+                    .onTapGesture {
+                        selectedComponent = .residualConnection
+                    }
                 }
                 .offset(y: 25)
             }
@@ -374,6 +387,7 @@ struct SingleAttentionHeadView: View {
         }
         .coordinateSpace(name: "rootView")
         .onAppear {
+            selectedComponent = .maskedSelfAttention
             DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
                 calculatePositions()
                 withAnimation(.easeInOut(duration: 1.0)) {

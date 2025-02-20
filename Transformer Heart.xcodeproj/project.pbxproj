@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		8A3DAC462D50C8E00009E7E6 /* Constant.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A3DAC452D50C8DD0009E7E6 /* Constant.swift */; };
+		8A407A372D654BF700534DEF /* ExplanationSubView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A407A362D654BF700534DEF /* ExplanationSubView.swift */; };
 		8A40A8482D3708AD004BA5F6 /* ProbabilityOutputPipeline.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A40A8472D37087F004BA5F6 /* ProbabilityOutputPipeline.swift */; };
 		8A57F7A02D59F60D00253362 /* OverviewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A57F79F2D59F60D00253362 /* OverviewView.swift */; };
 		8A57F7A32D5AC85800253362 /* VectorMatrix.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A57F7A22D5AC85400253362 /* VectorMatrix.swift */; };
@@ -32,10 +33,16 @@
 		8A830B972D33B23F004DEE43 /* AttentionHeadPipeline.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A830B962D33B23F004DEE43 /* AttentionHeadPipeline.swift */; };
 		8A8FA7C62D462BA70079583F /* Curve.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A8FA7C52D462BA70079583F /* Curve.swift */; };
 		8AC7B97A2D35EABC00249EDC /* TransformerFFNPipeline.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8AC7B9792D35EAAF00249EDC /* TransformerFFNPipeline.swift */; };
+		8AE4D6B82D66D83F008CE4FD /* EmbeddingExplanation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8AE4D6B72D66D835008CE4FD /* EmbeddingExplanation.swift */; };
+		8AE4D6BA2D66D84A008CE4FD /* AttentionKQVExplanation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8AE4D6B92D66D843008CE4FD /* AttentionKQVExplanation.swift */; };
+		8AE4D6BC2D66D857008CE4FD /* AttentionHeadExplanation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8AE4D6BB2D66D84E008CE4FD /* AttentionHeadExplanation.swift */; };
+		8AE4D6BE2D66D860008CE4FD /* FFNExplanation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8AE4D6BD2D66D85C008CE4FD /* FFNExplanation.swift */; };
+		8AE4D6C02D66D869008CE4FD /* ProbabilityExplanation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8AE4D6BF2D66D864008CE4FD /* ProbabilityExplanation.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		8A3DAC452D50C8DD0009E7E6 /* Constant.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constant.swift; sourceTree = "<group>"; };
+		8A407A362D654BF700534DEF /* ExplanationSubView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExplanationSubView.swift; sourceTree = "<group>"; };
 		8A40A8472D37087F004BA5F6 /* ProbabilityOutputPipeline.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProbabilityOutputPipeline.swift; sourceTree = "<group>"; };
 		8A57F79F2D59F60D00253362 /* OverviewView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OverviewView.swift; sourceTree = "<group>"; };
 		8A57F7A22D5AC85400253362 /* VectorMatrix.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VectorMatrix.swift; sourceTree = "<group>"; };
@@ -61,6 +68,11 @@
 		8A830B962D33B23F004DEE43 /* AttentionHeadPipeline.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttentionHeadPipeline.swift; sourceTree = "<group>"; };
 		8A8FA7C52D462BA70079583F /* Curve.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Curve.swift; sourceTree = "<group>"; };
 		8AC7B9792D35EAAF00249EDC /* TransformerFFNPipeline.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransformerFFNPipeline.swift; sourceTree = "<group>"; };
+		8AE4D6B72D66D835008CE4FD /* EmbeddingExplanation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmbeddingExplanation.swift; sourceTree = "<group>"; };
+		8AE4D6B92D66D843008CE4FD /* AttentionKQVExplanation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttentionKQVExplanation.swift; sourceTree = "<group>"; };
+		8AE4D6BB2D66D84E008CE4FD /* AttentionHeadExplanation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttentionHeadExplanation.swift; sourceTree = "<group>"; };
+		8AE4D6BD2D66D85C008CE4FD /* FFNExplanation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FFNExplanation.swift; sourceTree = "<group>"; };
+		8AE4D6BF2D66D864008CE4FD /* ProbabilityExplanation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProbabilityExplanation.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -144,6 +156,12 @@
 		8A7B331E2D3C9D590071ADF8 /* IllustrationView */ = {
 			isa = PBXGroup;
 			children = (
+				8AE4D6BF2D66D864008CE4FD /* ProbabilityExplanation.swift */,
+				8AE4D6BD2D66D85C008CE4FD /* FFNExplanation.swift */,
+				8AE4D6BB2D66D84E008CE4FD /* AttentionHeadExplanation.swift */,
+				8AE4D6B92D66D843008CE4FD /* AttentionKQVExplanation.swift */,
+				8AE4D6B72D66D835008CE4FD /* EmbeddingExplanation.swift */,
+				8A407A362D654BF700534DEF /* ExplanationSubView.swift */,
 				8A57F79F2D59F60D00253362 /* OverviewView.swift */,
 				8A7B331C2D3A47DE0071ADF8 /* EmbeddingPipeline.swift */,
 				8A74ADFB2D333C9B00E6B06B /* AttentionKQVPipeline.swift */,
@@ -225,8 +243,10 @@
 			buildActionMask = 2147483647;
 			files = (
 				8A57F7A62D5ADBCB00253362 /* MathPage.swift in Sources */,
+				8AE4D6BA2D66D84A008CE4FD /* AttentionKQVExplanation.swift in Sources */,
 				8A40A8482D3708AD004BA5F6 /* ProbabilityOutputPipeline.swift in Sources */,
 				8A7B33142D3A457D0071ADF8 /* Matrix.swift in Sources */,
+				8AE4D6B82D66D83F008CE4FD /* EmbeddingExplanation.swift in Sources */,
 				8A7B33152D3A457D0071ADF8 /* AttentionHead.swift in Sources */,
 				8A57F7A32D5AC85800253362 /* VectorMatrix.swift in Sources */,
 				8A7B33162D3A457D0071ADF8 /* TokenList.swift in Sources */,
@@ -235,15 +255,19 @@
 				8A57F7AE2D5AE9AE00253362 /* SoftmaxClassification.swift in Sources */,
 				8A3DAC462D50C8E00009E7E6 /* Constant.swift in Sources */,
 				8A7B331D2D3A47E60071ADF8 /* EmbeddingPipeline.swift in Sources */,
+				8A407A372D654BF700534DEF /* ExplanationSubView.swift in Sources */,
 				8A57F7B02D5AE9B900253362 /* DropoutNormalization.swift in Sources */,
 				8A57F7B42D5D89F800253362 /* LaunchPage.swift in Sources */,
+				8AE4D6BE2D66D860008CE4FD /* FFNExplanation.swift in Sources */,
 				8A8FA7C62D462BA70079583F /* Curve.swift in Sources */,
+				8AE4D6C02D66D869008CE4FD /* ProbabilityExplanation.swift in Sources */,
 				8A830B972D33B23F004DEE43 /* AttentionHeadPipeline.swift in Sources */,
 				8AC7B97A2D35EABC00249EDC /* TransformerFFNPipeline.swift in Sources */,
 				8A57F7A82D5AE96F00253362 /* InnerProductSimilarity.swift in Sources */,
 				8A74ADFC2D333C9B00E6B06B /* AttentionKQVPipeline.swift in Sources */,
 				8A65C84D2D31220C0093E12A /* Transformer_HeartApp.swift in Sources */,
 				8A57F7AC2D5AE99700253362 /* FeedforwardNetworkActivation.swift in Sources */,
+				8AE4D6BC2D66D857008CE4FD /* AttentionHeadExplanation.swift in Sources */,
 				8A57F7AA2D5AE97E00253362 /* MatrixMultiplication.swift in Sources */,
 				8A57F7A02D59F60D00253362 /* OverviewView.swift in Sources */,
 				8A57F7B22D5AF2CE00253362 /* InnerProductPlayground.swift in Sources */,

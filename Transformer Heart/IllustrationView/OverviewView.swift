@@ -82,6 +82,9 @@ struct AttentionKQVSubView: View {
     @Binding var attentionOutputPosition: CGPoint
     @Binding var headConnectionProgress: CGFloat
     @Binding var headOutputConnectionProgress: CGFloat
+    @Binding var currentView: String
+    @Binding var selectedComponent: ModelComponent
+
     @State private var headScale: CGFloat = 1.0
 
     @State private var qMatrixView: VectorListViewModel = VectorListViewModel(matrixWeight: qMatrix)
@@ -188,67 +191,79 @@ struct AttentionKQVSubView: View {
                         }
                     }
                 }
+                .onTapGesture {
+                    currentView = "KQV Matrix Pipeline"
+                }
                 .padding()
                 
-                // Attention head with title
-                VStack(alignment: .center, spacing: 8) {
-                    Text("Attention Head")
-                        .font(.headline)
-                        .foregroundColor(.gray)
+                HStack {
+                    // Attention head with title
+                    VStack(alignment: .center, spacing: 8) {
+                        Text("Attention Head")
+                            .font(.headline)
+                            .foregroundColor(.gray)
+                        
+                        AttentionHeadView(
+                            head: tokens.count,
+                            headViewModel: dotHeadView,
+                            title: "",
+                            circleScale: $headScale
+                        )
+                        .background(
+                            GeometryReader { geo in
+                                Color.clear
+                                    .onAppear {
+                                        attentionHeadPosition = CGPoint(
+                                            x: geo.frame(in: .named("attentionBlock")).minX + 10,
+                                            y: geo.frame(in: .named("attentionBlock")).minY + 10
+                                        )
+                                    }
+                            }
+                        )
+                    }
+                    .offset(y: -4)
+                    .padding()
+                    .onTapGesture {
+                        currentView = "Cross Attention Pipeline"
+                    }
                     
-                    AttentionHeadView(
-                        head: tokens.count,
-                        headViewModel: dotHeadView,
-                        title: "",
-                        circleScale: $headScale
-                    )
-                    .background(
-                        GeometryReader { geo in
-                            Color.clear
+                    VStack(alignment: .center, spacing: 8) {
+                        Text("Attention Residual Output")
+                            .frame(width: 60)
+                            .lineLimit(3)
+                            .font(.caption)
+                            .foregroundColor(.gray)
+
+                        VectorList(
+                            dimention: 10,
+                            vectors: kMatrixView,
+                            labels: kMatrix,
+                            color: .gray,
+                            defaultWidth: 3,
+                            defaultHeight: 10,
+                            spacing: 5,
+                            title: "",
+                            matrixMode: false
+                        )
+                        .background {
+                            GeometryReader { geo in
+                                Color.clear
                                 .onAppear {
-                                    attentionHeadPosition = CGPoint(
-                                        x: geo.frame(in: .named("attentionBlock")).minX + 10,
-                                        y: geo.frame(in: .named("attentionBlock")).minY + 10
+                                    attentionOutputPosition = CGPoint(
+                                        x: geo.frame(in: .named("contentRootView")).maxX+5,
+                                        y: geo.frame(in: .named("contentRootView")).maxY-5
                                     )
                                 }
-                        }
-                    )
-                }
-                .offset(y: -4)
-                .padding()
-                
-                VStack(alignment: .center, spacing: 8) {
-                    Text("Attention Residual Output")
-                        .frame(width: 60)
-                        .lineLimit(3)
-                        .font(.caption)
-                        .foregroundColor(.gray)
-
-                    VectorList(
-                        dimention: 10,
-                        vectors: kMatrixView,
-                        labels: kMatrix,
-                        color: .gray,
-                        defaultWidth: 3,
-                        defaultHeight: 10,
-                        spacing: 5,
-                        title: "",
-                        matrixMode: false
-                    )
-                    .background {
-                        GeometryReader { geo in
-                            Color.clear
-                            .onAppear {
-                                attentionOutputPosition = CGPoint(
-                                    x: geo.frame(in: .named("contentRootView")).maxX+5,
-                                    y: geo.frame(in: .named("contentRootView")).maxY-5
-                                )
                             }
                         }
+                        .padding(.trailing, 10)
                     }
-                    .padding(.trailing, 10)
+                    .offset(y: -20)
+                    .onTapGesture {
+                        selectedComponent = .outputConcatenation
+                    }
                 }
-                .offset(y: -20)
+                
             }
             .background {
                 if verticalHeadPositions.count == tokens.count {
@@ -303,6 +318,9 @@ struct AttentionKQVSubView: View {
                         .font(.headline)
                         .foregroundColor(.gray)
                         .padding()
+                        .onTapGesture {
+                            selectedComponent = .multiheadSplitting
+                        }
                 }
             }
         }
@@ -424,8 +442,21 @@ struct FFNSubView: View {
                     }
                 }
             }
+            .padding(.trailing, 40)
         }
         .coordinateSpace(name: "ffnBlock")
+        .overlay {
+            VStack {
+                Spacer()
+                HStack {
+                    Spacer()
+                    Text("Feed-Forward Network")
+                        .font(.headline)
+                        .foregroundColor(.gray)
+                        .padding(.trailing, 10)
+                }
+            }
+        }
         .padding()
         .onAppear {
             DispatchQueue.main.asyncAfter(deadline: .now()+0.1) {
@@ -610,6 +641,18 @@ struct PredictionSubView: View {
             )
             .fill(Color.blue.opacity(0.3))
         }
+        .overlay {
+            VStack {
+                Spacer()
+                HStack {
+                    Spacer()
+                    Text("Last Token Prediction")
+                        .font(.headline)
+                        .foregroundColor(.gray)
+                        .padding()
+                }
+            }
+        }
         .padding(.horizontal, 30)
         .padding(.vertical, 10)
         .onAppear {
@@ -681,6 +724,7 @@ struct OverviewView: View {
     @Binding var lastOffset: CGSize
     @State private var lastScale: CGFloat = 1.0
     @Binding var indexSelected: Int
+    @Binding var selectedComponent: ModelComponent
 
     // Position of the Embedding Layer
     @State var embeddingOutputPosition: CGPoint = CGPoint(x: 0, y: 0)
@@ -755,17 +799,14 @@ struct OverviewView: View {
                     }
                     .offset(y: -80)
                     .onTapGesture {
-                        currentView = "Embedding Pipeline"
+                        currentView = "Embedding Layer"
                     }
 
 
                 HStack {
-                    AttentionKQVSubView(keyInputPosition: $keyInputPosition, queryInputPosition: $queryInputPosition, valueInputPosition: $valueInputPosition, attentionOutputPosition: $attentionOutputPosition, headConnectionProgress: $headConnectionProgress, headOutputConnectionProgress: $headOutputConnectionProgress)
+                    AttentionKQVSubView(keyInputPosition: $keyInputPosition, queryInputPosition: $queryInputPosition, valueInputPosition: $valueInputPosition, attentionOutputPosition: $attentionOutputPosition, headConnectionProgress: $headConnectionProgress, headOutputConnectionProgress: $headOutputConnectionProgress, currentView: $currentView, selectedComponent: $selectedComponent)
                         .background(StackedBackground())
                         .padding(20)
-                        .onTapGesture {
-                            currentView = "KQV Matrix Pipeline"
-                        }
 
                     FFNSubView(hiddenInputPosition: $hiddenInputPosition, ffnOutputPosition: $ffnOutputPosition, ffnOutputConnectionProgress: $ffnOutputConnectionProgress)
                         .background {
@@ -776,6 +817,7 @@ struct OverviewView: View {
                         .padding(20)
                         .onTapGesture {
                             currentView = "Feed-Forward Network Pipeline"
+                            selectedComponent = .ffn
                         }
                 }
                 .background{
@@ -868,6 +910,7 @@ struct OverviewView: View {
         }
         
         .onAppear {
+            selectedComponent = .transformer
             DispatchQueue.main.asyncAfter(deadline: .now()+0.1) {
                 calculatePositions()
             }

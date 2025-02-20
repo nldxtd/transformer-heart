@@ -27,6 +27,7 @@ struct AttentionQKVView: View {
 
     @Binding var currentView: String
     var animationNamespace: Namespace.ID
+    @Binding var selectedComponent: ModelComponent
 
     let vectorListHeight: CGFloat = CGFloat(15 * tokens.count + 20)
     let vectorListWidth: CGFloat = 48
@@ -130,6 +131,7 @@ struct AttentionQKVView: View {
             }
         }
         .onAppear {
+            selectedComponent = .kqvMatrices
             DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
                 QKVMatrixVisible = true
             }
@@ -283,15 +285,5 @@ struct AttentionQKVView: View {
                 startThirdTimer()
             }
         }
-    }
-}
-
-struct AttentionQKVView_Previews: PreviewProvider {
-    static var previews: some View {
-        @Namespace var namespace
-        return AttentionQKVView(
-            currentView: .constant("AttentionQKV"),
-            animationNamespace: namespace
-        )
     }
 }
