@@ -16,7 +16,7 @@ struct SingleAttentionHeadView: View {
     @State private var dotHeadView: AttentionHeadViewModel = AttentionHeadViewModel(
         headWeight: dotHeadWeight)
     @State private var maskHeadView: AttentionHeadViewModel = AttentionHeadViewModel(
-        headWeight: maskHeadWeight)
+        headWeight: dotHeadWeight)
     @State private var softHeadView: AttentionHeadViewModel = AttentionHeadViewModel(
         headWeight: softHeadWeight)
     @State private var kPosition: CGPoint = CGPoint(x: 0, y: 0)
@@ -38,7 +38,10 @@ struct SingleAttentionHeadView: View {
     @State private var finalMultipleProgress: CGFloat = 0
     @State private var plusSignVisible: Bool = false
     @State private var attentionOutputVisible: Bool = false
-    @State private var attentionHeadBorderVisible: Bool = false
+    
+    // state for attention head
+    @State private var highlightRow: Int = -1
+    @State private var highlightCol: Int = -1
 
     @Binding var currentView: String
     var animationNamespace: Namespace.ID
@@ -68,7 +71,8 @@ struct SingleAttentionHeadView: View {
                             vectorSpacing: 0,
                             title: "key",
                             titleWidth: 43,
-                            titleHeight: 20
+                            titleHeight: 20,
+                            highlightRowIndex: highlightCol
                         )
                         .matchedGeometryEffect(id: "kMatix", in: animationNamespace)
                         .frame(width: vectorListWidth, height: vectorListHeight)
@@ -95,7 +99,8 @@ struct SingleAttentionHeadView: View {
                             vectorSpacing: 0,
                             title: "query",
                             titleWidth: 48,
-                            titleHeight: 20
+                            titleHeight: 20,
+                            highlightRowIndex: highlightRow
                         )
                         .matchedGeometryEffect(id: "qMatix", in: animationNamespace)
                         .frame(width: vectorListWidth, height: vectorListHeight)
@@ -122,7 +127,8 @@ struct SingleAttentionHeadView: View {
                             vectorSpacing: 0,
                             title: "value",
                             titleWidth: 43,
-                            titleHeight: 20
+                            titleHeight: 20,
+                            highlightRowIndex: highlightCol
                         )
                         .matchedGeometryEffect(id: "vMatix", in: animationNamespace)
                         .frame(width: vectorListWidth, height: vectorListHeight)
@@ -148,7 +154,9 @@ struct SingleAttentionHeadView: View {
                                 head: tokens.count,
                                 headViewModel: dotHeadView,
                                 title: "Dot Product",
-                                circleScale: $scale
+                                circleScale: $scale,
+                                highlightRow: $highlightRow,
+                                highlightCol: $highlightCol
                             )
                             .overlay(
                                 GeometryReader { geo in
@@ -166,6 +174,7 @@ struct SingleAttentionHeadView: View {
                                 .frame(width: 130)
                                 .lineLimit(1)
                                 .font(.subheadline)
+                                .underline()
                                 .foregroundColor(.gray)
                         }
                         .onTapGesture {
@@ -183,14 +192,18 @@ struct SingleAttentionHeadView: View {
                                 AttentionHeadView(
                                     head: tokens.count,
                                     headViewModel: maskHeadView,
-                                    title: "Scaling · Mask",
-                                    circleScale: $scale
+                                    title: "Masking",
+                                    circleScale: $scale,
+                                    highlightRow: $highlightRow,
+                                    highlightCol: $highlightCol,
+                                    isActive: false
                                 )
 
-                                Text("Scaling · Mask")
+                                Text("Masking")
                                     .frame(width: 130)
                                     .lineLimit(1)
                                     .font(.subheadline)
+                                    .underline()
                                     .foregroundColor(.gray)
                             }
                         }
@@ -212,12 +225,16 @@ struct SingleAttentionHeadView: View {
                                     head: tokens.count,
                                     headViewModel: softHeadView,
                                     title: "Softmax",
-                                    circleScale: $scale
+                                    circleScale: $scale,
+                                    highlightRow: $highlightRow,
+                                    highlightCol: $highlightCol,
+                                    isActive: true
                                 )
                                 Text("Softmax")
                                     .frame(width: 130)
                                     .lineLimit(1)
                                     .font(.subheadline)
+                                    .underline()
                                     .foregroundColor(.gray)
                             }
                             .overlay(
@@ -246,7 +263,6 @@ struct SingleAttentionHeadView: View {
                         }
                     }
                     .padding()
-                    .border(attentionHeadBorderVisible ? Color.black : Color.clear, width: 7)
                     .cornerRadius(7)
 
                     // Represent of final matrix calculation
@@ -261,7 +277,8 @@ struct SingleAttentionHeadView: View {
                             defaultHeight: 13,
                             spacing: 2,
                             title: "Embedding Matrix",
-                            matrixMode: true
+                            matrixMode: true,
+                            highlightRowIndex: highlightRow
                         )
                         .offset(x: -65, y: -70)
                         .matchedGeometryEffect(id: "Embedding Matrix", in: animationNamespace)
@@ -312,12 +329,13 @@ struct SingleAttentionHeadView: View {
                                 dimention: 10,
                                 vectors: embeddingMatrix,
                                 labels: embeddingMatrixWeight,
-                                color: .gray,
+                                color: .mint,
                                 defaultWidth: 12,
                                 defaultHeight: 13,
                                 spacing: 2,
                                 title: "Attention Output",
-                                matrixMode: true
+                                matrixMode: true,
+                                highlightRowIndex: highlightRow
                             )
                             .offset(y: -45)
                             .opacity(attentionOutputVisible ? 1 : 0)
@@ -330,6 +348,16 @@ struct SingleAttentionHeadView: View {
                     }
                 }
                 .offset(y: 25)
+                .background {
+                    Text("Matrix Multiplication")
+                        .font(.caption)
+                        .foregroundColor(.gray)
+                        .underline()
+                        .offset(x: -300, y: 200)
+                        .onTapGesture {
+                            selectedComponent = .valueSoftmaxMul
+                        }
+                }
             }
             .background {
                 if verticalHeadPositions.count == tokens.count {
@@ -371,7 +399,7 @@ struct SingleAttentionHeadView: View {
                         corner4: smBottomPosition,
                         progress: finalMultipleProgress
                     )
-                    .fill(Color.blue.opacity(0.3))
+                    .fill(Color.mint.opacity(0.3))
                 }
                 VerticleAnimatedCurveShape(
                     corner1: CGPoint(
@@ -408,7 +436,7 @@ struct SingleAttentionHeadView: View {
                 withAnimation(.easeInOut(duration: 0.5)) {
                     for i in 0..<tokens.count {
                         for j in i + 1..<tokens.count {
-                            maskHeadView.headWeight[i][j] = 0
+                            maskHeadView.headWeight[i][j] = maskHeadWeight[i][j]
                         }
                     }
                 }
@@ -431,11 +459,6 @@ struct SingleAttentionHeadView: View {
             DispatchQueue.main.asyncAfter(deadline: .now() + 8) {
                 withAnimation(.easeInOut(duration: 1)) {
                     attentionOutputVisible = true
-                }
-            }
-            DispatchQueue.main.asyncAfter(deadline: .now() + 9) {
-                withAnimation(.easeInOut(duration: 0.5)) {
-                    attentionHeadBorderVisible = true
                 }
             }
         }

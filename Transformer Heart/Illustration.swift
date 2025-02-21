@@ -66,10 +66,10 @@ struct GPTIllustrationView: View {
     let pipelineNames = [
         "Model Overview",
         "Embedding Layer",
-        "KQV Matrix Pipeline",
-        "Cross Attention Pipeline",
+        "KQV Matrix Multiplication",
+        "Single-Head Self Attention",
         "Feed-Forward Network Pipeline",
-        "Prediction Pipeline",
+        "Next Token Prediction",
     ]
 
     var body: some View {     
@@ -120,17 +120,17 @@ struct GPTIllustrationView: View {
                 } else if currentView == "Embedding Layer" {
                     InputEmbeddingView(
                         currentView: $currentView, animationNamespace: animationNamespace, selectedComponent: $selectedComponent)
-                } else if currentView == "KQV Matrix Pipeline" {
+                } else if currentView == "KQV Matrix Multiplication" {
                     AttentionQKVView(
                         currentView: $currentView, animationNamespace: animationNamespace, selectedComponent: $selectedComponent)
-                } else if currentView == "Cross Attention Pipeline" {
+                } else if currentView == "Single-Head Self Attention" {
                     SingleAttentionHeadView(
                         currentView: $currentView, animationNamespace: animationNamespace, selectedComponent: $selectedComponent)
                 } else if currentView == "Feed-Forward Network Pipeline" {
                     TransformerFFNView(
                         currentView: $currentView, animationNamespace: animationNamespace, selectedComponent: $selectedComponent)
                         .scaleEffect(0.9)
-                } else if currentView == "Prediction Pipeline" {
+                } else if currentView == "Next Token Prediction" {
                     ProbabilityOutputView(
                         currentView: $currentView, animationNamespace: animationNamespace, selectedComponent: $selectedComponent)
                         .scaleEffect(0.9)
@@ -177,7 +177,7 @@ struct GPTIllustrationView: View {
                                     curIdx == pipelineNames.count - 1
                                         ? pipelineNames.count - 1 : curIdx + 1]
                             },
-                            isDisabled: currentView == "Prediction Pipeline"
+                            isDisabled: currentView == "Next Token Prediction"
                         )
                     }
                     .padding(8)
@@ -223,80 +223,163 @@ struct GPTIllustrationView: View {
 
 struct GuideView: View {
     @Environment(\.dismiss) var dismiss
+    @State private var currentPage = 0
     
     var body: some View {
         NavigationView {
-            ScrollView {
-                VStack(spacing: 25) {
-                    // Title
-                    Text("Welcome to Transformer Visualization")
-                        .font(.title)
-                        .fontWeight(.bold)
-                    
-                    // Transformer Introduction Section
-                    VStack(alignment: .leading, spacing: 15) {
-                        Text("What is a Transformer?")
-                            .font(.title2)
-                            .fontWeight(.semibold)
-                        
-                        Text("Transformer is a neural network architecture that has fundamentally changed the approach to Artificial Intelligence. Transformer was first introduced in the seminal paper 'Attention is All You Need' in 2017 and has since become the go-to architecture for deep learning models, powering text-generative models like OpenAI's GPT, Meta's Llama, and Google's Gemini.")
-                            .font(.body)
-                            .foregroundColor(.secondary)
-                        
-                        Text("Fundamentally, text-generative Transformer models operate on the principle of next-word prediction: given a text prompt from the user, what is the most probable next word that will follow this input? The core innovation and power of Transformers lie in their use of self-attention mechanism, which allows them to process entire sequences and capture long-range dependencies more effectively than previous architectures. We illustrate this process using GPT-2 which is not the latest model but shares common architecture and components with SOTA models.")
-                            .font(.body)
-                            .foregroundColor(.secondary)
-                    }
-                    .padding()
-                    .background(
-                        RoundedRectangle(cornerRadius: 12)
-                            .fill(Color.blue.opacity(0.1))
-                    )
-                    
-                    // Interaction Guide Section
-                    VStack(alignment: .leading, spacing: 20) {
-                        Text("How to Interact")
-                            .font(.title2)
-                            .fontWeight(.semibold)
-                        
-                        VStack(alignment: .leading, spacing: 15) {
-                            GuideItem(
-                                icon: "hand.draw.fill",
-                                title: "Zoom & Drag",
-                                text: "The model architecture can be zoomed and dragged to serve your best observation"
-                            )
-                            
-                            GuideItem(
-                                icon: "hand.tap.fill",
-                                title: "Interactive Elements",
-                                text: "Everything is clickable! Click on any element that makes you confused to learn more"
-                            )
-                            
-                            GuideItem(
-                                icon: "arrow.left.and.right.square.fill",
-                                title: "Step-by-Step",
-                                text: "Follow the visualization to understand how Transformer processes and predicts the next token"
-                            )
+            VStack(spacing: 20) {
+                // Page Control
+                HStack {
+                    PageButton(text: "What is Transformer?", isSelected: currentPage == 0) {
+                        withAnimation {
+                            currentPage = 0
                         }
                     }
-                    .padding()
-                    .background(
-                        RoundedRectangle(cornerRadius: 12)
-                            .fill(Color.green.opacity(0.1))
-                    )
                     
-                    // Dismiss Button
-                    Button("Start Exploring") {
+                    PageButton(text: "How to Use", isSelected: currentPage == 1) {
+                        withAnimation {
+                            currentPage = 1
+                        }
+                    }
+                }
+                .padding(.horizontal)
+                .padding(.top)
+                
+                // Page Content
+                TabView(selection: $currentPage) {
+                    // Page 1: Transformer Introduction
+                    TransformerIntroPage()
+                        .tag(0)
+                    
+                    // Page 2: Usage Guide
+                    UsageGuidePage()
+                        .tag(1)
+                }
+                .tabViewStyle(.page(indexDisplayMode: .never))
+                
+                // Dismiss Button
+                Button(currentPage == 0 ? "Next" : "Start Exploring") {
+                    if currentPage == 0 {
+                        withAnimation {
+                            currentPage = 1
+                        }
+                    } else {
                         dismiss()
                     }
-                    .font(.headline)
-                    .foregroundColor(.white)
-                    .frame(width: 200, height: 44)
-                    .background(Color.blue)
-                    .cornerRadius(10)
+                }
+                .font(.headline)
+                .foregroundColor(.white)
+                .frame(width: 200, height: 44)
+                .background(Color.blue)
+                .cornerRadius(10)
+                .padding(.bottom)
+            }
+        }
+    }
+}
+
+struct PageButton: View {
+    let text: String
+    let isSelected: Bool
+    let action: () -> Void
+    
+    var body: some View {
+        Button(action: action) {
+            Text(text)
+                .font(.headline)
+                .foregroundColor(isSelected ? .primary : .secondary)
+                .padding(.vertical, 8)
+                .padding(.horizontal, 16)
+                .background(
+                    RoundedRectangle(cornerRadius: 8)
+                        .fill(isSelected ? Color.blue.opacity(0.1) : Color.clear)
+                )
+        }
+    }
+}
+
+struct TransformerIntroPage: View {
+    var body: some View {
+        ScrollView {
+            VStack(alignment: .leading, spacing: 25) {
+                // Title
+                Text("Welcome to Transformer Visualization")
+                    .font(.title)
+                    .fontWeight(.bold)
+                
+                // Transformer Introduction Section
+                VStack(alignment: .leading, spacing: 15) {
+                    Text("What is a Transformer?")
+                        .font(.title2)
+                        .fontWeight(.semibold)
+                    
+                    Text("Transformer is a neural network architecture that has fundamentally changed the approach to Artificial Intelligence. Transformer was first introduced in the seminal paper 'Attention is All You Need' in 2017 and has since become the go-to architecture for deep learning models, powering text-generative models like OpenAI's GPT, Meta's Llama, and Google's Gemini.")
+                        .font(.body)
+                        .foregroundColor(.secondary)
+                    
+                    Text("Fundamentally, text-generative Transformer models operate on the principle of next-word prediction: given a text prompt from the user, what is the most probable next word that will follow this input? The core innovation and power of Transformers lie in their use of self-attention mechanism, which allows them to process entire sequences and capture long-range dependencies more effectively than previous architectures. We illustrate this process using GPT-2 which is not the latest model but shares common architecture and components with SOTA models.")
+                        .font(.body)
+                        .foregroundColor(.secondary)
                 }
                 .padding()
+                .background(
+                    RoundedRectangle(cornerRadius: 12)
+                        .fill(Color.blue.opacity(0.1))
+                )
             }
+            .padding()
+        }
+    }
+}
+
+struct UsageGuidePage: View {
+    var body: some View {
+        ScrollView {
+            VStack(alignment: .leading, spacing: 25) {
+                // Title
+                Text("How to Use This App")
+                    .font(.title)
+                    .fontWeight(.bold)
+                
+                // Interaction Guide Section
+                VStack(alignment: .leading, spacing: 20) {
+                    Text("Interactive Features")
+                        .font(.title2)
+                        .fontWeight(.semibold)
+                    
+                    VStack(alignment: .leading, spacing: 15) {
+                        GuideItem(
+                            icon: "hand.draw.fill",
+                            title: "Zoom & Drag",
+                            text: "The model architecture can be zoomed and dragged to serve your best observation"
+                        )
+
+                        GuideItem(
+                            icon: "button.programmable",
+                            title: "Use the button",
+                            text: "Use the button on the top-right side of the screen to switch between views and return to overview"
+                        )
+                        
+                        GuideItem(
+                            icon: "hand.tap.fill",
+                            title: "Interactive Elements",
+                            text: "Everything is clickable! Click on any element that makes you confused to learn more"
+                        )
+                        
+                        GuideItem(
+                            icon: "arrow.left.and.right.square.fill",
+                            title: "Step-by-Step",
+                            text: "Follow the visualization to understand how Transformer processes and predicts the next token"
+                        )
+                    }
+                }
+                .padding()
+                .background(
+                    RoundedRectangle(cornerRadius: 12)
+                        .fill(Color.green.opacity(0.1))
+                )
+            }
+            .padding()
         }
     }
 }

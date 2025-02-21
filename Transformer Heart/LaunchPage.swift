@@ -19,7 +19,7 @@ struct LaunchPage: View {
             // Main Content
             VStack(spacing: 40) {
                 // Title Section
-                VStack(spacing: 15) {
+                HStack(spacing: 15) {
                     Text("Transformer")
                         .font(.system(size: 48, weight: .bold, design: .rounded))
                         .foregroundColor(.blue)
@@ -47,7 +47,7 @@ struct LaunchPage: View {
                         GPTIllustrationView()
                     } label: {
                         HStack {
-                            Text("To begin with: GPT-2")
+                            Text("Transformer Overview")
                             Image(systemName: "arrow.right.circle.fill")
                         }
                         .font(.title3)
@@ -55,21 +55,6 @@ struct LaunchPage: View {
                         .foregroundColor(.white)
                         .frame(width: 300, height: 50)
                         .background(Color.blue)
-                        .cornerRadius(10)
-                    }
-                    
-                    NavigationLink {
-                        DeepseekView()
-                    } label: {
-                        HStack {
-                            Text("Most recent: DeepSeek")
-                            Image(systemName: "arrow.right.circle.fill")
-                        }
-                        .font(.title3)
-                        .fontWeight(.semibold)
-                        .foregroundColor(.white)
-                        .frame(width: 300, height: 50)
-                        .background(Color.green)
                         .cornerRadius(10)
                     }
                 }
@@ -81,18 +66,15 @@ struct LaunchPage: View {
                     }
                 }) {
                     HStack {
-                        Image(systemName: "function")
-                        Text("If needed: Learn the math basics")
-                        Image(systemName: "arrow.right.circle")
+                        Text("Math Basics")
+                        Image(systemName: "arrow.right.circle.fill")
                     }
-                    .font(.subheadline)
-                    .foregroundColor(.blue)
-                    .padding(.horizontal, 20)
-                    .padding(.vertical, 10)
-                    .background(
-                        RoundedRectangle(cornerRadius: 20)
-                            .stroke(Color.blue, lineWidth: 1)
-                    )
+                    .font(.title3)
+                    .fontWeight(.semibold)
+                    .foregroundColor(.white)
+                    .frame(width: 300, height: 50)
+                    .background(Color.green)
+                    .cornerRadius(10)
                 }
             }
             .padding()
@@ -194,12 +176,6 @@ struct GridPattern: Shape {
         }
         
         return path
-    }
-}
-
-struct DeepseekView: View {
-    var body: some View {
-        Text("Deepseek View")
     }
 }
 

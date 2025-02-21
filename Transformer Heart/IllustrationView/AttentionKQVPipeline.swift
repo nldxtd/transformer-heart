@@ -31,7 +31,7 @@ struct AttentionQKVView: View {
 
     let vectorListHeight: CGFloat = CGFloat(15 * tokens.count + 20)
     let vectorListWidth: CGFloat = 48
-
+    
     var body: some View {
         ZStack {
             HStack {

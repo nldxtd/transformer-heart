@@ -42,7 +42,7 @@ struct HorizontalCurveConnection: View {
             }
         }
         .trim(from: 0, to: progress)
-        .stroke(color, lineWidth: 2)
+        .stroke(color.opacity(0.3), lineWidth: 2)
     }
 }
 
@@ -70,7 +70,7 @@ struct VerticalCurveConnection: View {
             path.addLine(to: CGPoint(x: end.x, y: end.y + 110))
         }
         .trim(from: 0, to: progress)
-        .stroke(color, lineWidth: 2)
+        .stroke(color.opacity(0.3), lineWidth: 2)
     }
 }
 

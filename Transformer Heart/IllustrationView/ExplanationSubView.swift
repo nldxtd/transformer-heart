@@ -19,13 +19,14 @@ enum ModelComponent: String {
     case attentionScore = "Attention Score"
     case masking = "Masking"
     case softmax = "Softmax"
+    case valueSoftmaxMul = "Value Score Multiplication"
     case outputConcatenation = "Output and Concatenation"
     // tag
     case residualConnection = "Residual Connection"
     
     case ffn = "Feed Forward Network"
     
-    case outputProbability = "Next Token Probability"
+    case outputProbability = "Next Token Prediction"
     case unembeddingMatrix = "Unembedding Matrix"
     case temperature = "Temperature"
     case softmaxProbability = "Softmax Probability"
@@ -70,6 +71,8 @@ enum ModelComponent: String {
         case .softmax:
             return "Normalizing attention scores into probabilities that sum to 1."
             
+        case .valueSoftmaxMul:
+            return "Multiple value vectors with attention-head scores to be added back to embedding vectors."
         case .outputConcatenation:
             return "Combining outputs from multiple attention heads into a single representation."            
         case .residualConnection:
@@ -195,6 +198,8 @@ struct DetailedExplanation: View {
                 MaskingExplanation()
             case .softmax:
                 SoftmaxExplanation()
+            case .valueSoftmaxMul:
+                ValueSoftmaxMulExplanation()
             case .outputConcatenation:
                 OutputConcatenationExplanation()
             case .residualConnection:

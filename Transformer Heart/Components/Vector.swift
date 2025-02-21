@@ -42,16 +42,16 @@ struct VectorView: View {
                         .fill(color.opacity(vectorWeight[index]))
                         .frame(width: defaultWidth*zoom, height: defaultHeight*zoom)
                         .overlay(
-                            Text(String(format: "%.2f", labels[index]))
-                                .font(.caption)
-                                .opacity(withLabel ? 1 : 0)
+                            withLabel ? Text(String(format: "%.2f", labels[index]))
+                                .font(.caption) : nil
                         )
                 }
             }
             .cornerRadius(matrixMode ? 0 : cornerRadius*zoom)
             .overlay(
-                RoundedRectangle(cornerRadius: 0)
-                    .stroke(Color.blue.opacity(highlightRow ? 0.3 : 0), lineWidth: highlightRow ? 3 : 0)
+                highlightRow ?
+                    RoundedRectangle(cornerRadius: 0)
+                        .stroke(Color.red, lineWidth: 3) : nil
             )
         }
     }
@@ -126,8 +126,8 @@ struct VectorList: View {
     var titleWidth: CGFloat = 140
     var titleHeight: CGFloat = 60
     var matrixMode: Bool = false
-    var highlightLastRow: Bool = false
     var withLabel: Bool = false
+    var highlightRowIndex: Int = -1
 
     var body: some View {
         VStack(alignment: .center, spacing: 5) {
@@ -148,7 +148,7 @@ struct VectorList: View {
                         defaultHeight: defaultHeight,
                         spacing: vectorSpacing,
                         matrixMode: matrixMode,
-                        highlightRow: index==vectors.vectorListWeight.count-1 ? highlightLastRow : false,
+                        highlightRow: index==highlightRowIndex,
                         withLabel: withLabel
                     )
                 }

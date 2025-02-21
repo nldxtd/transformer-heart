@@ -50,7 +50,7 @@ struct EmbeddingSubView: View {
                     dimention: 10,
                     vectors: embeddingMatrix,
                     labels: embeddingMatrixWeight,
-                    color: .green,
+                    color: .gray,
                     defaultWidth: 6,
                     defaultHeight: 16,
                     spacing: 8,
@@ -90,7 +90,7 @@ struct AttentionKQVSubView: View {
     @State private var qMatrixView: VectorListViewModel = VectorListViewModel(matrixWeight: qMatrix)
     @State private var kMatrixView: VectorListViewModel = VectorListViewModel(matrixWeight: kMatrix)
     @State private var vMatrixView: VectorListViewModel = VectorListViewModel(matrixWeight: vMatrix)
-    @State private var dotHeadView: AttentionHeadViewModel = AttentionHeadViewModel(headWeight: dotHeadWeight)
+    @State private var softmaxHeadView: AttentionHeadViewModel = AttentionHeadViewModel(headWeight: softHeadWeight)
 
     @State private var kPosition: CGPoint = CGPoint(x: 0, y: 0)
     @State private var qPosition: CGPoint = CGPoint(x: 0, y: 0)
@@ -100,11 +100,13 @@ struct AttentionKQVSubView: View {
     @State private var qPositions: [CGPoint] = []
     @State private var horizontalHeadPositions: [CGPoint] = []
     @State private var verticalHeadPositions: [CGPoint] = []
+    @State private var highlightRow: Int = -1
+    @State private var highlightCol: Int = -1
 
     var body: some View {
         // KQV section
         ZStack {
-            HStack(alignment: .center, spacing: 40) {
+            HStack(alignment: .center) {
                 // KQV vectors
                 VStack(spacing: 20) {
                     // Key Vector
@@ -192,11 +194,11 @@ struct AttentionKQVSubView: View {
                     }
                 }
                 .onTapGesture {
-                    currentView = "KQV Matrix Pipeline"
+                    currentView = "KQV Matrix Multiplication"
                 }
                 .padding()
                 
-                HStack {
+                HStack(spacing: 25) {
                     // Attention head with title
                     VStack(alignment: .center, spacing: 8) {
                         Text("Attention Head")
@@ -205,9 +207,12 @@ struct AttentionKQVSubView: View {
                         
                         AttentionHeadView(
                             head: tokens.count,
-                            headViewModel: dotHeadView,
+                            headViewModel: softmaxHeadView,
                             title: "",
-                            circleScale: $headScale
+                            circleScale: $headScale,
+                            highlightRow: $highlightRow,
+                            highlightCol: $highlightCol,
+                            isActive: false
                         )
                         .background(
                             GeometryReader { geo in
@@ -224,7 +229,7 @@ struct AttentionKQVSubView: View {
                     .offset(y: -4)
                     .padding()
                     .onTapGesture {
-                        currentView = "Cross Attention Pipeline"
+                        currentView = "Single-Head Self Attention"
                     }
                     
                     VStack(alignment: .center, spacing: 8) {
@@ -233,12 +238,13 @@ struct AttentionKQVSubView: View {
                             .lineLimit(3)
                             .font(.caption)
                             .foregroundColor(.gray)
+                            .underline()
 
                         VectorList(
                             dimention: 10,
                             vectors: kMatrixView,
                             labels: kMatrix,
-                            color: .gray,
+                            color: .mint,
                             defaultWidth: 3,
                             defaultHeight: 10,
                             spacing: 5,
@@ -283,13 +289,13 @@ struct AttentionKQVSubView: View {
                     }
                     let vTopPosition: CGPoint = CGPoint(x: vPosition.x, y: vPosition.y - 75)
                     let smHeadPosition: CGPoint = CGPoint(
-                        x: attentionHeadPosition.x+130, y: attentionHeadPosition.y)
+                        x: attentionHeadPosition.x+125, y: attentionHeadPosition.y)
                     let smBottomPosition: CGPoint = CGPoint(
                         x: smHeadPosition.x, y: smHeadPosition.y + 110)
                     let valueTopEndPosition: CGPoint = CGPoint(
-                        x: smHeadPosition.x + 40, y: smHeadPosition.y + 22)
+                        x: smHeadPosition.x + 30, y: smHeadPosition.y + 22)
                     let valueBottomEndPotision: CGPoint = CGPoint(
-                        x: smHeadPosition.x + 40, y: smHeadPosition.y + 88)
+                        x: smHeadPosition.x + 30, y: smHeadPosition.y + 88)
                     AnimatedCurveShape(
                         corner1: vTopPosition,
                         corner2: valueTopEndPosition,
@@ -305,7 +311,7 @@ struct AttentionKQVSubView: View {
                         corner4: smBottomPosition,
                         progress: headOutputConnectionProgress
                     )
-                    .fill(Color.blue.opacity(0.3))
+                    .fill(Color.mint.opacity(0.3))
                 }
             }
         }
@@ -317,6 +323,7 @@ struct AttentionKQVSubView: View {
                     Text("1 of 12 Attention Head")
                         .font(.headline)
                         .foregroundColor(.gray)
+                        .underline()
                         .padding()
                         .onTapGesture {
                             selectedComponent = .multiheadSplitting
@@ -364,7 +371,7 @@ struct FFNSubView: View {
             HStack(alignment: .center, spacing: 20) { 
                 // Hidden layer (up-dimensioned)
                 VStack(spacing: 15) {
-                    Text("hidden")
+                    Text("Hidden layer")
                         .font(.caption)
                         .foregroundColor(.gray)
                     
@@ -374,7 +381,7 @@ struct FFNSubView: View {
                                 dimention: 15,
                                 vector: hiddenVectors[i],
                                 labels: hiddenLayerMatrixWeight[i].map{String($0)},
-                                color: .orange,
+                                color: .teal,
                                 defaultWidth: 10,
                                 defaultHeight: 5,
                                 spacing: 0
@@ -406,7 +413,7 @@ struct FFNSubView: View {
                         dimention: 10,
                         vectors: outputVectors,
                         labels: feedForwardMatrixWeight,
-                        color: .green,
+                        color: .cyan,
                         defaultWidth: 3,
                         defaultHeight: 10,
                         spacing: 5,
@@ -438,7 +445,7 @@ struct FFNSubView: View {
                             corner4: hiddenVectorPositions[2*i+1],
                             progress: ffnOutputConnectionProgress
                         )
-                        .fill(Color.green.opacity(0.3))
+                        .fill(Color.cyan.opacity(0.3))
                     }
                 }
             }
@@ -847,7 +854,7 @@ struct OverviewView: View {
                             .shadow(radius: 5)
                     }
                     .onTapGesture {
-                        currentView = "Prediction Pipeline"
+                        currentView = "Next Token Prediction"
                     }
             }
             .overlay {
@@ -884,14 +891,14 @@ struct OverviewView: View {
                             corner4: attentionOutputPositions[2*i+1],
                             progress: hiddenConnectionProgress
                         )
-                        .fill(Color.green.opacity(0.3))
+                        .fill(Color.teal.opacity(0.3))
                     }
                 }
                 if logitsInputPosition != CGPoint(x: 0, y: 0) {
                     Rectangle()
                         .fill(
                             LinearGradient(
-                                gradient: Gradient(colors: [Color.green.opacity(0.3), Color.blue.opacity(0.3)]),
+                                gradient: Gradient(colors: [Color.cyan.opacity(0.3), Color.blue.opacity(0.3)]),
                                 startPoint: .leading,
                                 endPoint: .trailing
                             )

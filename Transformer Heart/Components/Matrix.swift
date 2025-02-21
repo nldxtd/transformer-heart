@@ -95,7 +95,7 @@ struct KQVMatrixView: View {
     var col: Int
     @ObservedObject var matrixViewModel: MatrixViewModel
     var tokensCount : Int = 7
-    var colors: [Color] = [.green, .orange, .purple]
+    var colors: [Color] = [.orange, .green, .purple]
     var backgroundColor: Color = Color.gray
     var largeTitle: String = "QKV Matrix"
     var largeTitleFont: Font = .headline

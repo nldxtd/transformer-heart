@@ -2,9 +2,9 @@ import SwiftUI
 
 struct TransformerFFNView: View {
     @State private var attentionOutputMatrix: VectorListViewModel = VectorListViewModel(
-        matrixWeight: embeddingMatrixWeight)
+        matrixWeight: embeddingMatrixWeight.map{ $0.map {$0/2 }})
     @State private var feedforwardOutputMatrix: VectorListViewModel = VectorListViewModel(
-        matrixWeight: feedForwardMatrixWeight)
+        matrixWeight: Array(repeating: Array(repeating: 0, count: 10), count: 6))
     @State private var finalOutputMatrix: VectorListViewModel = VectorListViewModel(
         matrixWeight: feedForwardOutputMatrixWeight)
     @State private var attentionOutputPosition: CGPoint = CGPoint(x: 0, y: 0)
@@ -33,6 +33,7 @@ struct TransformerFFNView: View {
     @State private var plusSignVisible: Bool = false
     @State private var attentionOutputMoved: Bool = false
     @State private var finalOutputVisible: Bool = false
+    @State private var finalPlusProgress: CGFloat = 0
 
     @Binding var currentView: String
     var animationNamespace: Namespace.ID
@@ -45,7 +46,7 @@ struct TransformerFFNView: View {
                     dimention: 10,
                     vectors: attentionOutputMatrix,
                     labels: embeddingMatrixWeight,
-                    color: .gray,
+                    color: .mint,
                     defaultWidth: 12,
                     defaultHeight: 13,
                     spacing: 2,
@@ -53,8 +54,8 @@ struct TransformerFFNView: View {
                     matrixMode: true
                 )
                 .position(
-                    x: attentionOutputMoved ? plusSignPosition.x+10 : attentionOutputPosition.x,
-                    y: attentionOutputMoved ? 180 : attentionOutputPosition.y
+                    x: attentionOutputMoved ? plusSignPosition.x : attentionOutputPosition.x,
+                    y: attentionOutputMoved ? 200 : attentionOutputPosition.y
                 )
                 .opacity(attentionOutputMoved ? 1 : 0)
 
@@ -65,7 +66,7 @@ struct TransformerFFNView: View {
                     dimention: 10,
                     vectors: attentionOutputMatrix,
                     labels: embeddingMatrixWeight,
-                    color: .gray,
+                    color: .mint,
                     defaultWidth: 12,
                     defaultHeight: 13,
                     spacing: 2,
@@ -94,20 +95,21 @@ struct TransformerFFNView: View {
                     HStack(spacing: 40) {
                         // Input Layer of FFN
                         VStack {
+                            Text("Input layer")
+                                .font(.caption)
+                                .foregroundColor(.gray)
+                                .padding()
                             ForEach(0..<10) { idx in
                                 Circle()
-                                    .stroke(Color.black, lineWidth: 2)
+                                    .stroke(Color.mint, lineWidth: 2)
                                     .frame(width: 30, height: 30)
                                     .background {
                                         GeometryReader { geo in
                                             ZStack {
                                                 Circle().fill(Color.white)
-
-                                                let grayValue = max(
-                                                    0, min(1, 1 - inputLayerGrayer[idx]))
                                                 let maskWidth = max(0, inputLayerMask[idx])
 
-                                                Circle().fill(Color(white: grayValue, opacity: 1.0))
+                                                Circle().fill(Color.mint.opacity(inputLayerGrayer[idx]))
                                                     .mask(
                                                         Rectangle()
                                                             .frame(width: maskWidth, height: 30)
@@ -134,20 +136,21 @@ struct TransformerFFNView: View {
 
                         // Hidden Layer of FFN
                         VStack {
+                            Text("Hidden layer")
+                                .font(.caption)
+                                .foregroundColor(.gray)
+                                .padding()
                             ForEach(0..<7) { idx in
                                 Circle()
-                                    .stroke(Color.black, lineWidth: 2)
+                                    .stroke(Color.teal, lineWidth: 2)
                                     .frame(width: 30, height: 30)
                                     .background {
                                         GeometryReader { geo in
                                             ZStack {
                                                 Circle().fill(Color.white)
-
-                                                let grayValue = max(
-                                                    0, min(1, 1 - hiddenLayerUpperGrayer[idx]))
                                                 let maskWidth = max(0, hiddenLayerUpperMask[idx])
 
-                                                Circle().fill(Color(white: grayValue, opacity: 1.0))
+                                                Circle().fill(Color.teal.opacity(hiddenLayerUpperGrayer[idx]))
                                                     .mask(
                                                         Rectangle()
                                                             .frame(width: maskWidth, height: 30)
@@ -173,18 +176,15 @@ struct TransformerFFNView: View {
                             Text("⋮")
                             ForEach(0..<7) { idx in
                                 Circle()
-                                    .stroke(Color.black, lineWidth: 2)
+                                    .stroke(Color.teal, lineWidth: 2)
                                     .frame(width: 30, height: 30)
                                     .background {
                                         GeometryReader { geo in
                                             ZStack {
                                                 Circle().fill(Color.white)
-
-                                                let grayValue = max(
-                                                    0, min(1, 1 - hiddenLayerBottomGrayer[idx]))
                                                 let maskWidth = max(0, hiddenLayerBottomMask[idx])
 
-                                                Circle().fill(Color(white: grayValue, opacity: 1.0))
+                                                Circle().fill(Color.teal.opacity(hiddenLayerBottomGrayer[idx]))
                                                     .mask(
                                                         Rectangle()
                                                             .frame(width: maskWidth, height: 30)
@@ -211,20 +211,21 @@ struct TransformerFFNView: View {
 
                         // Output Layer of FFN
                         VStack {
+                            Text("Output layer")
+                                .font(.caption)
+                                .foregroundColor(.gray)
+                                .padding()
                             ForEach(0..<10) { idx in
                                 Circle()
-                                    .stroke(Color.black, lineWidth: 2)
+                                    .stroke(Color.cyan, lineWidth: 2)
                                     .frame(width: 30, height: 30)
                                     .background {
                                         GeometryReader { geo in
                                             ZStack {
                                                 Circle().fill(Color.white)
-
-                                                let grayValue = max(
-                                                    0, min(1, 1 - outputLayerGrayer[idx]))
                                                 let maskWidth = max(0, outputLayerMask[idx])
 
-                                                Circle().fill(Color(white: grayValue, opacity: 1.0))
+                                                Circle().fill(Color.cyan.opacity(outputLayerGrayer[idx]))
                                                     .mask(
                                                         Rectangle()
                                                             .frame(width: maskWidth, height: 30)
@@ -257,7 +258,7 @@ struct TransformerFFNView: View {
                     dimention: 10,
                     vectors: feedforwardOutputMatrix,
                     labels: feedForwardOutputMatrixWeight,
-                    color: .gray,
+                    color: .cyan,
                     defaultWidth: 12,
                     defaultHeight: 13,
                     spacing: 2,
@@ -302,20 +303,26 @@ struct TransformerFFNView: View {
                     selectedComponent = .residualConnection
                 }
 
-                // Transformer output plus residual and Norm
-                VectorList(
-                    dimention: 10,
-                    vectors: finalOutputMatrix,
-                    labels: feedForwardOutputMatrixWeight,
-                    color: .gray,
-                    defaultWidth: 12,
-                    defaultHeight: 13,
-                    spacing: 2,
-                    title: "Final Output",
-                    matrixMode: true
-                )
+                HStack {
+                    Image(systemName: "arrow.right")
+                        .font(.system(size: 15))
+                        .foregroundColor(.black)
+
+                    // Transformer output plus residual and Norm
+                    VectorList(
+                        dimention: 10,
+                        vectors: finalOutputMatrix,
+                        labels: feedForwardOutputMatrixWeight,
+                        color: .blue,
+                        defaultWidth: 12,
+                        defaultHeight: 13,
+                        spacing: 2,
+                        title: "FFN Output",
+                        matrixMode: true
+                    )
+                    .matchedGeometryEffect(id: "Final Output", in: animationNamespace)
+                }
                 .opacity(finalOutputVisible ? 1 : 0)
-                .matchedGeometryEffect(id: "Final Output", in: animationNamespace)
             }
         }
         .coordinateSpace(name: "ffnRootView")
@@ -328,9 +335,7 @@ struct TransformerFFNView: View {
                             path.addLine(to: hiddenLayerPositions[hidIdx])
                         }
                         .trim(from: 0, to: hiddenConnectProgress[hidIdx])
-                        .stroke(
-                            hiddenConnectProgress[hidIdx] == 1.0 ? Color.gray : Color.yellow,
-                            lineWidth: hiddenConnectProgress[hidIdx] == 1.0 ? 1 : 2)
+                        .stroke(Color.gray, lineWidth: 1)
                     }
                 }
 
@@ -341,11 +346,20 @@ struct TransformerFFNView: View {
                             path.addLine(to: outputLayerPosistions[outIdx])
                         }
                         .trim(from: 0, to: outputConnectProgress[outIdx])
-                        .stroke(
-                            outputConnectProgress[outIdx] == 1.0 ? Color.gray : Color.yellow,
-                            lineWidth: outputConnectProgress[outIdx] == 1.0 ? 1 : 2)
+                        .stroke(Color.gray, lineWidth: 1)
                     }
                 }
+
+                VerticleAnimatedCurveShape(
+                    corner1: CGPoint(
+                        x: plusSignPosition.x + 20, y: 280),
+                    corner2: CGPoint(x: plusSignPosition.x + 5, y: plusSignPosition.y-20),
+                    corner3: CGPoint(x: plusSignPosition.x - 5, y: plusSignPosition.y-20),
+                    corner4: CGPoint(
+                        x: plusSignPosition.x - 20, y: 280),
+                    progress: finalPlusProgress
+                )
+                .fill(Color.gray.opacity(0.3))
             }
         }
         .onAppear {
@@ -356,38 +370,31 @@ struct TransformerFFNView: View {
                 animateLoadingInputIntoFFN(rowIdx: 0, baseDelay: 1.0, startTime: startTime)
                 animateFeedForwardToHiddenLayer(rowIdx: 0, baseDelay: 2.5, startTime: startTime)
                 animateFinalConnection(baseDelay: 8.5, startTime: startTime)
-                animateFeedForwardToOutputLayer(rowIdx: 0, baseDelay: 10, startTime: startTime)
+                animateFeedForwardToOutputLayer(rowIdx: 0, baseDelay: 9.5, startTime: startTime)
             }
             // animation of the rest lines performing feed-forward
-            DispatchQueue.main.asyncAfter(deadline: .now() + 12) {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 11) {
                 let startTime = DispatchTime.now()
-                for rowIdx in 1..<3 {
+                for rowIdx in 1..<tokens.count {
                     animateFeedForwardOnRow(
-                        rowIdx: rowIdx, baseDelay: 3.5 * Double(rowIdx - 1), startTime: startTime)
-                }
-            }
-            DispatchQueue.main.asyncAfter(deadline: .now() + 19) {
-                let startTime = DispatchTime.now()
-                for rowIdx in 3..<tokens.count {
-                    animateFeedForwardOnRow(
-                        rowIdx: rowIdx, baseDelay: 1.5 * Double(rowIdx - 3), startTime: startTime,
-                        interval: 0.2)
+                        rowIdx: rowIdx, baseDelay: 1.5 * Double(rowIdx - 1), startTime: startTime, interval: 0.2)
                 }
             }
             // animation of the movement and component appearence
-            DispatchQueue.main.asyncAfter(deadline: .now() + 24) {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 19) {
                 withAnimation(.easeInOut(duration: 1)) {
                     attentionOutputMoved = true
                 }
             }
-            DispatchQueue.main.asyncAfter(deadline: .now() + 25) {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 20) {
                 withAnimation(.easeInOut(duration: 0.5)) {
                     plusSignVisible = true
                 }
             }
-            DispatchQueue.main.asyncAfter(deadline: .now() + 26) {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 21) {
                 withAnimation(.easeInOut(duration: 0.5)) {
                     finalOutputVisible = true
+                    finalPlusProgress = 1.0
                 }
             }
         }
@@ -401,7 +408,7 @@ struct TransformerFFNView: View {
             {
                 inputLayerGrayer[idx] = embeddingMatrixWeight[rowIdx][idx]
                 withAnimation(.easeInOut(duration: interval)) {
-                    attentionOutputMatrix.vectorListWeight[rowIdx][idx] *= 2
+                    attentionOutputMatrix.vectorListWeight[rowIdx][idx] = embeddingMatrixWeight[rowIdx][idx]
                     inputLayerMask[idx] = 30
                 }
             }
@@ -451,10 +458,10 @@ struct TransformerFFNView: View {
             withAnimation(.easeInOut(duration: 1)) {
                 for idx in 0..<7 {
                     hiddenLayerUpperGrayer[idx] =
-                        feedforwardOutputMatrix.vectorListWeight[rowIdx][idx]
+                        feedForwardMatrixWeight[rowIdx][idx]
                     hiddenLayerUpperMask[idx] = 30
                     hiddenLayerBottomGrayer[idx] =
-                        feedforwardOutputMatrix.vectorListWeight[rowIdx][idx]
+                        feedForwardMatrixWeight[rowIdx][idx]
                     hiddenLayerBottomMask[idx] = 30
                 }
             }
@@ -478,14 +485,14 @@ struct TransformerFFNView: View {
     /// Animate feedforward to output layer
     func animateFeedForwardToOutputLayer(rowIdx: Int, baseDelay: Double, startTime: DispatchTime) {
         for idx in 0..<10 {
-            outputLayerGrayer[idx] = feedforwardOutputMatrix.vectorListWeight[rowIdx][idx]
+            outputLayerGrayer[idx] = feedForwardMatrixWeight[rowIdx][idx]
         }
 
         DispatchQueue.main.asyncAfter(deadline: startTime + baseDelay) {
             withAnimation(.easeInOut(duration: 0.5)) {
                 for idx in 0..<10 {
                     outputLayerMask[idx] = 30
-                    feedforwardOutputMatrix.vectorListWeight[rowIdx][idx] *= 2
+                    feedforwardOutputMatrix.vectorListWeight[rowIdx][idx] = feedForwardMatrixWeight[rowIdx][idx]
                 }
             }
         }
@@ -515,7 +522,7 @@ struct TransformerFFNView: View {
             }
             withAnimation(.easeInOut(duration: interval)) {
                 for idx in 0..<10 {
-                    attentionOutputMatrix.vectorListWeight[rowIdx][idx] *= 2
+                    attentionOutputMatrix.vectorListWeight[rowIdx][idx] = embeddingMatrixWeight[rowIdx][idx]
                     inputLayerMask[idx] = 30
                 }
             }
@@ -565,9 +572,9 @@ struct TransformerFFNView: View {
         DispatchQueue.main.asyncAfter(deadline: startTime + baseDelay + interval * 4) {
             withAnimation(.easeInOut(duration: interval)) {
                 for idx in 0..<10 {
-                    outputLayerGrayer[idx] = feedforwardOutputMatrix.vectorListWeight[rowIdx][idx]
+                    outputLayerGrayer[idx] = feedForwardMatrixWeight[rowIdx][idx]
                     outputLayerMask[idx] = 30
-                    feedforwardOutputMatrix.vectorListWeight[rowIdx][idx] *= 2
+                    feedforwardOutputMatrix.vectorListWeight[rowIdx][idx] = feedForwardMatrixWeight[rowIdx][idx]
                 }
             }
         }

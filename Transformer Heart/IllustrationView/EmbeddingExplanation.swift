@@ -308,7 +308,7 @@ struct PositionalEncodingExplanation: View {
                             
                             // Token
                             TokenBox(
-                                text: ["Data", "visualization", "em", "powers", "users", "to"][index],
+                                text: ["Transformer", "visualization", "em", "powers", "users", "to"][index],
                                 id: ["#1842", "#4728", "#2341", "#8392", "#2849", "#374"][index]
                             )
                             
@@ -376,7 +376,7 @@ struct FinalEmbeddingExplanation: View {
                             HStack(spacing: 2) {
                                 ForEach(0..<8) { _ in
                                     RoundedRectangle(cornerRadius: 2)
-                                        .fill(Color.orange.opacity(0.3))
+                                        .fill(Color.green.opacity(0.3))
                                         .frame(width: 8, height: 20)
                                 }
                                 Text("...")
@@ -398,7 +398,7 @@ struct FinalEmbeddingExplanation: View {
                             HStack(spacing: 2) {
                                 ForEach(0..<8) { _ in
                                     RoundedRectangle(cornerRadius: 2)
-                                        .fill(Color.green.opacity(0.3))
+                                        .fill(Color.orange.opacity(0.3))
                                         .frame(width: 8, height: 20)
                                 }
                                 Text("...")
@@ -420,7 +420,7 @@ struct FinalEmbeddingExplanation: View {
                             HStack(spacing: 2) {
                                 ForEach(0..<8) { _ in
                                     RoundedRectangle(cornerRadius: 2)
-                                        .fill(Color.blue.opacity(0.3))
+                                        .fill(Color.gray.opacity(0.3))
                                         .frame(width: 8, height: 20)
                                 }
                                 Text("...")

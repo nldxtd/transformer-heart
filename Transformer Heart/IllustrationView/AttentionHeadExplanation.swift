@@ -89,12 +89,20 @@ struct MultiheadSplittingExplanation: View {
 struct MaskedSelfAttentionExplanation: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 20) {
-            Text("Masked Self-Attention")
+            Text("Single-Head Masked Self-Attention")
                 .font(.title3)
                 .foregroundColor(.indigo)
                 .padding(.bottom, 4)
             
-            Text("In each head, we perform masked self-attention calculations. This mechanism allows the model to generate sequences by focusing on relevant parts of the input while preventing access to future tokens.")
+            Text("After applying KQV matrices to the embedding matrix, we get query, key, value vector for each embedding token. At this point, each vector is split into several parts(in GPT-2, 12 parts) and each part goes into a single Self-Attention head.")
+                .font(.subheadline)
+                .foregroundColor(.secondary)
+
+            Text("In each head, inner(dot) product of between each pair of query vectors and key vectors are calculated to determine the relationship between each tokens. And a mask is applyed to prevent the former token from getting information from post tokens.")
+                .font(.subheadline)
+                .foregroundColor(.secondary)
+            
+            Text("After calculation, we apply softmax to each row of cross attention head to make normalization, and the softmax weight is applied to value vectors. After concatetation values from different attention head, the result is added back to embedding vectors to make attention output.")
                 .font(.subheadline)
                 .foregroundColor(.secondary)
         }
@@ -211,10 +219,10 @@ struct MaskingExplanation: View {
                     VStack(spacing: 2) {
                         ForEach(0..<6) { col in
                             Rectangle()
-                                .fill(col <= row ? Color.gray.opacity(0.2) : Color.blue.opacity(0.3))
+                                .fill(col < row ? Color.gray.opacity(0.2) : Color.blue.opacity(0.3))
                                 .frame(width: 30, height: 30)
                                 .overlay(
-                                    Text(col <= row ? "−∞" : "")
+                                    Text(col < row ? "−∞" : "")
                                         .font(.caption2)
                                         .foregroundColor(.gray)
                                 )
@@ -322,6 +330,41 @@ struct SoftmaxExplanation: View {
             .background(Color.gray.opacity(0.05))
             .cornerRadius(8)
         }
+    }
+}
+
+struct ValueSoftmaxMulExplanation: View {
+    var body: some View {
+        VStack(alignment: .leading, spacing: 20) {
+            // Title
+            Text("Value Vectors * Attention Scores")
+                .font(.title2)
+                .foregroundColor(.indigo)
+                .padding(.bottom, 8)
+
+            // Explanation of the softmax-weighted multiplication
+            VStack(alignment: .leading, spacing: 12) {
+                Text("How Attention is Applied")
+                    .font(.headline)
+                    .foregroundColor(.primary)
+
+                Text("The attention mechanism uses the scores from the softmax function to weight the Value (V) vectors. This calculation allows the model to focus on the most relevant parts of the input sequence. Each token’s output is a weighted sum of the Value vectors based on its relationship with every other token.")
+                    .font(.subheadline)
+                    .foregroundColor(.secondary)
+            }
+
+            // Explanation of concatenating multiple heads
+            VStack(alignment: .leading, spacing: 12) {
+                Text("Concatenating Multiple Heads")
+                    .font(.headline)
+                    .foregroundColor(.primary)
+
+                Text("Each attention head independently computes its own weighted sum of Value vectors. The outputs from all heads are concatenated and then passed through a linear transformation. This combined output is added back to the original embeddings to produce a richer representation for subsequent layers.")
+                    .font(.subheadline)
+                    .foregroundColor(.secondary)
+            }
+        }
+        .padding()
     }
 }
 
@@ -508,6 +551,10 @@ struct ResidualConnectionExplanation: View {
             
             // Main explanation
             Text("Residual connections, also known as skip connections, add the input directly to the output of a layer. In transformers, they are used after both attention and FFN layers.")
+                .font(.subheadline)
+                .foregroundColor(.secondary)
+
+            Text("In Cross-Attention heads, the residual connection is applied after the output of each head is concatetated.")
                 .font(.subheadline)
                 .foregroundColor(.secondary)
             

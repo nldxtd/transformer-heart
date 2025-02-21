@@ -8,7 +8,7 @@ struct ProbabilityOutputView: View {
 
     @State private var finalOutputPosition: CGPoint = CGPoint(x: 0, y: 0)
     @State private var verticalVectorPosition: CGPoint = CGPoint(x: 0, y: 0)
-    @State private var highlightLastRow: Bool = false
+    @State private var highlightLastRow: Int = -1
     @State private var downEmbeddingProgress: CGFloat = 0
     @State private var verticleVectorVisible: Bool = false
     @State private var probPredictionVisible: Bool = false
@@ -37,13 +37,13 @@ struct ProbabilityOutputView: View {
                     dimention: 10,
                     vectors: finalOutputMatrix,
                     labels: feedForwardOutputMatrixWeight,
-                    color: .gray,
+                    color: .blue,
                     defaultWidth: 12,
                     defaultHeight: 13,
                     spacing: 2,
                     title: "Final Output",
                     matrixMode: true,
-                    highlightLastRow: highlightLastRow
+                    highlightRowIndex: highlightLastRow
                 )
                 .matchedGeometryEffect(id: "Final Output", in: animationNamespace)
                 .background {
@@ -62,6 +62,7 @@ struct ProbabilityOutputView: View {
                     .font(.subheadline)
                     .offset(x: 20, y: 100)
                     .opacity(downEmbeddingProgress)
+                    .underline()
                     .onTapGesture {
                         selectedComponent = .unembeddingMatrix
                     }
@@ -73,7 +74,7 @@ struct ProbabilityOutputView: View {
                     VStack(spacing: 2) {
                         ForEach(0..<8, id: \.self) { idx in
                             Rectangle()
-                                .fill(Color.gray.opacity(firstTokenOpacity[idx]))
+                                .fill(Color.blue.opacity(firstTokenOpacity[idx]))
                                 .frame(width: 90, height: 20)
                                 .overlay(alignment: .center) {
                                     Text(fisrtTokenChoices[idx])
@@ -83,7 +84,7 @@ struct ProbabilityOutputView: View {
                             .frame(height: 20)
                         ForEach(0..<5, id: \.self) { idx in
                             Rectangle()
-                                .fill(Color.gray.opacity(secondTokenOpacity[idx]))
+                                .fill(Color.blue.opacity(secondTokenOpacity[idx]))
                                 .frame(width: 90, height: 20)
                                 .overlay(alignment: .center) {
                                     Text(secondTokenChoices[idx])
@@ -93,7 +94,7 @@ struct ProbabilityOutputView: View {
                             .frame(height: 20)
                         ForEach(0..<3, id: \.self) { idx in
                             Rectangle()
-                                .fill(Color.gray.opacity(thirdTokenOpacity[idx]))
+                                .fill(Color.blue.opacity(thirdTokenOpacity[idx]))
                                 .frame(width: 90, height: 20)
                                 .overlay(alignment: .center) {
                                     Text(thirdTokenChoices[idx])
@@ -103,7 +104,7 @@ struct ProbabilityOutputView: View {
                             .frame(height: 20)
                         ForEach(0..<6, id: \.self) { idx in
                             Rectangle()
-                                .fill(Color.gray.opacity(forthTokenOpacity[idx]))
+                                .fill(Color.blue.opacity(forthTokenOpacity[idx]))
                                 .frame(width: 90, height: 20)
                                 .overlay(alignment: .center) {
                                     Text(forthTokenChoices[idx])
@@ -134,7 +135,7 @@ struct ProbabilityOutputView: View {
                 // Output logits and probabilities
                 VStack(alignment: .center, spacing: 2) {
 
-                    Text("Next token probabilities")
+                    Text("Probability calculation")
                         .font(.title)
                         .padding()
                     ProbabilityView(selectedComponent: $selectedComponent)
@@ -160,7 +161,7 @@ struct ProbabilityOutputView: View {
             selectedComponent = .outputProbability
             DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
                 withAnimation(.easeInOut(duration: 0.5)) {
-                    highlightLastRow = true
+                    highlightLastRow = 5
                 }
             }
             DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
@@ -196,6 +197,7 @@ struct ProbabilityView: View {
         VStack {
             HStack {
                 Text("Temperature: ")
+                    .underline()
                     .onTapGesture {
                         selectedComponent = .temperature
                     }
@@ -257,6 +259,7 @@ struct ProbabilityView: View {
                 VStack(alignment: .leading) {
                     Text("Softmax")
                         .font(.subheadline)
+                        .underline()
                         .onTapGesture {
                             selectedComponent = .softmaxProbability
                         }
